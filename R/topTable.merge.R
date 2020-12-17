@@ -52,7 +52,8 @@ topTable.merge <- function(contrastList,
         as.data.frame
     colnames(dat) <- stringr::str_c(colNames[1], "_", colnames(dat))
     dat <- round(dat, digits[1])
-    dat %<>% tibble::rownames_to_column(var = "rowid")
+    dat <- dat %>%
+        tibble::rownames_to_column(var = "rowid")
 
     if (length(colNames)  > 1) {
         for (i in 1:length(colNames)) {
@@ -61,15 +62,18 @@ topTable.merge <- function(contrastList,
             # Add datatype as prefix on colname e.g. logFC_contrastname
             colnames(dat2) <- stringr::str_c(colNames[i], "_", colnames(dat2))
             dat2 <- round(dat2, digits[i])
-            dat2 %<>% tibble::rownames_to_column(var = "rowid")
+            dat2 <- dat2 %>%
+                tibble::rownames_to_column(var = "rowid")
             if (i == 1) {
                 dat <- dat2
             } else {
-                dat %<>% dplyr::left_join(dat2, by = "rowid")
+                dat <- dat %>%
+                    dplyr::left_join(dat2, by = "rowid")
             }
         }
     }
 
-    dat %<>% tibble::column_to_rownames(var = "rowid")
+    dat <- dat %>%
+        tibble::column_to_rownames(var = "rowid")
     return(dat)
 }

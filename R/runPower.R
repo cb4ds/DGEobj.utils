@@ -89,7 +89,7 @@ runPower <- function(countsMatrix,
 
     if (tolower(return) %in% c("plot", "both")) {
         rocdat <- dplyr::filter(pdat, n %in% N)
-        rocdat$depth %<>% as.factor
+        rocdat$depth <- as.factor(rocdat$depth)
 
         roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
@@ -109,7 +109,7 @@ runPower <- function(countsMatrix,
         # Filter to just a few FDR thresholds
         ndat <- dplyr::filter(pdat, alpha %in% FDR)
 
-        ndat$depth %<>% as.factor
+        ndat$depth <- as.factor(ndat$depth)
         ndat$FDR <- ndat$alpha
 
         NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
