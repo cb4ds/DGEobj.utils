@@ -72,10 +72,12 @@ extractCol <- function(contrastList, colName, robust = TRUE){
         if (i == 1) {
             dat <- newdat
         } else {
-            dat %<>% dplyr::full_join(newdat, by = "rowid")
+            dat <- dat %>%
+                dplyr::full_join(newdat, by = "rowid")
         }
     }
-    dat %<>% tibble::column_to_rownames(var = "rowid")
+    dat <- dat %>%
+        tibble::column_to_rownames(var = "rowid")
     colnames(dat) <- names(contrastList)
     return(dat)
 }

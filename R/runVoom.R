@@ -187,25 +187,27 @@ runVoom <- function(dgeObj,
     }
 
     VoomElistName = paste(designMatrixName, "_Elist", sep = "")
-    dgeObj %<>% DGEobj::addItem(VoomElist, VoomElistName,
-                                "Elist",
-                                funArgs = funArgs,
-                                parent = list("DGEList", designMatrixName)
-    )
+    dgeObj <- dgeObj %>%
+        DGEobj::addItem(VoomElist, VoomElistName,
+                        "Elist",
+                        funArgs = funArgs,
+                        parent = list("DGEList", designMatrixName))
 
     # Add corfit if present
     if (exists("corfit")) {
-        dgeObj %<>% DGEobj::addItem(corfit, paste(designMatrixName, "_corFit", sep = ""),
-                                    "corFit",
-                                    funArgs = funArgs,
-                                    parent = paste(designMatrixName, "_Elist", sep = ""))
+        dgeObj <- dgeObj %>%
+            DGEobj::addItem(corfit, paste(designMatrixName, "_corFit", sep = ""),
+                            "corFit",
+                            funArgs = funArgs,
+                            parent = paste(designMatrixName, "_Elist", sep = ""))
     }
 
-    dgeObj %<>% DGEobj::addItem(fit, paste(designMatrixName, "_fit", sep = ""),
-                                "fit",
-                                funArgs = funArgs,
-                                itemAttr = itemAttr,
-                                parent = list(VoomElistName, designMatrixName))
+    dgeObj <- dgeObj %>%
+        DGEobj::addItem(fit, paste(designMatrixName, "_fit", sep = ""),
+                        "fit",
+                        funArgs = funArgs,
+                        itemAttr = itemAttr,
+                        parent = list(VoomElistName, designMatrixName))
 
     return(dgeObj)
 }

@@ -31,7 +31,7 @@
 #'    myContrastList <- runQvalue(myContrastList)
 #'
 #'    # The magrittr way:
-#'    myContrastList %<>% runQvalue
+#'    myContrastList <- myContrastList %>% runQvalue()
 #' }
 #'
 #' @import magrittr
