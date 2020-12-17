@@ -65,19 +65,16 @@ extractCol <- function(contrastList, colName, robust = TRUE){
                             msg = "colName must be a column in the data of class 'character'.")
 
     for (i in 1:length(contrastList)) {
-        newdat <- contrastList[[i]] %>%
-            tibble::rownames_to_column(var = "rowid") %>%
-            dplyr::select(rowid, colName)
+        newdat <- cbind(rowid = rownames(contrastList[[i]]), data.frame(contrastList[[i]], row.names = NULL))
+        newdat <- newdat[, c("rowid", "P.Value")]
 
         if (i == 1) {
             dat <- newdat
         } else {
-            dat <- dat %>%
-                dplyr::full_join(newdat, by = "rowid")
+            dat <- merge(x = dat, y = newdat, by = "rowid", all = TRUE, sort = FALSE)
         }
     }
-    dat <- dat %>%
-        tibble::column_to_rownames(var = "rowid")
+    dat <- data.frame(dat[,-c(1)], row.names = dat[,c(1)])
     colnames(dat) <- names(contrastList)
     return(dat)
 }
