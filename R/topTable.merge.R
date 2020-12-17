@@ -21,8 +21,6 @@
 #'
 #' @import magrittr
 #' @importFrom stringr str_c
-#' @importFrom tibble rownames_to_column column_to_rownames
-#' @importFrom dplyr left_join
 #'
 #' @export
 topTable.merge <- function(contrastList,
@@ -52,8 +50,7 @@ topTable.merge <- function(contrastList,
         as.data.frame
     colnames(dat) <- stringr::str_c(colNames[1], "_", colnames(dat))
     dat <- round(dat, digits[1])
-    dat <- dat %>%
-        tibble::rownames_to_column(var = "rowid")
+    dat <- cbind(rowID = rownames(dat), data.frame(dat, row.names = NULL))
 
     if (length(colNames)  > 1) {
         for (i in 1:length(colNames)) {
@@ -62,18 +59,15 @@ topTable.merge <- function(contrastList,
             # Add datatype as prefix on colname e.g. logFC_contrastname
             colnames(dat2) <- stringr::str_c(colNames[i], "_", colnames(dat2))
             dat2 <- round(dat2, digits[i])
-            dat2 <- dat2 %>%
-                tibble::rownames_to_column(var = "rowid")
+            dat2 <- cbind(rowID = rownames(dat2), data.frame(dat2, row.names = NULL))
             if (i == 1) {
                 dat <- dat2
             } else {
-                dat <- dat %>%
-                    dplyr::left_join(dat2, by = "rowid")
+                dat <- merge(x = dat, y = dat2, by = "rowid", all.x = TRUE, sort = FALSE)
             }
         }
     }
 
-    dat <- dat %>%
-        tibble::column_to_rownames(var = "rowid")
+    dat <- data.frame(dat[,-c(1)], row.names = dat[,c(1)])
     return(dat)
 }
