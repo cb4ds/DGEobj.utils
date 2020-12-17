@@ -43,7 +43,7 @@ to FDRs and q-values.
    myContrastList <- runQvalue(myContrastList)
 
    # The magrittr way:
-   myContrastList \%<>\% runQvalue
+   myContrastList <- myContrastList \%>\% runQvalue()
 }
 
 }
