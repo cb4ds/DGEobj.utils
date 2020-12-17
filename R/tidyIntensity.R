@@ -31,10 +31,7 @@
 #' }
 #'
 #' @importFrom assertthat assert_that
-#' @importFrom dplyr left_join
-#' @importFrom stats setNames
 #' @importFrom tidyr gather
-#' @importFrom tibble rownames_to_column tibble
 #'
 #' @export
 tidyIntensity <- function(intensityObj,
@@ -62,11 +59,12 @@ tidyIntensity <- function(intensityObj,
 
     # Create a rownames column
     xcol <- ncol(intensityObj) + 1
-    intensityObj <- tibble::rownames_to_column(intensityObj, var = rowIDcolname)
+    intensityObj <- cbind(GeneID = rownames(intensityObj), data.frame(intensityObj, row.names = NULL))
     intensityObj <- tidyr::gather(intensityObj, key = !!keyColname, value = !!valueColname, 2:xcol)
 
     # Join the group info
-    groupinfo <- tibble::tibble(keycol = samples, group = group)
-    intensityObj <- dplyr::left_join(intensityObj, groupinfo, by = stats::setNames(nm = keyColname, "keycol"))
+    groupinfo <- data.frame(keycol = samples, group = group)
+    intensityObj <- merge(x = intensityObj, y = groupinfo, by.x = "Sample", by.y = "keycol", all.x = TRUE, sort = FALSE)
+    intensityObj <- intensityObj[,c("GeneID", "Sample", "Log2CPM", "group")]
     return(intensityObj)
 }
