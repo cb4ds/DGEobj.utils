@@ -30,7 +30,8 @@
 #' }
 #'
 #' @importFrom assertthat assert_that
-#' @importFrom dplyr select bind_rows
+#' @importFrom dplyr select
+#' @importFrom tibble rownames_to_column
 #' @importFrom DGEobj getType
 #'
 #' @export
@@ -76,13 +77,13 @@ tidyContrasts <- function(DGEdata,
     # Does the rownameColumn exist in df1?
     if (!rownameColumn %in% colnames(DGEdata[[1]])) {
         # Move rownames to rownameColumn
-        DGEdata <- lapply(DGEdata, rownames_to_column, var = rownameColumn)
+        DGEdata <- lapply(DGEdata, tibble::rownames_to_column, var = rownameColumn)
         commonColumns <- c(rownameColumn, commonColumns)
     }
 
     # Reduce all dataframes to the selected columns
     # This also insures same column order in each df
-    DGEdata <- lapply(DGEdata, select, commonColumns)
+    DGEdata <- lapply(DGEdata, dplyr::select, commonColumns)
 
     # Add a contrast name column to each DF
     for (name in names(DGEdata)) {
@@ -90,7 +91,7 @@ tidyContrasts <- function(DGEdata,
     }
 
     # Now merge the dataframes vertically
-    DGEdata <- dplyr::bind_rows(DGEdata)
+    DGEdata <- do.call(rbind, DGEdata)
 
     return(DGEdata)
 }
