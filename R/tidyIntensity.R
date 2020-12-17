@@ -50,7 +50,7 @@ tidyIntensity <- function(intensityObj,
                             msg = "valueColname must be specified.")
     assertthat::assert_that(!missing(group),
                             length(group) == ncol(intensityObj),
-                            msg = "group must be specified and should be the same length as the number of columns in x.")
+                            msg = "group must be specified and should be the same length as the number of columns in intensityObj.")
 
     if ("matrix" %in% class(intensityObj)) {
         intensityObj <- as.data.frame(intensityObj)
