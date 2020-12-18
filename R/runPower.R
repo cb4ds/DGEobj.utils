@@ -69,7 +69,7 @@ runPower <- function(countsMatrix,
                        alpha = double(),
                        powerVal = double(),
                        stringsAsFactors = FALSE)
-    cnames <- c("depth", "n", "effect", "alpha", "power1")
+    cnames <- c("depth", "n", "effect", "alpha", "power")
 
     for (D in depth) {
         cv <- depthBCV[D == depth]
