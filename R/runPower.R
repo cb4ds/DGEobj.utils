@@ -67,9 +67,9 @@ runPower <- function(countsMatrix,
                        n = double(),
                        effect = double(),
                        alpha = double(),
-                       power = double(),
+                       powerVal = double(),
                        stringsAsFactors = FALSE)
-    cnames <- colnames(pdat)
+    cnames <- c("depth", "n", "effect", "alpha", "power1")
 
     for (D in depth) {
         cv <- depthBCV[D == depth]
@@ -77,7 +77,7 @@ runPower <- function(countsMatrix,
             for (E in effectSize)
                 for (A in alpha) {
                     P <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
-                    pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, power = P))
+                    pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, powerVal = P))
                 }
     }
     colnames(pdat) <- cnames
@@ -91,7 +91,7 @@ runPower <- function(countsMatrix,
         rocdat <- dplyr::filter(pdat, n %in% N)
         rocdat$depth <- as.factor(rocdat$depth)
 
-        roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
+        roc <- ggplot(rocdat, aes(x = alpha, y = powerVal, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_x_continuous(breaks = seq(0, 1, 0.2)) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
@@ -112,7 +112,7 @@ runPower <- function(countsMatrix,
         ndat$depth <- as.factor(ndat$depth)
         ndat$FDR <- ndat$alpha
 
-        NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
+        NvP <- ggplot(ndat, aes(x = n, y = powerVal, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
             facet_grid(FDR ~ effect, labeller = label_both) +
