@@ -69,7 +69,7 @@ runPower <- function(countsMatrix,
                        alpha = double(),
                        powerVal = double(),
                        stringsAsFactors = FALSE)
-    cnames <- c("depth", "n", "effect", "alpha", "power")
+    cnames <- colnames(pdat)
 
     for (D in depth) {
         cv <- depthBCV[D == depth]
@@ -85,6 +85,7 @@ runPower <- function(countsMatrix,
     result <- list()
     if (tolower(return) %in% c("dataframe", "both")) {
         result$PowerData <- pdat
+        colnames(result$PowerData) <- c("depth", "n", "effect", "alpha", "power")
     }
 
     if (tolower(return) %in% c("plot", "both")) {
