@@ -2,7 +2,7 @@
 % Please edit documentation in R/runVoom.R
 \name{runVoom}
 \alias{runVoom}
-\title{Run functions in a typical voom workflow}
+\title{Run functions in a typical voom/lmfit workflow}
 \usage{
 runVoom(
   dgeObj,

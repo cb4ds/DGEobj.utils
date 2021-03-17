@@ -4,17 +4,22 @@
 \alias{runSVA}
 \title{Test for surrogate variables}
 \usage{
-runSVA(dgeObj, designMatrixName, method = "leek")
+runSVA(dgeObj, designMatrixName, n.sv, method = "leek")
 }
 \arguments{
 \item{dgeObj}{A DGEobj with normalized counts and a DesignMatrix.}
 
 \item{designMatrixName}{The itemName of the design matrix in DGEobj.}
 
-\item{method}{Method passed to num.sv. Supports "leek" or "be". (Default = "leek")}
+\item{n.sv}{Optional; Use to override the default n.sv returned by num.sv
+for the number of SV to analyze.}
+
+\item{method}{Method passed to num.sv. Supports "leek" or "be". (Default =
+"leek")}
 }
 \value{
-dgeObj containing a new design matrix and an updated design table.
+dgeObj containing an updated design table, the svobj and a new design
+  matrix.
 }
 \description{
 Takes an DGEobj from runVoom and tests for surrogate variables. Adds a new
