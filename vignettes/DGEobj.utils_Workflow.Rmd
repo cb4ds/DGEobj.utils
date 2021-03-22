@@ -19,14 +19,14 @@ knitr::opts_chunk$set(echo    = TRUE,
                       include = TRUE, 
                       warning = FALSE, 
                       message = FALSE, 
-                      eval    = TRUE)
+                      eval    = TRUE, 
+                      fig.height = 3.5,
+                      fig.width  = 7)
 
 suppressPackageStartupMessages({
     library(biomaRt)
     library(dplyr)
     library(glue)
-    # library(edgeR)
-    # library(kableExtra)
     library(DGEobj)
     library(DGEobj.utils)
     library(stringr)
@@ -34,18 +34,11 @@ suppressPackageStartupMessages({
     library(conflicted)
     library(ggplot2)
     library(sva)
-    
-# library(tidyverse)
-# library(JRTutil)  #need to remove this dependency (BMS internal package)
-# library(parallel)
-# library(doParallel)
 })
 
 conflict_prefer("select",    "dplyr",   quiet = TRUE)
-conflict_prefer("filter",    "dplyr",   quiet = TRUE)
 conflict_prefer("left_join", "dplyr",   quiet = TRUE)
 conflict_prefer("rename",    "dplyr",   quiet = TRUE)
-# conflict_prefer("collapse",  "glue",    quiet = TRUE) 
 ```
 
 
@@ -63,7 +56,7 @@ Briefly, livers were removed from rats 4 weeks after bile duct ligation or sham 
 
 Files containing counts, sample annotations, and QC data associated with this project can be downloaded from the [NCBI GEO resource](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE120804).
 
-The GEO data includes Ensembl gene IDs. Additional gene information such as chromosome positions, type of transcript, etc, are downloaded from Ensembl using the biomaRt package.
+The GEO data includes Ensembl gene IDs. Additional gene information such as chromosome positions, type of transcript, etc., are downloaded from Ensembl using the biomaRt package.
 
 ## Starting DGEobj creation
 
@@ -158,7 +151,7 @@ ens.data    <- getBM(attributes = ens.columns,
 gene.data <- left_join(data.frame(ensembl_gene_id = rownames(counts), stringsAsFactors = F),
                        ens.data,
                        by = "ensembl_gene_id") %>%
-    dplyr::rename(start = start_position, end = end_position) %>%
+    rename(start = start_position, end = end_position) %>%
     mutate(strand = case_when(strand == -1 ~ "-",
                               strand == 1  ~ "+",
                               TRUE         ~ "*"))
@@ -199,130 +192,89 @@ Columns available in this object for building contrasts:
 ```{r build_cols}
 designCol <- "ReplicateGroup"
 
-levels <- str_c(designCol, (unique(dgeObj$design[[designCol]])))
-kable(levels)
+str_c(designCol, (unique(dgeObj$design[[designCol]])))
 ```
 
-Since we want to use formulas we have a few additional steps that may be necessary depending on the data:
+If using formulas there may be a few additional steps that may be necessary depending on the data:
 
 ```{r projconfig}
-# Next step is only necessary IF you have a numeric column that you
-# want to treat as a factor in formulas.
+## This step is only necessary IF there is a numeric column that you want 
+## to treat as a factor in formulas
 dgeObj$design$ReplicateGroup <- as.factor(dgeObj$design$ReplicateGroup)
 
-## The next step is only necessary if you want to use a ~ 1 formula, then 
-## the desired baseline must be made the first factor and thus the default baseline..
+## This step is only necessary if you want to use a ~ 1 formula.  
+## The desired baseline must be made the first factor and thus the default baseline
 dgeObj$design$ReplicateGroup <- relevel(dgeObj$design$ReplicateGroup, "Sham")
 
-# Print the contents of the dgeObj
 kable(inventory(dgeObj))
 ```
 
 ## Limma/Voom Workflow Reference
 
-At this point our starting object is fully setup for the analysis we wish to perform so we will proceed to run the Limma/Voom Differential Gene Expression analysis as described in:
+At this point our starting object is fully setup for the analysis.  The next step is to run the Limma/Voom Differential Gene Expression analysis as described in:
 
->  TBD
->  TBD
->  TBD  
+> Law CW, Alhamdoosh M, Su S et al. RNA-seq analysis is easy as 1-2-3 with 
+> limma, Glimma and edgeR.  F1000Research 2018, 5:1408. [DOI: 10.12688/f1000research.9005.3](https://doi.org/10.12688/f1000research.9005.3) 
 
+
+<br/><br/>
 
 # Pre-processing
 
 ## Low Intensity Filtering
 
-Typically, genes with near zero counts are removed before further analysis. They
-contain no useful information, increase the multiple test burden, asnd could
-(under some conditions) compromise the normalization and violate assumptions
-implicit in linear modeling.
+Typically, genes with near zero counts are removed before further analysis. They contain no useful information, increase the multiple test burden, and could (under some conditions) compromise the normalization and violate assumptions implicit in linear modeling.
 
-Two methods for low intensity filtering are supplied; min counts, and
-FPK.  The lowIntFilter function will use any combination of these methods.  The
-sampleFraction argument defines the proportion of samples that must meet all
-specified criteria to keep a gene.  
+Two methods for low intensity filtering are supplied; min counts, and FPK.  The lowIntFilter function will use any combination of these methods.  The sampleFraction argument defines the proportion of samples that must meet all specified criteria to keep a gene.  
 
-We typically recommend using counts >= 10 and FPK >=5.  But the filter should be
-set as close as possible to criteria the original analyst used.  A custom filter
-can also be substituted.
+It is typically recommended to use counts >= 10 and FPK >=5.  But the filter should be set as close as possible to criteria the original analyst used.  A custom filter can also be substituted.
 
-Minmum counts >= 10 is commonly used to filter out low intensity genes.  But
-mincounts is biased against short genes.  In contrast, FPK (fragments per
-kilobase), described below, provides an intensity measure that is not length biased.  
+Minimum counts >= 10 is commonly used to filter out low intensity genes.  But mincounts is biased against short genes.  In contrast, FPK (fragments per kilobase), described below, provides an intensity measure that is not length biased.  
   
-Fragments Per Killobase (FPK) is another filtering criterion.  For an average
-size ~2kb mRNA FPK = 5 is equivalent to counts = 10, however, FPK is not length
-biased.   Another useful property of FPK is that FPK can be calculated for
-intergenic DNA and thus provides an empirical background level of stochastic or
-spurious transcription.  This estimate is surely conservative in that there is
-very likely some real transcription going on in intergenic regions.  Typically,
-the intergenic FPK level is below 5 so FPK >= 5 is an appropriate threshold.
+Fragments per kilobase (FPK) is another filtering criterion.  For an average size ~2kb mRNA FPK = 5 is equivalent to counts = 10, however, FPK is not length biased.   Another useful property of FPK is that FPK can be calculated for intergenic DNA and thus provides an empirical background level of stochastic or spurious transcription.  This estimate is surely conservative in that there is very likely some real transcription going on in intergenic regions.  Typically, the intergenic FPK level is below 5 so FPK >= 5 is an appropriate threshold.
 
-The FPK + mincount filters can both be applied together to selecte detected
-genes. The one must decide how to integrate this information across multiple
-samples and experiment groups. You can get more sophisticated and do this on a
-group-wise basis so you can include genes that were expressed in at least one of
-your treatment groups. I leave that as an exercise for the reader and note that
-groupwise filtering introduces a bias that affects your pvalue calibration.  To
-avoid such bias, we simply require 50% of samples to pass the intensity
-threshold and you can modify the percentage to adjust the stringency.
+The FPK + mincount filters can both be applied together to select detected genes. The one must decide how to integrate this information across multiple samples and experiment groups. You can get more sophisticated and do this on a group-wise basis so you can include genes that were expressed in at least one of your treatment groups. That is left as an exercise for the reader -- note that groupwise filtering introduces a bias that affects your pvalue calibration.  To avoid such bias, simply require 50% of samples to pass the intensity threshold and then modify the percentage to adjust the stringency.
 
-If you use FPK, a length adjusted measure, you must also supply the geneLength
-argument. A Gene length vlue for each gene is thus required in the gene
-annotation if FPK is to be used.  The RSEM algorithm for generating gene counts
-also provide an effective length calculation for each gene that may be 
-conveniently used for the FPK calculations.
+If using FPK, a length adjusted measure, you must also supply the geneLength argument. A Gene length value for each gene is thus required in the gene annotation if FPK is to be used.  The RSEM algorithm for generating gene counts also provide an effective length calculation for each gene that may be  conveniently used for the FPK calculations.
 
-In this example, only the counts were provided in the GEO source and thus the
-genelength information required to use FPK is not available.  Therefore, a
-simple count threshold will be used and 50% of samples are required to meet
-these criteria for the gene to be included.
+In this example, only the counts were provided in the GEO source and thus the gene length information required to use FPK is not available.  Therefore, a simple count threshold will be used and 50% of samples are required to meet these criteria for the gene to be included.
 
-
-Dimensions before filtering: 
-`r dim(dgeObj)`
+**Dimensions before filtering: `r dim(dgeObj)` **
 
 ```{r LowIntensityFilter}
-### Gene Filter Criteria ###
+# Gene filter criteria
 countThreshold <- 10   # Must meet or exceed this value
-sampleFraction <- 0.5  # Fraction of samples that must meet the established criteria
+sampleFraction <- 0.5  # Fraction of samples that must meet the criteria
 
-# low expression filter
 dgeObj <- lowIntFilter(dgeObj, 
                        countThreshold = countThreshold,
                        sampleFraction = sampleFraction)
-
 ```
 
-Dimensions after filtering: 
-`r dim(dgeObj)`
+**Dimensions after filtering: `r dim(dgeObj)` **
+
 
 ## Filter for Protein Coding Genes  
 
-Often an analysis is focused on protein-coding genes.  Here we use the Ensembl
-gene_biotype column in the gene annotation to keep only protein-coding genes.
-
-Here square bracket subsetting is used to sub-select protein-coding genes.  
+Often an analysis is focused on protein-coding genes.  Here the Ensembl gene_biotype column is used in the gene annotation to keep only protein-coding genes.
 
 ```{r filterProteinCoding}
 idx    <- dgeObj$geneData$gene_biotype == "protein_coding"
 dgeObj <- dgeObj[idx,]
 ```
 
-Dimensions after filtering for protein_coding:   
-`r dim(dgeObj)`
+**Dimensions after filtering for protein_coding: `r dim(dgeObj)` **
 
+
+<br/><br/>
 
 # DGE Analysis  
 
-## EdgeR Normalization  
+## edgeR Normalization  
 
-This step simply applies edgeR::calcNormFactors to effect TMM normalization.
-This results in a DGEList object being added to the DGEobj.  Note that the
-counts matrix within the DGEList object is NOT normalized counts.  Rather a
-separate item in the DGEList contains the norm factors and you should use the
-edgeR cpm function to extract normalized counts from the DGEList.
+This step simply applies edgeR::calcNormFactors to effect TMM normalization. This results in a DGEList object being added to the DGEobj.  Note that the counts matrix within the DGEList object is NOT normalized counts.  Rather a separate item in the DGEList contains the norm factors and you should use the edgeR cpm function to extract normalized counts from the DGEList.
 
-```{r Normalize, fig.width=5, fig.height=3, eval = F}
+```{r Normalize}
 dgeObj <- runEdgeRNorm(dgeObj, plotFile = TRUE)
 ```
 
@@ -330,23 +282,24 @@ dgeObj <- runEdgeRNorm(dgeObj, plotFile = TRUE)
 
 Provide a formula and construct the design matrix:
 
-```{r ModelDefinition, eval = F}
-### Formula must be composed of column names from the design table.
+```{r ModelDefinition}
+# Formula must be composed of column names from the design table
 formula <- '~ 0 + ReplicateGroup'
+
 # User-defined name for the designMatrix
 designMatrixName <- "ReplicateGroupDesign"
 
-# build the designMatrix
+# Build the designMatrix
 design <- getItem(dgeObj, "design")
 designMatrix <- model.matrix(as.formula(formula), design)
 
 # Make sure the column names in the design matrix are legal
 colnames(designMatrix) <- make.names(colnames(designMatrix))
 
-#capture the formula as an attribute of the design matrix
+# Capture the formula as an attribute of the design matrix
 attr(designMatrix, "formula") <- formula
 
-#add the designMatrix to the DGEobj
+# Add the designMatrix to the DGEobj
 dgeObj <- addItem(dgeObj, 
                   item      = designMatrix, 
                   itemName  = designMatrixName, 
@@ -357,162 +310,127 @@ dgeObj <- addItem(dgeObj,
 
 ## Check for Surrogate Variables (unaccounted-for variation)
 
-SVA looks for hidden structure in the data using PCA-like methods.  It 
-defines surrogate variables that can be added to your model to account 
-for systematic trends that do not map to known experiment factors.  This
-can improve power to detect changes due to factors of interest.
+SVA looks for hidden structure in the data using PCA-like methods.  It  defines surrogate variables that can be added to your model to account  for systematic trends that do not map to known experiment factors.  This can improve power to detect changes due to factors of interest.
 
-The ReplicateGroup design column captures both disease status and drug treatment
-groups.  With this design, no SVs are detected.  
+The ReplicateGroup design column captures both disease status and drug treatment groups.  With this design, no SVs are detected.  
 
-```{r checkForSV, eval = F}
-log2cpm      <- convertCounts(dgeObj$counts, unit="cpm", log=TRUE, normalize="tmm")
+```{r checkForSV}
+log2cpm      <- convertCounts(dgeObj$counts, 
+                              unit      = "cpm", 
+                              log       = TRUE, 
+                              normalize = "tmm")
+
 designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
 
 sva::num.sv(log2cpm, designMatrix, method = "leek")
 ```
 
-To illustrate SVA use, a model is constructed using only disease status and
-ignoring compound treatment.  The compound treatment effects should be
-discoverable as a surrogate variable.  
+To illustrate SVA use, a model is constructed using only disease status and ignoring compound treatment.  The compound treatment effects should be discoverable as a surrogate variable.  
 
 Note that here the SVA output is captured in a fork of the main DGEobj.  
 
-```{r runSVA, eval = F}
-### Formula must be composed of column names from the design table.
+```{r runSVA}
+# Formula must be composed of column names from the design table.
 formula <- '~ 0 + DiseaseStatus'
+
 # User-defined name for the designMatrix
 designMatrixName <- "DiseaseStatusDesign"
 
-# build the designMatrix
+# Build the designMatrix
 design <- getItem(dgeObj, "design")
-designMatrix <- model.matrix (as.formula(formula), design)
+designMatrix <- model.matrix(as.formula(formula), design)
 
 # Make sure the column names in the design matrix are legal
-# convert spaces and other disallowed chars to underscores or dots
 colnames(designMatrix) <- make.names(colnames(designMatrix))
 
-#capture the formula as an attribute of the design matrix
+# Capture the formula as an attribute of the design matrix
 attr(designMatrix, "formula") <- formula
 
-#add the designMatrix to the DGEobj
-dgeObj_SVA <- addItem(dgeObj, item=designMatrix, 
-                  itemName=designMatrixName, 
-                  itemType="designMatrix",
-                  parent="design", 
-                  overwrite=TRUE)
+# Add the designMatrix to the DGEobj
+dgeObj_SVA <- addItem(dgeObj, 
+                      item      = designMatrix, 
+                      itemName  = designMatrixName, 
+                      itemType  = "designMatrix",
+                      parent    = "design", 
+                      overwrite = TRUE)
 
-dgeObj_SVA <- runSVA(dgeObj_SVA, designMatrixName=designMatrixName)
+dgeObj_SVA <- runSVA(dgeObj_SVA, designMatrixName = designMatrixName)
 
 ```
-Indeed SVA now identifies one surrogate varable.  
+
+Indeed SVA now identifies one surrogate variable.  
 
 If n.sv is >0, the runSVA function adds the following changes to the DGEobj:  
 
 1. Adds a column for each SV to the design table  
 2. Stores the svobj from the SVA analysis  
-3. Creates and stores a new design matrix with the sv columns and adds a "_sva" suffix to the designMatrix name   
+3. Creates and stores a new design matrix with the SV columns and adds a "_sva" suffix to the designMatrix name   
 
 The user can then use the new design matrix to incorporate the SVs into the analysis.   
 
-```{r examineSVs, eval = F}
-
-kable(inventory(dgeObj_SVA))
-
-```
+`r kable(inventory(dgeObj_SVA))`
 
 
 ## Run Voom and fit the model (lmfit)  
 
-The duplicateCorrelation method in voom optionally allows the user to account
-for a random effect, such as repeated measurements on the same animal in this
-case.  
+The duplicateCorrelation method in Voom optionally allows the user to account for a random effect, such as repeated measurements on the same animal in this case.  
 
-To invoke duplicateCorrelation in the runVoom function, assign a blocking
-variable to the dupCorBlock argument.  
+To invoke duplicateCorrelation in the runVoom function, assign a blocking variable to the dupCorBlock argument.  
 
-```{r runVoom, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE, fig.height=3.5, eval = F}
-### Use duplicateCorrelation when subjects have been sampled more than once even
-### if under different conditions (e.g. treated, untreated) Pass a vector (usually
-### a design column) representing the subject ID.
+```{r runVoom}
+## Use duplicateCorrelation when subjects have been sampled more than once even
+## if under different conditions (e.g. treated, untreated) 
 dupCorBlock <- dgeObj$design$AnimalNum 
 designMatrixName <- "ReplicateGroupDesign"
 
+# Defaults are: qualityWeights = TRUE, runEBayes = TRUE, robust = TRUE
 if (is.null(dupCorBlock)) {
   dgeObj <- runVoom(dgeObj, designMatrixName)
 } else {
-  dgeObj <- runVoom(dgeObj, designMatrixName,
-                           dupCorBlock = dupCorBlock)
+  dgeObj <- runVoom(dgeObj, designMatrixName, dupCorBlock = dupCorBlock)
 }
-# note: qualityWeights = TRUE,  runEBayes = TRUE and robust = TRUE are the defaults.
-
 ```
 
+The Mean-variance trend nicely shows the heteroscedasticity typical of RNA-Seq data (variance dependent on intensity).
+
+If a downward hook on the left end of this distribution is observed, it means a more stringent low intensity filter should be used.  
 
 
-
-The Mean-variance trend nicely shows the heteroscedasticity typical of RNA-Seq
-data (variance dependent on intensity).
-
-If a downward hook on the left end of this distribution is observed, it means a
-more stringent low intensity filter should be used.  
-
-
-```{r snapshot2, eval=TRUE, echo=TRUE, warning=FALSE, message=FALSE, eval = F}
-# Let's save a snapshot of the DGEobj at this point
-saveRDS (dgeObj, file.path(outputPath, "dgeobj.RDS"))
-
-# dgeObj <- readRDS(file.path(outputPath, "dgeobj.RDS"))
-
-```
-
-
-
-## Run contrasts  
+## Run Contrasts  
 
 Function runContrasts takes a named list of contrasts (see config chunk).  
 
-
-```{r runContrasts, echo=TRUE, warning=FALSE, message=FALSE, eval = F}
+```{r runContrasts}
 # Name the design matrix to be used
 designMatrixName <- "ReplicateGroupDesign"
 
 # Print the available column names for constructing contrasts:
 print(colnames(dgeObj$ReplicateGroupDesign))
 
-##  Define the named contrasts from design matrix column names
-contrastList  <- list(BDL_vs_Sham = "ReplicateGroupBDL - ReplicateGroupSham",
+# Define the named contrasts from design matrix column names
+contrastList  <- list(BDL_vs_Sham    = "ReplicateGroupBDL - ReplicateGroupSham",
                       EXT1024_vs_BDL = "ReplicateGroupBDL_EXT.1024  - ReplicateGroupBDL",
-                      Nint_vs_BDL = "ReplicateGroupBDL_Nint - ReplicateGroupBDL",
-                        Sora_vs_BDL = "ReplicateGroupBDL_Sora - ReplicateGroupBDL"
+                      Nint_vs_BDL    = "ReplicateGroupBDL_Nint - ReplicateGroupBDL",
+                      Sora_vs_BDL    = "ReplicateGroupBDL_Sora - ReplicateGroupBDL"
 )
 
 dgeObj <- runContrasts(dgeObj, 
-                       designMatrixName=designMatrixName, 
-                       contrastList=contrastList, 
-                       qValue=TRUE,
-                       IHW = TRUE)
+                       designMatrixName = designMatrixName, 
+                       contrastList     = contrastList, 
+                       qValue           = TRUE,
+                       IHW              = TRUE)
+
+kable(inventory(dgeObj))
 ```
 
+After executing runContrasts, the topTable dataframes are present in the DGEobj and the DGE analysis is complete.  
 
-\scriptsize
-
-`r knitr::kable(inventory(dgeObj))`  
-
-\normalsize  
-
-After executing runContrasts, the topTable dataframes are present in the DGEobj
-and the DGE analysis is complete.  
 
 ## Alternative FDR scores  
 
-topTable provides a BH FDR value (adj.P.Val).  Two optional 
-FDR measures are supported that add additional columns to the topTable results.
-Use the Qvalue and IHW arguments to invoke these additional FDR measures.   
+topTable provides a BH FDR value (adj.P.Val).  Two optional FDR measures are supported that add additional columns to the topTable results. Use the Qvalue and IHW arguments to invoke these additional FDR measures.   
 
-Qvalue = TRUE adds "qvalue" and "qvalue.lfdr" columns to the topTable output.  
+* `Qvalue = TRUE` adds "qvalue" and "qvalue.lfdr" columns to the topTable output.  
+* `IHW = TRUE` adds columns "ihw.adj_pvalue" and "ihw.weight".  
 
-IHW = TRUE adds columns "ihw.adj_pvalue" and "ihw.weight".  
-
-BrowseVignettes() for the qvalue and IHW packages for more details on these 
-alternative FDR measures.  
+See the vignettes for the qvalue and IHW packages for more details on these alternative FDR measures.  
