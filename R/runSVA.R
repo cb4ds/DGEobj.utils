@@ -59,7 +59,7 @@ runSVA <- function(dgeObj,
         if (n.sv > rdf)
             n.sv <- rdf
     }
-    svobj <- sva::sva(log2cpm, designMatrix, NullDesignMatrix, n.sv = n.sv)
+    svobj <- suppressWarnings(sva::sva(log2cpm, designMatrix, NullDesignMatrix, n.sv = n.sv))
 
     # Pull out the surrogate variables
     sv <- svobj$sv
