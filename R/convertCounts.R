@@ -71,6 +71,10 @@ convertCounts <- function(countsMatrix,
         }
     }
     # Make normalize method case insensitive (calcNormFactors is case sensitive)
+    if (is.null(normalize)) {
+        normalize = 'none'
+    }
+
     if (toupper(normalize) %in% c("TMM", "RLE")) {
         normalize <- toupper(normalize)
     }
@@ -97,9 +101,7 @@ convertCounts <- function(countsMatrix,
     if (missing(log)) {
         log = FALSE
     }
-    if (missing(normalize)) {
-        normalize = 'none'
-    }
+
     if (is.logical(normalize)) { # Don't encourage logicals; here for backward compatibility
         if (normalize == TRUE) {
             normalize <- 'TMM'
