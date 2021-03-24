@@ -17,10 +17,12 @@ test_that("convertCounts.R: convertCounts()", {
     expect_error(convertCounts(counts = t_obj1$counts_orig),
                  msg = "argument \"unit\" is missing, with no default")
     ## Subset of the Count Matrix
-    count_matrix <- convertCounts(counts = t_obj1$counts_orig[1:100,], unit = "CPM")
+    count_matrix <- convertCounts(counts = t_obj1$counts_orig[1:100, ], unit = "CPM")
     expect_true("matrix" %in% class(count_matrix))
+    expect_identical(dim(t_obj1$counts[1:100,]), dim(count_matrix))
 
     # TPM
+    ## Full Count Matrix
     genelength <- getItem(t_obj1, "geneData")$ExonLength
     count_matrix <- convertCounts(counts      = t_obj1$counts,
                                   unit        = "TPM",
@@ -32,17 +34,24 @@ test_that("convertCounts.R: convertCounts()", {
     expect_true("matrix" %in% class(count_matrix))
     expect_identical(dim(t_obj1$counts), dim(count_matrix))
     expect_error(convertCounts(counts = t_obj1$counts, unit = "TPM"), regexp = "geneLength is required for unit = FPK|FPKM|TPM")
-    expect_warning(convertCounts(counts = t_obj1$counts, unit = "TPM", geneLength = genelength, normalize = "TMM"),
+    expect_warning(convertCounts(counts = t_obj1$counts,
+                                 unit = "TPM",
+                                 geneLength = genelength,
+                                 normalize = "TMM"),
                    regexp = "TPM normalization overides TMM normalization!")
-    expect_warning(convertCounts(counts = t_obj1$counts, unit = "TPM", geneLength = genelength, prior.count = 1,log = TRUE),
+    expect_warning(convertCounts(counts = t_obj1$counts,
+                                 unit = "TPM",
+                                 geneLength = genelength,
+                                 prior.count = 1,
+                                 log = TRUE),
                    regexp = "Using a prior.count for logTPM calculations is not recommended and may produce unpredictable results!")
-
-    warnings_tpm <- capture_warnings(convertCounts(counts = t_obj1$counts_orig[1:100,], unit = "TPM", geneLength  = genelength[1:100]))
-    expect_length(warnings_tpm, 2)
-    expect_equal(warnings_tpm[[1]], "You should use the whole dataset when calculating TPM, not a subset.")
-    expect_equal(warnings_tpm[[2]], "You should use the whole dataset when calculating FPKM, not a subset.")
-    }
-)
+    ## Subset of the Count Matrix
+    count_matrix <- convertCounts(counts = t_obj1$counts_orig[1:100, ],
+                                  unit = "TPM",
+                                  geneLength  = genelength[1:100])
+    expect_true("matrix" %in% class(count_matrix))
+    expect_identical(dim(t_obj1$counts[1:100,]), dim(count_matrix))
+})
 
 test_that("convertCounts.R: tpm.on.subset()", {
     geneLength <- NULL
