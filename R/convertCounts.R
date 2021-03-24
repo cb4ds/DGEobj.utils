@@ -298,13 +298,10 @@ calcFPK <- function(countsMatrix, log, normalize, geneLength, prior.count){
         if (min(geneLength) == 0) {
             geneLength <- geneLength + 1
         }
-
-        FPK <- countsMatrix / (geneLength / 1000)
-
-        if (log == TRUE) {
-            FPK <- log2(FPK + prior.count)
-        }
     }
-
+    FPK <- countsMatrix / (geneLength / 1000)
+    if (log == TRUE) {
+        FPK <- log2(FPK + prior.count)
+    }
     return(FPK)
 }
