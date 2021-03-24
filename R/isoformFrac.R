@@ -62,7 +62,7 @@ isoformFrac <- function(dgeObj,
                                              normalize = "none")
     ) %>% as.data.frame()
 
-    omicData$GeneID <- isoformData$GeneID
+    omicData$GeneID <- isoformData$rgd_symbol
     omicData$TranscriptID <- rownames(omicData)
 
     # Calculate isoform fraction
