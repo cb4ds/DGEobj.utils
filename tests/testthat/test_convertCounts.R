@@ -3,6 +3,7 @@ context("DGEobj.utils - tests for convertCounts.R functions")
 
 test_that("convertCounts.R: convertCounts()", {
     # CPM
+    ## Full Count Matrix
     count_matrix <- convertCounts(counts      = t_obj1$counts_orig,
                                   unit        = "CPM",
                                   log         = FALSE,
@@ -15,8 +16,9 @@ test_that("convertCounts.R: convertCounts()", {
                  msg = "argument \"counts\" is missing, with no default")
     expect_error(convertCounts(counts = t_obj1$counts_orig),
                  msg = "argument \"unit\" is missing, with no default")
-    expect_warning(convertCounts(counts = t_obj1$counts_orig[1:100,], unit = "CPM"),
-                   "You should use the whole dataset when calculating CPM, not a subset.")
+    ## Subset of the Count Matrix
+    count_matrix <- convertCounts(counts = t_obj1$counts_orig[1:100,], unit = "CPM")
+    expect_true("matrix" %in% class(count_matrix))
 
     # TPM
     genelength <- getItem(t_obj1, "geneData")$ExonLength
