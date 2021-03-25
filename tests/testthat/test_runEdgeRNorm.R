@@ -4,7 +4,7 @@ context("DGEobj.utils - tests for runEdgeRNorm.R functions")
 test_that('runEdgeRNorm: runEdgeRNorm()', {
     dgeobj <- t_obj1
     dgeobj$DGEList <- NULL
-    runEdgeRNorm_one_test <- runEdgeRNorm(dgeobj, plotFile = FALSE)
+    runEdgeRNorm_one_test <- runEdgeRNorm(dgeobj)
     runEdgeRNorm_one_test_DGEList <- getType(runEdgeRNorm_one_test, "DGEList")
 
     expect_s3_class(runEdgeRNorm_one_test, "DGEobj")
@@ -17,7 +17,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
         a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
         paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
     }
-    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", plotFile = TRUE,
+    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = TRUE,
                                           plotLabels = plot_labels(ncol(dgeobj)))
     expect_true(is.list(runEdgeRNorm_two_test))
     expect_equal(length(runEdgeRNorm_two_test), 2)
@@ -28,7 +28,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
 
 
     # with no samples
-    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", plotFile = TRUE)
+    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = TRUE)
     runEdgeRNorm_two_test_DGEList <- getType(runEdgeRNorm_two_test[[1]], "DGEList")
     expect_true(is.list(runEdgeRNorm_two_test))
     expect_equal(length(runEdgeRNorm_two_test), 2)

@@ -5,7 +5,7 @@
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")
-#' @param plotFile Enable a bar plot of the norm.factors produced. (Default = TRUE)
+#' @param includePlot Enable returning a bar plot of the norm.factors produced. (Default = FALSE)
 #' @param plotLabels Sample labels for the plot. Length must equal the number of
 #'   samples. (Default = NULL; sample number will be displayed)
 #'
@@ -24,7 +24,7 @@
 #' @export
 runEdgeRNorm <- function(dgeObj,
                          normMethod = "TMM",
-                         plotFile = TRUE,
+                         includePlot = FALSE,
                          plotLabels = NULL) {
     funArgs <- match.call()
     assertthat::assert_that(class(dgeObj) == "DGEobj",
@@ -44,7 +44,7 @@ runEdgeRNorm <- function(dgeObj,
                                 itemAttr = itemAttr,
                                 parent = "counts")
 
-    if (plotFile) { # Bar plot of norm.factors
+    if (includePlot) { # Bar plot of norm.factors
         # Plot the Norm factors
         if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
             x = plotLabels
@@ -67,7 +67,7 @@ runEdgeRNorm <- function(dgeObj,
             theme_bw(12) +
             theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
     }
-    if (plotFile) {
+    if (includePlot) {
         list(dgeObj = dgeObj, plot = nfplot)
     } else {
         dgeObj
