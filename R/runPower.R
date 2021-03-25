@@ -29,7 +29,7 @@
 #'    myPowerResults <- runPower(countsMatrix, designMatrix)
 #' }
 #'
-#' @import magrittr
+#' @import magrittr ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter

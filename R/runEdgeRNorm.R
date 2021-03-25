@@ -16,7 +16,7 @@
 #'    myDGEobj <- runEdgeRNorm(myDGEobj)
 #' }
 #'
-#' @import magrittr
+#' @import magrittr ggplot2
 #' @importFrom edgeR calcNormFactors DGEList
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
