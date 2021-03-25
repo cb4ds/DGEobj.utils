@@ -26,32 +26,26 @@ runEdgeRNorm <- function(dgeObj,
                          normMethod = "TMM",
                          plotFile = TRUE,
                          plotLabels = NULL) {
-
     funArgs <- match.call()
-
     assertthat::assert_that(class(dgeObj) == "DGEobj",
                             msg = "dgeObj must be of class 'DGEobj'.")
-
-    # Convert counts to a matrix
-    CountsMatrix = as.matrix(DGEobj::getItem(dgeObj, "counts"))
-
-    # Now ready to normalize counts
-    MyDGElist = CountsMatrix %>%
+    MyDGElist  <-  as.matrix(DGEobj::getItem(dgeObj, "counts")) %>%
         edgeR::DGEList() %>%
         edgeR::calcNormFactors(method = normMethod)
 
+
     # Capture the DGEList
     itemAttr <- list(normalization = normMethod)
-    dgeObj <- DGEobj::addItem(dgeObj,
-                              item = MyDGElist,
-                              itemName = "DGEList",
-                              itemType = "DGEList",
-                              funArgs = funArgs,
-                              itemAttr = itemAttr,
-                              parent = "counts")
+    dgeObj   <- DGEobj::addItem(dgeObj,
+                                item = MyDGElist,
+                                itemName = "DGEList",
+                                itemType = "DGEList",
+                                funArgs = funArgs,
+                                itemAttr = itemAttr,
+                                parent = "counts")
 
     # Plot the Norm factors
-    if (!is.null(plotLabels)  && length(plotLabels == ncol(dgeObj))) {
+    if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
         x = plotLabels
         angle = 45
     } else {
@@ -76,6 +70,5 @@ runEdgeRNorm <- function(dgeObj,
 
         print(nfplot)
     }
-
     return(dgeObj)
 }
