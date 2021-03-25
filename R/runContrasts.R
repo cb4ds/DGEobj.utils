@@ -105,7 +105,7 @@ runContrasts <- function(dgeObj,
     fit <- DGEobj::getItem(dgeObj, fitName)
 
     # Run the contrast fit
-    ContrastMatrix <- limma::makeContrasts(contrasts = names(contrastList), levels = designMatrix)
+    ContrastMatrix <- limma::makeContrasts(contrasts = contrastList, levels = designMatrix)
     MyFit.Contrasts <- limma::contrasts.fit(fit, ContrastMatrix)
 
     # Run eBayes

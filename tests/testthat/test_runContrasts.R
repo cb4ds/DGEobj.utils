@@ -2,8 +2,11 @@ context("DGEobj.utils - tests for runContrasts.R functions")
 
 
 test_that('runContrasts.R: runContrasts()', {
-    contrastList <- getType(t_obj1, "topTable")
-    names(contrastList) <- colnames(t_obj1$ReplicateGroupDesign)[-1]
+    # Define the named contrasts from design matrix column names
+    contrastList  <- list(Sham_vs_BDL     = "ReplicateGroupSham - ReplicateGroupBDL",
+                          Sham_vs_EXT1024 = "ReplicateGroupSham  - ReplicateGroupBDL_EXT.1024",
+                          Sham_vs_Nint    = "ReplicateGroupSham - ReplicateGroupBDL_Nint",
+                          Sham_vs_Sora    = "ReplicateGroupSham - ReplicateGroupBDL_Sora")
 
     dgeObj_output <- runContrasts(dgeObj              = t_obj1,
                                   designMatrixName    = "ReplicateGroupDesign",
@@ -11,6 +14,10 @@ test_that('runContrasts.R: runContrasts()', {
                                   contrastSetName     = "ReplicateGroup_Contrasts")
     expect_s3_class(dgeObj_output, "DGEobj")
 
+    contrastList  <- list(EXT1024_vs_Sham    = "ReplicateGroupBDL_EXT.1024 - ReplicateGroupSham",
+                          BDL_vs_EXT1024     = "ReplicateGroupBDL  - ReplicateGroupBDL_EXT.1024",
+                          EXT1024_vs_Nint    = "ReplicateGroupBDL_EXT.1024 - ReplicateGroupBDL_Nint",
+                          EXT1024_vs_Sora    = "ReplicateGroupBDL_EXT.1024 - ReplicateGroupBDL_Sora")
     dgeObj_output <- runContrasts(dgeObj              = t_obj1,
                                   designMatrixName    = "ReplicateGroupDesign",
                                   contrastList        = contrastList,
