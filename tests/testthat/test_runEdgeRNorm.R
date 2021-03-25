@@ -12,16 +12,26 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     expect_equal(length(runEdgeRNorm_one_test$DGEList), 2)
     expect_equal(names(runEdgeRNorm_one_test$DGEList), c("counts", "samples"))
 
-    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", plotFile = FALSE)
-
+    # with samples
+    plot_labels <- function(n = 50) {
+        a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+        paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
+    }
+    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", plotFile = TRUE,
+                                          plotLabels = plot_labels(ncol(dgeobj)))
     runEdgeRNorm_two_test_DGEList <- getType(runEdgeRNorm_two_test, "DGEList")
-
     expect_s3_class(runEdgeRNorm_two_test, "DGEobj")
+
+    # with no samples
+    runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", plotFile = TRUE)
+    runEdgeRNorm_two_test_DGEList <- getType(runEdgeRNorm_two_test, "DGEList")
+    expect_s3_class(runEdgeRNorm_two_test, "DGEobj")
+
     expect_true(is.list(runEdgeRNorm_two_test_DGEList))
     expect_equal(length(runEdgeRNorm_two_test$DGEList), 2)
     expect_equal(names(runEdgeRNorm_two_test$DGEList), c("counts", "samples"))
 
-    runEdgeRNorm_three_test <- runEdgeRNorm(dgeobj, plotFile = FALSE)
+    runEdgeRNorm_three_test <- runEdgeRNorm(dgeobj, plotFile = TRUE)
     runEdgeRNorm_three_test_DGEList <- getType(runEdgeRNorm_three_test, "DGEList")
 
     expect_s3_class(runEdgeRNorm_three_test, "DGEobj")
