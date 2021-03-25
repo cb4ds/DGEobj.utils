@@ -9,7 +9,7 @@
 #' @param plotLabels Sample labels for the plot. Length must equal the number of
 #'   samples. (Default = NULL; sample number will be displayed)
 #'
-#' @return A DGEobj with a normalized DGEList added.
+#' @return A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 #'
 #' @examples
 #' \dontrun{
@@ -44,16 +44,15 @@ runEdgeRNorm <- function(dgeObj,
                                 itemAttr = itemAttr,
                                 parent = "counts")
 
-    # Plot the Norm factors
-    if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
-        x = plotLabels
-        angle = 45
-    } else {
-        x = 1:ncol(dgeObj)
-        angle = 0
-    }
-
     if (plotFile) { # Bar plot of norm.factors
+        # Plot the Norm factors
+        if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
+            x = plotLabels
+            angle = 45
+        } else {
+            x = 1:ncol(dgeObj)
+            angle = 0
+        }
         df <- data.frame(x = factor(x),
                          Norm.Factors = MyDGElist$samples$norm.factors)
         nfplot <- ggplot(df, aes(x = x, y = Norm.Factors)) +
@@ -67,8 +66,10 @@ runEdgeRNorm <- function(dgeObj,
             ggtitle("Normalization Factors") +
             theme_bw(12) +
             theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
-
-        print(nfplot)
     }
-    return(dgeObj)
+    if (plotFile) {
+        list(dgeObj = dgeObj, plot = nfplot)
+    } else {
+        dgeObj
+    }
 }
