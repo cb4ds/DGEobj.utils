@@ -11,7 +11,7 @@ lowIntFilter(
   countThreshold,
   tpmThreshold,
   sampleFraction = 0.5,
-  geneLength = NULL,
+  geneLength,
   verbose = FALSE
 )
 }
