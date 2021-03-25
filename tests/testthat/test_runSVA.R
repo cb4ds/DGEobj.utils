@@ -2,8 +2,23 @@ context("DGEobj.utils - tests for runSVA.R functions")
 
 
 test_that("runSVA.R: runSVA()", {
+    # method = leek
     dgeObj_sva <- runSVA(dgeObj = t_obj1, designMatrixName = "ReplicateGroupDesign")
+    expect_s3_class(dgeObj_sva, "DGEobj")
 
+    # method = be
+    dgeObj_sva <- runSVA(dgeObj = t_obj1, designMatrixName = "ReplicateGroupDesign", method = "be")
+    expect_s3_class(dgeObj_sva, "DGEobj")
+
+    # method = be and custom na.sv
+    dgeObj_sva <- runSVA(dgeObj = t_obj1, designMatrixName = "ReplicateGroupDesign", n.sv = 10, method = "be")
+    expect_s3_class(dgeObj_sva, "DGEobj")
+
+    # method = be and large custom na.sv
+    expect_message(dgeObj_sva <- runSVA(dgeObj = t_obj1,
+                                        designMatrixName = "ReplicateGroupDesign",
+                                        n.sv = 10000, method = "be"),
+                   regexp = "runSVA failed due to:")
     expect_s3_class(dgeObj_sva, "DGEobj")
 
     expect_error(runSVA(designMatrixName = "designMatrix"),
