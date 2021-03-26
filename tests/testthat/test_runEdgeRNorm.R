@@ -38,7 +38,11 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     expect_equal(names(runEdgeRNorm_two_test[[1]]$DGEList), c("counts", "samples"))
     expect_s3_class(runEdgeRNorm_two_test[[2]], c("gg", "ggplot"))
 
-    # Testing normMethod asserts
+    # Testing asserts
+    ## DGEobj
+    expect_error(runEdgeRNorm(list()),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    ## normMethod
     msg <- "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'."
     expect_error(runEdgeRNorm(dgeobj, normMethod = NULL),
                  regexp = msg)
