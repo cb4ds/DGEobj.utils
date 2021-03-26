@@ -279,7 +279,9 @@ dgeObj <- dgeObj[idx,]
 This step simply applies edgeR::calcNormFactors to effect TMM normalization. This results in a DGEList object being added to the DGEobj.  Note that the counts matrix within the DGEList object is NOT normalized counts.  Rather a separate item in the DGEList contains the norm factors and you should use the edgeR cpm function to extract normalized counts from the DGEList.
 
 ```{r Normalize}
-dgeObj <- runEdgeRNorm(dgeObj, plotFile = TRUE)
+data <- runEdgeRNorm(dgeObj, includePlot = TRUE)
+dgeObj <- data[[1]]
+data[[2]]
 ```
 
 ## Define the Model Formula  
