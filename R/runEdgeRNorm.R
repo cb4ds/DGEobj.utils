@@ -26,6 +26,7 @@
 #' @importFrom edgeR calcNormFactors DGEList
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
+#' @importFrom canvasXpress canvasXpress
 #'
 #' @export
 runEdgeRNorm <- function(dgeObj,
@@ -69,19 +70,37 @@ runEdgeRNorm <- function(dgeObj,
                                 funArgs = funArgs,
                                 itemAttr = itemAttr,
                                 parent = "counts")
-
-    if (includePlot == "ggplot") {
-        # Plot the Norm factors
+    if (plot_type != "none") {
         if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
-            x = plotLabels
-            angle = 45
+            labels <-  plotLabels
+            angle  <-  45
         } else {
-            x = 1:ncol(dgeObj)
-            angle = 0
+            labels <- 1:ncol(dgeObj)
+            angle  <- ifelse(plot_type == "canvasxpress", 90, 0)
         }
-        df <- data.frame(row.names = factor(x),
+        plot_data <- data.frame(row.names = factor(labels),
                          Norm.Factors = MyDGElist$samples$norm.factors)
-        nfplot <- ggplot(df, aes(x = x, y = Norm.Factors)) +
+    }
+
+    if (plot_type == "canvasxpress") {
+        plot <- canvasXpress::canvasXpress(data = as.data.frame(t(plot_data)),
+                                           graphOrientation = "vertical",
+                                           graphType = "Bar",
+                                           showLegend = FALSE,
+                                           smpLabelRotate = angle,
+                                           smpTitle = "Samples",
+                                           theme = "CanvasXpress",
+                                           widthFactor = 1.5,
+                                           title = "Normalization Factors",
+                                           xAxisTitle = "Norm Factors",
+                                           color    = "dodgerblue3",
+                                           decorations = list(line = list(list(value = 1,
+                                                                               width = 2,
+                                                                               color = "rgb(255,0,0)"))),
+                                           setMinX = 0)
+        list(dgeObj = dgeObj, plot = plot)
+    } else if (plot_type == "ggplot") {
+        plot <- ggplot(plot_data, aes(x = labels, y = Norm.Factors)) +
             geom_bar(stat = "identity",
                      color = "dodgerblue4",
                      fill = "dodgerblue3",
@@ -92,7 +111,7 @@ runEdgeRNorm <- function(dgeObj,
             ggtitle("Normalization Factors") +
             theme_bw(12) +
             theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
-        list(dgeObj = dgeObj, plot = nfplot)
+        list(dgeObj = dgeObj, plot = plot)
     } else {
         dgeObj
     }
