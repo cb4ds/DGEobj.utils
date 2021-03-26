@@ -35,6 +35,18 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     expect_s3_class(runEdgeRNorm_two_test[[1]], "DGEobj")
     expect_equal(names(runEdgeRNorm_two_test[[1]]$DGEList), c("counts", "samples"))
     expect_s3_class(runEdgeRNorm_two_test[[2]], c("canvasXpress", "htmlwidget"))
+    ## with wrong number of samples
+    expect_warning(runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj,
+                                                         normMethod = "upperquartile",
+                                                         includePlot = "canvasXpress",
+                                                         plotLabels = plot_labels(ncol(dgeobj) - 1)),
+                   regexp = "plotLabels must be a character vectore and its length must be equal to dgeobj number of columns. Assiging default values from 1 to dgeobj columns number.")
+    expect_true(is.list(runEdgeRNorm_two_test))
+    expect_equal(length(runEdgeRNorm_two_test), 2)
+    expect_equal(length(runEdgeRNorm_two_test[[1]]$DGEList), 2)
+    expect_s3_class(runEdgeRNorm_two_test[[1]], "DGEobj")
+    expect_equal(names(runEdgeRNorm_two_test[[1]]$DGEList), c("counts", "samples"))
+    expect_s3_class(runEdgeRNorm_two_test[[2]], c("canvasXpress", "htmlwidget"))
     ## with no samples
     runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = TRUE)
     runEdgeRNorm_two_test_DGEList <- getType(runEdgeRNorm_two_test[[1]], "DGEList")

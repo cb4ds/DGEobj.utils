@@ -71,10 +71,15 @@ runEdgeRNorm <- function(dgeObj,
                                 itemAttr = itemAttr,
                                 parent = "counts")
     if (plot_type != "none") {
-        if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
+        if (!is.null(plotLabels) && length(plotLabels) == ncol(dgeObj)) {
             labels <-  plotLabels
             angle  <-  45
         } else {
+            if (!is.null(plotLabels) && length(plotLabels) != ncol(dgeObj)) {
+                warning(paste("plotLabels must be a character vectore and",
+                              "its length must be equal to dgeobj number of columns.",
+                              "Assiging default values from 1 to dgeobj columns number."))
+            }
             labels <- 1:ncol(dgeObj)
             angle  <- ifelse(plot_type == "canvasxpress", 90, 0)
         }
