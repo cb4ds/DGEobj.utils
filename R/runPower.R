@@ -13,8 +13,8 @@
 #' If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an additional two
 #' "canvasXpress" or ggplots (plots) to the dataframe.
 #'
-#' @param countsMatrix A counts matrix. (Required)
-#' @param designMatrix A design matrix. (Required)
+#' @param countsMatrix A counts matrix or dataframe of numeric data. (Required)
+#' @param designMatrix A design matrix or dataframe of numeric data. (Required)
 #' @param depth A set of depth to use in the calculations.  The default depths of
 #'        c(10, 100, 1000) respectively represent a detection limit, below average
 #'        expression, and median expression levels, expressed in readcount units.
@@ -51,6 +51,14 @@ runPower <- function(countsMatrix,
                      FDR = c(0.05, 0.1),
                      effectSize = c(1.2, 1.5, 2),
                      includePlots = FALSE) {
+    assertthat::assert_that(!missing(countsMatrix),
+                            !is.null(countsMatrix),
+                            class(countsMatrix)[[1]] %in% c("matrix","data.frame"),
+                            msg = "countsMatrix must be specified and must be of class matrix or dataframe.")
+    assertthat::assert_that(!missing(designMatrix),
+                            !is.null(designMatrix),
+                            class(designMatrix)[[1]] %in% c("matrix","data.frame"),
+                            msg = "designMatrix must be specified and must be of class matrix or dataframe.")
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
     dgelist <- countsMatrix %>%
