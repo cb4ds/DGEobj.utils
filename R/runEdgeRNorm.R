@@ -5,7 +5,13 @@
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")
-#' @param includePlot Enable returning a bar plot of the norm.factors produced. (Default = FALSE)
+#' @param includePlot Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors produced (Default = FALSE).
+#'  Possible values to pass:
+#'  \itemize{
+#'   \item \strong{FALSE or NULL}: Disable plot
+#'   \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
+#'   \item \strong{"ggplot"}: returns "ggplot" bar plot of the norm.factors produced.
+#' }
 #' @param plotLabels Sample labels for the plot. Length must equal the number of
 #'   samples. (Default = NULL; sample number will be displayed)
 #'
@@ -53,7 +59,7 @@ runEdgeRNorm <- function(dgeObj,
             x = 1:ncol(dgeObj)
             angle = 0
         }
-        df <- data.frame(x = factor(x),
+        df <- data.frame(row.names = factor(x),
                          Norm.Factors = MyDGElist$samples$norm.factors)
         nfplot <- ggplot(df, aes(x = x, y = Norm.Factors)) +
             geom_bar(stat = "identity",
