@@ -11,7 +11,7 @@ runPower(
   N = c(3, 6, 10, 20),
   FDR = c(0.05, 0.1),
   effectSize = c(1.2, 1.5, 2),
-  return = "both"
+  includePlots = FALSE
 )
 }
 \arguments{
@@ -29,11 +29,16 @@ expression, and median expression levels, expressed in readcount units.}
 
 \item{effectSize}{A set of fold change values to test. (Default = c(1.2, 1.5, 2))}
 
-\item{return}{One of "dataframe", "plots", "both". (Default = "both").
-Two plots are generated; a ROC curve (FDR vs. Power) and a plot of N vs. Power.}
+\item{includePlots}{controls adding tow plots to the returned dataframe (Default = FALSE).
+The two plots are; a ROC curve (FDR vs. Power) and a plot of N vs. Power.
+Possible values to pass:
+\itemize{
+  \item \strong{FALSE or NULL}: Disable plots
+  \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" plots.
+  \item \strong{"ggplot"}: returns "ggplot" plots.}}
 }
 \value{
-A list of result objects as defined by the "return" argument.
+a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 }
 \description{
 Take a counts matrix and design matrix and return a power analysis using
@@ -43,10 +48,12 @@ should describe the major sources of variation so the procedure can dial
 out those known effects for the power calculations.
 }
 \details{
-If return = "dataframe," the function will return a tall skinny dataframe
+If includePlots = FALSE (the default) or NULL, the function will return a tall skinny dataframe
 of power calculations for various requested combinations of N and significance
-thresholds.  If return = "plots" or "both", a list is returned with two
-ggplots (plots) or the plots plus the dataframe (both).
+thresholds.
+
+If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an additional two
+"canvasXpress" or ggplots (plots) to the dataframe.
 }
 \examples{
 \dontrun{

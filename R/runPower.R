@@ -6,10 +6,12 @@
 #' should describe the major sources of variation so the procedure can dial
 #' out those known effects for the power calculations.
 #'
-#' If return = "dataframe," the function will return a tall skinny dataframe
+#' If includePlots = FALSE (the default) or NULL, the function will return a tall skinny dataframe
 #' of power calculations for various requested combinations of N and significance
-#' thresholds.  If return = "plots" or "both", a list is returned with two
-#' ggplots (plots) or the plots plus the dataframe (both).
+#' thresholds.
+#'
+#' If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an additional two
+#' "canvasXpress" or ggplots (plots) to the dataframe.
 #'
 #' @param countsMatrix A counts matrix. (Required)
 #' @param designMatrix A design matrix. (Required)
@@ -19,10 +21,15 @@
 #' @param N A set of N value to report power for. (Default = c(3, 6, 10, 20))
 #' @param FDR FDR thresholds to filter for for FDR vs. Power graph. (Default = c(0.05, 0.1))
 #' @param effectSize A set of fold change values to test. (Default = c(1.2, 1.5, 2))
-#' @param return One of "dataframe", "plots", "both". (Default = "both").
-#'        Two plots are generated; a ROC curve (FDR vs. Power) and a plot of N vs. Power.
+#' @param includePlots controls adding tow plots to the returned dataframe (Default = FALSE).
+#'        The two plots are; a ROC curve (FDR vs. Power) and a plot of N vs. Power.
+#'        Possible values to pass:
+#'        \itemize{
+#'          \item \strong{FALSE or NULL}: Disable plots
+#'          \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" plots.
+#'          \item \strong{"ggplot"}: returns "ggplot" plots.}
 #'
-#' @return A list of result objects as defined by the "return" argument.
+#' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
 #' \dontrun{
@@ -34,6 +41,7 @@
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter
 #' @importFrom stats approx
+#' @importFrom assertthat assert_that
 #'
 #' @export
 runPower <- function(countsMatrix,
@@ -42,8 +50,7 @@ runPower <- function(countsMatrix,
                      N = c(3, 6, 10, 20),
                      FDR = c(0.05, 0.1),
                      effectSize = c(1.2, 1.5, 2),
-                     return = "both") {
-
+                     includePlots = FALSE) {
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
     dgelist <- countsMatrix %>%
@@ -81,14 +88,25 @@ runPower <- function(countsMatrix,
                 }
     }
     colnames(pdat) <- cnames
-
-    result <- list()
-    if (tolower(return) %in% c("dataframe", "both")) {
-        result$PowerData <- pdat
-        colnames(result$PowerData) <- c("depth", "n", "effect", "alpha", "power")
+    PowerData <- pdat
+    colnames(PowerData) <- c("depth", "n", "effect", "alpha", "power")
+    if (is.null(includePlots)) {
+        plot_type <- "none"
+    } else if (is.logical(includePlots) && length(includePlots) == 1) {
+        plot_type <- ifelse(includePlots, "canvasxpress", "none")
+    } else if (is.character(includePlots) && length(includePlots) == 1) {
+        if (tolower(includePlots) %in% c("canvasxpress", "ggplot")) {
+            plot_type <- tolower(includePlots)
+        } else {
+            warning("includePlots must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
+            plot_type <- "none"
+        }
+    } else {
+        warning("includePlots must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
+        plot_type <- "none"
     }
 
-    if (tolower(return) %in% c("plot", "both")) {
+    if (plot_type == "ggplot") {
         rocdat <- dplyr::filter(pdat, n %in% N)
         rocdat$depth <- as.factor(rocdat$depth)
 
@@ -103,8 +121,6 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
             theme_gray(18)
-
-        result$ROC <- roc
 
         # N vs Power
         # Filter to just a few FDR thresholds
@@ -123,8 +139,8 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme_gray()
 
-        result$NvP <- NvP
+        list(PowerData = PowerData, ROC = roc, NvP = NvP)
+    } else {
+        PowerData
     }
-
-    return(result)
 }
