@@ -38,14 +38,16 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     expect_equal(names(runEdgeRNorm_two_test[[1]]$DGEList), c("counts", "samples"))
     expect_s3_class(runEdgeRNorm_two_test[[2]], c("gg", "ggplot"))
 
-    # runEdgeRNorm_three_test <- runEdgeRNorm(dgeobj, plotFile = TRUE)
-    # runEdgeRNorm_three_test_DGEList <- getType(runEdgeRNorm_three_test, "DGEList")
-
-    # expect_s3_class(runEdgeRNorm_three_test, "DGEobj")
-    # expect_true(is.list(runEdgeRNorm_three_test_DGEList))
-    # expect_equal(length(runEdgeRNorm_three_test$DGEList), 2)
-    # expect_equal(names(runEdgeRNorm_three_test$DGEList), c("counts", "samples"))
-
+    # Testing normMethod asserts
+    msg <- "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'."
+    expect_error(runEdgeRNorm(dgeobj, normMethod = NULL),
+                 regexp = msg)
+    expect_error(runEdgeRNorm(dgeobj, normMethod = "abc"),
+                 regexp = msg)
+    expect_error(runEdgeRNorm(dgeobj, normMethod = 123),
+                 regexp = msg)
+    expect_error(runEdgeRNorm(dgeobj, normMethod = c("TMM", "RLE")),
+                 regexp = msg)
     expect_error(runEdgeRNorm(runEdgeRNorm_test),
                  regexp = "object 'runEdgeRNorm_test' not found")
 })

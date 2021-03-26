@@ -35,6 +35,11 @@ runEdgeRNorm <- function(dgeObj,
     funArgs <- match.call()
     assertthat::assert_that(class(dgeObj) == "DGEobj",
                             msg = "dgeObj must be of class 'DGEobj'.")
+    assertthat::assert_that(!is.null(normMethod),
+                            is.character(normMethod),
+                            length(normMethod) == 1,
+                            normMethod %in% c("TMM", "RLE", "upperquartile", "none"),
+                            msg = "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'.")
     MyDGElist  <-  as.matrix(DGEobj::getItem(dgeObj, "counts")) %>%
         edgeR::DGEList() %>%
         edgeR::calcNormFactors(method = normMethod)
