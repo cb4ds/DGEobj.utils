@@ -38,8 +38,23 @@ runEdgeRNorm <- function(dgeObj,
     assertthat::assert_that(!is.null(normMethod),
                             is.character(normMethod),
                             length(normMethod) == 1,
-                            normMethod %in% c("TMM", "RLE", "upperquartile", "none"),
+                            tolower(normMethod) %in% c("tmm", "rle", "upperquartile", "none"),
                             msg = "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'.")
+    if (is.null(includePlot)) {
+        plot_type <- "none"
+    } else if (is.logical(includePlot) && length(includePlot) == 1) {
+        plot_type <- ifelse(includePlot, "canvasxpress", "none")
+    } else if (is.character(includePlot) && length(includePlot) == 1) {
+        if (tolower(includePlot) %in% c("canvasxpress", "ggplot")) {
+            plot_type <- tolower(includePlot)
+        } else {
+            warning("includePlot must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
+            plot_type <- "none"
+        }
+    } else {
+        warning("includePlot must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
+        plot_type <- "none"
+    }
     MyDGElist  <-  as.matrix(DGEobj::getItem(dgeObj, "counts")) %>%
         edgeR::DGEList() %>%
         edgeR::calcNormFactors(method = normMethod)
@@ -55,7 +70,7 @@ runEdgeRNorm <- function(dgeObj,
                                 itemAttr = itemAttr,
                                 parent = "counts")
 
-    if (includePlot) { # Bar plot of norm.factors
+    if (includePlot == "ggplot") {
         # Plot the Norm factors
         if (!is.null(plotLabels) && length(plotLabels == ncol(dgeObj))) {
             x = plotLabels
@@ -77,8 +92,6 @@ runEdgeRNorm <- function(dgeObj,
             ggtitle("Normalization Factors") +
             theme_bw(12) +
             theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
-    }
-    if (includePlot) {
         list(dgeObj = dgeObj, plot = nfplot)
     } else {
         dgeObj
