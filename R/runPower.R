@@ -69,9 +69,9 @@ runPower <- function(countsMatrix,
 
     # Get a fitted CV values for each input value of depth
     # BCV is the sqrt of Dispersion
-    GeoMeanLibSize <- dgelist$samples$lib.size %>% log %>% mean %>% exp
+    GeoMeanLibSize  <- dgelist$samples$lib.size %>% log %>% mean %>% exp
     depth_avelogcpm <- edgeR::aveLogCPM(depth, GeoMeanLibSize)
-    depthBCV <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
+    depthBCV        <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
                             xout = depth_avelogcpm, rule = 2, ties = mean)$y)
 
     n <- seq(min(N),max(N),1)   # For the N vs P plot
@@ -84,20 +84,18 @@ runPower <- function(countsMatrix,
                        alpha = double(),
                        powerVal = double(),
                        stringsAsFactors = FALSE)
-    cnames <- colnames(pdat)
-
     for (D in depth) {
         cv <- depthBCV[D == depth]
-        for (Nf in n)
-            for (E in effectSize)
+        for (Nf in n) {
+            for (E in effectSize) {
                 for (A in alpha) {
-                    P <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
+                    P    <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
                     pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, powerVal = P))
                 }
+            }
+        }
     }
-    colnames(pdat) <- cnames
-    PowerData <- pdat
-    colnames(PowerData) <- c("depth", "n", "effect", "alpha", "power")
+    colnames(pdat) <- c("depth", "n", "effect", "alpha", "power")
     if (is.null(includePlots)) {
         plot_type <- "none"
     } else if (is.logical(includePlots) && length(includePlots) == 1) {
@@ -147,8 +145,8 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme_gray()
 
-        list(PowerData = PowerData, ROC = roc, NvP = NvP)
+        list(PowerData = pdat, ROC = roc, NvP = NvP)
     } else {
-        PowerData
+        pdat
     }
 }
