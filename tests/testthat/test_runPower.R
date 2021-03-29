@@ -7,19 +7,19 @@ test_that("runPower.R: runPower()", {
 
     # no plots
     ## default value
-    power_plot <- runPower(counts = t_obj1$counts, designMatrix = designMatrix)
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix)
     expect_s3_class(power_plot, "data.frame")
     ## NULL value
-    power_plot <- runPower(counts = t_obj1$counts, designMatrix = designMatrix, includePlots = NULL)
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = NULL)
     expect_s3_class(power_plot, "data.frame")
     ## FALSE value
-    power_plot <- runPower(counts = t_obj1$counts, designMatrix = designMatrix, includePlots = FALSE)
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = FALSE)
     expect_s3_class(power_plot, "data.frame")
     #expect_equal(dim(power_plot), c())
 
     # with plots
     ## ggplot
-    power_plot <- runPower(counts = t_obj1$counts, designMatrix = designMatrix, includePlots = "ggplot")
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = "ggplot")
     expect_type(power_plot, "list")
     expect_s3_class(power_plot$ROC, c("gg", "ggplot"))
     expect_s3_class(power_plot$NvP, c("gg", "ggplot"))
