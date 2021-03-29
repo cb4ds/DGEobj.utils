@@ -7,6 +7,7 @@
 runEdgeRNorm(
   dgeObj,
   normMethod = "TMM",
+  itemName = NULL,
   includePlot = FALSE,
   plotLabels = NULL
 )
@@ -16,8 +17,11 @@ runEdgeRNorm(
 
 \item{normMethod}{One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")}
 
-\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors produced (Default = FALSE).
- Possible values to pass:
+\item{itemName}{optional string represents the name of the new DGEList. It must be unique and not exist
+in the passed DGEobj (Default = NULL; defualt name will be used)}
+
+\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors
+produced (Default = FALSE). Possible values to pass:
  \itemize{
   \item \strong{FALSE or NULL}: Disable plot
   \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.

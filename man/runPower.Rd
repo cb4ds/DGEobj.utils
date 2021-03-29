@@ -15,9 +15,9 @@ runPower(
 )
 }
 \arguments{
-\item{countsMatrix}{A counts matrix. (Required)}
+\item{countsMatrix}{A counts matrix or dataframe of numeric data. (Required)}
 
-\item{designMatrix}{A design matrix. (Required)}
+\item{designMatrix}{A design matrix or dataframe of numeric data. (Required)}
 
 \item{depth}{A set of depth to use in the calculations.  The default depths of
 c(10, 100, 1000) respectively represent a detection limit, below average

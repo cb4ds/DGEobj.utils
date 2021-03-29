@@ -5,8 +5,10 @@
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")
-#' @param includePlot Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors produced (Default = FALSE).
-#'  Possible values to pass:
+#' @param itemName optional string represents the name of the new DGEList. It must be unique and not exist
+#' in the passed DGEobj (Default = NULL; defualt name will be used)
+#' @param includePlot Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors
+#' produced (Default = FALSE). Possible values to pass:
 #'  \itemize{
 #'   \item \strong{FALSE or NULL}: Disable plot
 #'   \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
@@ -30,9 +32,10 @@
 #'
 #' @export
 runEdgeRNorm <- function(dgeObj,
-                         normMethod = "TMM",
+                         normMethod  = "TMM",
+                         itemName    = "DGEList",
                          includePlot = FALSE,
-                         plotLabels = NULL) {
+                         plotLabels  = NULL) {
     funArgs <- match.call()
     assertthat::assert_that(class(dgeObj) == "DGEobj",
                             msg = "dgeObj must be of class 'DGEobj'.")
@@ -41,6 +44,10 @@ runEdgeRNorm <- function(dgeObj,
                             length(normMethod) == 1,
                             tolower(normMethod) %in% c("tmm", "rle", "upperquartile", "none"),
                             msg = "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'.")
+    assertthat::assert_that(!is.null(itemName),
+                            !itemName %in% names(dgeObj),
+                            length(itemName) == 1,
+                            msg = "itemName must be a singular, unique and not NULL character value.")
     if (is.null(includePlot)) {
         plot_type <- "none"
     } else if (is.logical(includePlot) && length(includePlot) == 1) {
@@ -64,12 +71,12 @@ runEdgeRNorm <- function(dgeObj,
     # Capture the DGEList
     itemAttr <- list(normalization = normMethod)
     dgeObj   <- DGEobj::addItem(dgeObj,
-                                item = MyDGElist,
-                                itemName = "DGEList",
+                                item     = MyDGElist,
+                                itemName = itemName,
                                 itemType = "DGEList",
-                                funArgs = funArgs,
+                                funArgs  = funArgs,
                                 itemAttr = itemAttr,
-                                parent = "counts")
+                                parent   = "counts")
     if (plot_type != "none") {
         if (!is.null(plotLabels) && length(plotLabels) == ncol(dgeObj)) {
             labels <-  plotLabels
@@ -88,30 +95,29 @@ runEdgeRNorm <- function(dgeObj,
     }
 
     if (plot_type == "canvasxpress") {
-        plot <- canvasXpress::canvasXpress(data = as.data.frame(t(plot_data)),
+        plot <- canvasXpress::canvasXpress(data             = as.data.frame(t(plot_data)),
                                            graphOrientation = "vertical",
-                                           graphType = "Bar",
-                                           showLegend = FALSE,
-                                           smpLabelRotate = angle,
-                                           smpTitle = "Samples",
-                                           theme = "CanvasXpress",
-                                           widthFactor = 1.5,
-                                           title = "Normalization Factors",
-                                           xAxisTitle = "Norm Factors",
-                                           color    = "dodgerblue3",
-                                           afterRender = list(list(
-                                               "sortSamples",
-                                               list(sortDir = "ascending"))),
-                                           decorations = list(line = list(list(value = 1,
-                                                                               width = 2,
-                                                                               color = "rgb(255,0,0)"))),
-                                           setMinX = 0)
+                                           graphType        = "Bar",
+                                           showLegend       = FALSE,
+                                           smpLabelRotate   = angle,
+                                           smpTitle         = "Samples",
+                                           theme            = "CanvasXpress",
+                                           widthFactor      = 1.5,
+                                           title            = "Normalization Factors",
+                                           xAxisTitle       = "Norm Factors",
+                                           color            = "dodgerblue3",
+                                           afterRender      = list(list("sortSamples",
+                                                                        list(sortDir = "ascending"))),
+                                           decorations      = list(line = list(list(value = 1,
+                                                                                    width = 2,
+                                                                                    color = "rgb(255,0,0)"))),
+                                           setMinX          = 0)
         list(dgeObj = dgeObj, plot = plot)
     } else if (plot_type == "ggplot") {
         plot <- ggplot(plot_data, aes(x = labels, y = Norm.Factors)) +
-            geom_bar(stat = "identity",
+            geom_bar(stat  = "identity",
                      color = "dodgerblue4",
-                     fill = "dodgerblue3",
+                     fill  = "dodgerblue3",
                      width = 0.7) +
             geom_hline(yintercept = 1.0, color = "red") +
             xlab("Samples") +

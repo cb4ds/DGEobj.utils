@@ -24,7 +24,14 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     ## NULL
     runEdgeRNorm_one_test <- runEdgeRNorm(dgeobj, includePlot = NULL)
     expect_s3_class(runEdgeRNorm_one_test, "DGEobj")
-
+    ## New more list
+    runEdgeRNorm_one_test <- runEdgeRNorm(runEdgeRNorm_one_test, itemName = "newList")
+    expect_s3_class(runEdgeRNorm_one_test, "DGEobj")
+    runEdgeRNorm_one_test_newList <- getItems(runEdgeRNorm_one_test, c("DGEList", "newList"))
+    expect_true(is.list(runEdgeRNorm_one_test_newList))
+    expect_equal(names(runEdgeRNorm_one_test_newList), c("DGEList", "newList"))
+    expect_equal(length(runEdgeRNorm_one_test$newList), 2)
+    expect_equal(names(runEdgeRNorm_one_test$newList), c("counts", "samples"))
     # canvasXpress
     ## with samples
     runEdgeRNorm_two_test <- runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = "canvasXpress",
@@ -96,6 +103,18 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
                  regexp = msg)
     expect_error(runEdgeRNorm(runEdgeRNorm_test),
                  regexp = "object 'runEdgeRNorm_test' not found")
+    ## itemName
+    msg <-  "itemName must be a singular, unique and not NULL character value."
+    ### null name
+    expect_error(runEdgeRNorm(dgeobj, itemName = NULL),
+                 regexp = msg)
+    ### duplicate defult name
+    expect_error(runEdgeRNorm(t_obj1),
+                 regexp = msg)
+    ### duplicate new name
+    dgeobj <- runEdgeRNorm(dgeobj, itemName = "newList")
+    expect_error(runEdgeRNorm(dgeobj, itemName = "newList"),
+                 regexp = msg)
     ## includePlot
     msg <- "includePlot must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE."
     expect_warning(runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = c(TRUE, FALSE)),
