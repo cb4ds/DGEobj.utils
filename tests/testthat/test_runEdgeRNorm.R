@@ -4,7 +4,7 @@ context("DGEobj.utils - tests for runEdgeRNorm.R functions")
 test_that('runEdgeRNorm: runEdgeRNorm()', {
     # data setup
     dgeobj <- t_obj1
-    dgeobj$DGEList <- NULL
+    dgeobj <- rmItem(dgeobj, "DGEList")
     plot_labels <- function(n = 50) {
         a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
         paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
@@ -27,7 +27,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     ## New more list
     runEdgeRNorm_one_test <- runEdgeRNorm(runEdgeRNorm_one_test, itemName = "newList")
     expect_s3_class(runEdgeRNorm_one_test, "DGEobj")
-    runEdgeRNorm_one_test_newList <- getItems(runEdgeRNorm_one_test, c("DGEList", "newList"))
+    runEdgeRNorm_one_test_newList <- getType(runEdgeRNorm_one_test, "DGEList")
     expect_true(is.list(runEdgeRNorm_one_test_newList))
     expect_equal(names(runEdgeRNorm_one_test_newList), c("DGEList", "newList"))
     expect_equal(length(runEdgeRNorm_one_test$newList), 2)
