@@ -4,20 +4,31 @@
 \alias{runEdgeRNorm}
 \title{Run edgeR TMM normalization on DGEobj}
 \usage{
-runEdgeRNorm(dgeObj, normMethod = "TMM", plotFile = TRUE, plotLabels = NULL)
+runEdgeRNorm(
+  dgeObj,
+  normMethod = "TMM",
+  includePlot = FALSE,
+  plotLabels = NULL
+)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing counts, design data, and gene annotation.}
 
 \item{normMethod}{One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")}
 
-\item{plotFile}{Enable a bar plot of the norm.factors produced. (Default = TRUE)}
+\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors produced (Default = FALSE).
+ Possible values to pass:
+ \itemize{
+  \item \strong{FALSE or NULL}: Disable plot
+  \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
+  \item \strong{"ggplot"}: returns "ggplot" bar plot of the norm.factors produced.
+}}
 
 \item{plotLabels}{Sample labels for the plot. Length must equal the number of
 samples. (Default = NULL; sample number will be displayed)}
 }
 \value{
-A DGEobj with a normalized DGEList added.
+A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 }
 \description{
 Returns a DGEobj containing DGEList object representing the result of

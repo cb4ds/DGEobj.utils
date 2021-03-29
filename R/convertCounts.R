@@ -19,7 +19,7 @@
 #'    If geneLength is a matrix, the rowMeans are calculated and used.
 #' @param log Default = FALSE.  Set TRUE to return Log2 values.
 #'    Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.
-#' @param normalize Default = "none". Other options: "TMM", "RLE", "upperquartile"
+#' @param normalize Default = "none". Other options: "TMM", "RLE", "upperquartile", "TMMwzp"
 #'  Invokes edgeR::calcNormFactors() for normalization. Upperquartile uses the 75th percentile.  Normalize settings are case insensitive.
 #' @param prior.count Average count to be added to each observation to avoid taking log of zero.
 #'  Used only if log = TRUE. (Default dependent on method; 0 for TPM, 0.25 for CPM and FPKM)
@@ -71,6 +71,10 @@ convertCounts <- function(countsMatrix,
         }
     }
     # Make normalize method case insensitive (calcNormFactors is case sensitive)
+    if (is.null(normalize)) {
+        normalize = 'none'
+    }
+
     if (toupper(normalize) %in% c("TMM", "RLE")) {
         normalize <- toupper(normalize)
     }
@@ -97,9 +101,7 @@ convertCounts <- function(countsMatrix,
     if (missing(log)) {
         log = FALSE
     }
-    if (missing(normalize)) {
-        normalize = 'none'
-    }
+
     if (is.logical(normalize)) { # Don't encourage logicals; here for backward compatibility
         if (normalize == TRUE) {
             normalize <- 'TMM'
@@ -298,13 +300,10 @@ calcFPK <- function(countsMatrix, log, normalize, geneLength, prior.count){
         if (min(geneLength) == 0) {
             geneLength <- geneLength + 1
         }
-
-        FPK <- countsMatrix / (geneLength / 1000)
-
-        if (log == TRUE) {
-            FPK <- log2(FPK + prior.count)
-        }
     }
-
+    FPK <- countsMatrix / (geneLength / 1000)
+    if (log == TRUE) {
+        FPK <- log2(FPK + prior.count)
+    }
     return(FPK)
 }

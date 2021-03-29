@@ -19,6 +19,7 @@ Language: en-US
 Encoding: UTF-8
 Imports:
     assertthat,
+    canvasXpress,
     DGEobj  (>= 1.0.2),
     dplyr   (>= 0.8),
     ggplot2,

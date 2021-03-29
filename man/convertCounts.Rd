@@ -25,7 +25,7 @@ If geneLength is a matrix, the rowMeans are calculated and used.}
 \item{log}{Default = FALSE.  Set TRUE to return Log2 values.
 Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.}
 
-\item{normalize}{Default = "none". Other options: "TMM", "RLE", "upperquartile"
+\item{normalize}{Default = "none". Other options: "TMM", "RLE", "upperquartile", "TMMwzp"
 Invokes edgeR::calcNormFactors() for normalization. Upperquartile uses the 75th percentile.  Normalize settings are case insensitive.}
 
 \item{prior.count}{Average count to be added to each observation to avoid taking log of zero.

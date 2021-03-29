@@ -54,40 +54,46 @@ runSVA <- function(dgeObj,
     designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
     if (missing(n.sv)) {
         n.sv <- sva::num.sv(log2cpm, designMatrix, method = method)
-    } else { # can't have n.sv > number of residual degrees of freedom
+    } else {# can't have n.sv > number of residual degrees of freedom
         rdf <- ncol(dgeObj) - ncol(designMatrix)
         if (n.sv > rdf)
             n.sv <- rdf
     }
-    svobj <- sva::sva(log2cpm, designMatrix, NullDesignMatrix, n.sv = n.sv)
+    tryCatch({
+        svobj <- suppressWarnings(sva::sva(log2cpm, designMatrix, NullDesignMatrix, n.sv = n.sv))
 
-    # Pull out the surrogate variables
-    sv <- svobj$sv
+        # Pull out the surrogate variables
+        sv <- svobj$sv
 
-    if (svobj$n.sv > 0) {
-        # Give them a colname
-        colnames(sv) <- paste("sv", 1:ncol(sv), sep = "")
+        if (svobj$n.sv > 0) {
+            # Give them a colname
+            colnames(sv) <- paste("sv", 1:ncol(sv), sep = "")
 
-        # Add the SVA colums to the DesignMatrix
-        designMatrix_SVA <- cbind(designMatrix, sv)
+            # Add the SVA colums to the DesignMatrix
+            designMatrix_SVA <- cbind(designMatrix, sv)
 
-        # Capture the function call
-        FunArgs <- match.call()
+            # Capture the function call
+            FunArgs <- match.call()
 
-        dgeObj <- addItem(dgeObj, svobj, paste(designMatrixName, "_svobj", sep = ""),
-                          "svobj",
-                          funArgs = FunArgs,
-                          parent = designMatrixName)
+            dgeObj <- addItem(dgeObj, svobj, paste(designMatrixName, "_svobj", sep = ""),
+                              "svobj",
+                              funArgs = FunArgs,
+                              parent = designMatrixName)
 
-        # Save the new designMatrix
-        dgeObj <- addItem(dgeObj, designMatrix_SVA, paste(designMatrixName, "_sva", sep = ""),
-                          "designMatrix",
-                          funArgs = FunArgs,
-                          parent = designMatrixName)
-        # Add the SV columns to the Design table
-        dgeObj$design <- cbind(dgeObj$design, sv)
+            # Save the new designMatrix
+            dgeObj <- addItem(dgeObj, designMatrix_SVA, paste(designMatrixName, "_sva", sep = ""),
+                              "designMatrix",
+                              funArgs = FunArgs,
+                              parent = designMatrixName)
+            # Add the SV columns to the Design table
+            dgeObj$design <- cbind(dgeObj$design, sv)
 
-    } else .tsmsg("No Surrogate Variables Found. DGEobj is unchanged.")
+        } else .tsmsg("No Surrogate Variables Found. DGEobj is unchanged.")
+    },
+    error = function(e) {
+        message(paste("runSVA failed due to: ", e))
+    })
+
 
     return(dgeObj)
 }

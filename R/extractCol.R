@@ -66,15 +66,15 @@ extractCol <- function(contrastList, colName, robust = TRUE){
 
     for (i in 1:length(contrastList)) {
         newdat <- cbind(rowid = rownames(contrastList[[i]]), data.frame(contrastList[[i]], row.names = NULL))
-        newdat <- newdat[, c("rowid", "P.Value")]
+        newdat <- newdat[, c("rowid", colName)]
 
         if (i == 1) {
             dat <- newdat
         } else {
             dat <- merge(x = dat, y = newdat, by = "rowid", all = TRUE, sort = FALSE)
         }
+        colnames(dat)[i + 1] <- names(contrastList[i])
     }
     dat <- data.frame(dat[,-c(1)], row.names = dat[,c(1)])
-    colnames(dat) <- names(contrastList)
     return(dat)
 }

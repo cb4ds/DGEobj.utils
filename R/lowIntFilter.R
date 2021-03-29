@@ -42,7 +42,7 @@ lowIntFilter <- function(dgeObj,
                          countThreshold,
                          tpmThreshold,
                          sampleFraction = 0.5,
-                         geneLength = NULL,
+                         geneLength,
                          verbose = FALSE)
 {
     assertthat::assert_that("DGEobj" %in% class(dgeObj),
@@ -53,14 +53,11 @@ lowIntFilter <- function(dgeObj,
                                 is.null(tpmThreshold) & !is.null(zfpkmThreshold),
                                 msg = "Must use zfpkmThreshold or tpmThreshold, but not both.")
     }
-
     counts <- getItem(dgeObj, "counts")
-    geneLength <- dgeObj$geneData$ExonLength
-
     starting_rowcount <- nrow(counts)
 
     # Get geneLength from DGEobj
-    if (is.null(geneLength)) {  # User supplied geneLength supercedes geneLength from DGEobj
+    if (missing(geneLength) || is.null(geneLength)) {  # User supplied geneLength supercedes geneLength from DGEobj
         geneLength <- dgeObj$geneData$ExonLength
     }
 
