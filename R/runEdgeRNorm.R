@@ -84,7 +84,7 @@ runEdgeRNorm <- function(dgeObj,
             angle  <- ifelse(plot_type == "canvasxpress", 90, 0)
         }
         plot_data <- data.frame(row.names = factor(labels),
-                         Norm.Factors = MyDGElist$samples$norm.factors)
+                                Norm.Factors = MyDGElist$samples$norm.factors)
     }
 
     if (plot_type == "canvasxpress") {
@@ -99,6 +99,9 @@ runEdgeRNorm <- function(dgeObj,
                                            title = "Normalization Factors",
                                            xAxisTitle = "Norm Factors",
                                            color    = "dodgerblue3",
+                                           afterRender = list(list(
+                                               "sortSamples",
+                                               list(sortDir = "ascending"))),
                                            decorations = list(line = list(list(value = 1,
                                                                                width = 2,
                                                                                color = "rgb(255,0,0)"))),
