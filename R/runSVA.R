@@ -93,7 +93,5 @@ runSVA <- function(dgeObj,
     error = function(e) {
         message(paste("runSVA failed due to: ", e))
     })
-
-
-    return(dgeObj)
+    dgeObj
 }
