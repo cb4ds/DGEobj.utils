@@ -45,7 +45,9 @@ lowIntFilter <- function(dgeObj,
                          geneLength,
                          verbose = FALSE)
 {
-    assertthat::assert_that("DGEobj" %in% class(dgeObj),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be of class 'DGEobj'.")
 
     if (!missing(zfpkmThreshold) && !missing(tpmThreshold)) {

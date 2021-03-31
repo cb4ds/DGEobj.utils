@@ -46,13 +46,14 @@ test_that('lowIntFilter: lowIntFilter()', {
 
     expect_error(lowIntFilter(lowIntFilter_five_test),
                  regexp = "object 'lowIntFilter_five_test' not found")
+    expect_error(lowIntFilter(NULL),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    expect_error(lowIntFilter(),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
 })
 
 
 test_that('lowIntFilter: incorrect usage', {
-    expect_error(lowIntFilter(),
-                 regexp = "argument \"dgeObj\" is missing, with no default")
-
     expect_error(lowIntFilter(t_obj1, zfpkmThreshold = 3.0, tpmThreshold = 1),
                  regexp = "Must use zfpkmThreshold or tpmThreshold, but not both.")
 })
