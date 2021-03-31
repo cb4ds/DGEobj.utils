@@ -18,6 +18,18 @@ test_that("runPower.R: runPower()", {
     #expect_equal(dim(power_plot), c())
 
     # with plots
+    ## canvasXpress
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = "canvasXpress")
+    expect_type(power_plot, "list")
+    expect_s3_class(power_plot$ROC, c("canvasXpress", "htmlwidget"))
+    expect_s3_class(power_plot$NvP, c("canvasXpress", "htmlwidget"))
+    expect_s3_class(power_plot$PowerData, "data.frame")
+    ## TRUE
+    power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = TRUE)
+    expect_type(power_plot, "list")
+    expect_s3_class(power_plot$ROC, c("canvasXpress", "htmlwidget"))
+    expect_s3_class(power_plot$NvP, c("canvasXpress", "htmlwidget"))
+    expect_s3_class(power_plot$PowerData, "data.frame")
     ## ggplot
     power_plot <- runPower(countsMatrix = t_obj1$counts, designMatrix = designMatrix, includePlots = "ggplot")
     expect_type(power_plot, "list")
