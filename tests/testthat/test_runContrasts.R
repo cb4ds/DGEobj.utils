@@ -152,7 +152,7 @@ test_that('runContrasts.R: runContrasts()', {
                                 contrastSetName  = "ReplicateGroup_Contrasts",
                                 IHW              = c(FALSE, FALSE)),
                    regexp = msg)
-    ## runEBayes
+    ## verbose
     msg <- "verbose must be a singular logical value. Assigning default value FALSE"
     expect_warning(runContrasts(dgeObj           = t_obj1,
                                 designMatrixName = "ReplicateGroupDesign",

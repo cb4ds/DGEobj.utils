@@ -105,4 +105,106 @@ test_that('runVoom.R: runVoom()', {
     expect_error(runVoom(dgeObj = dgeObj, designMatrixName = "xyz"),
                  regexp = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.",
                  fixed = TRUE)
+    ## runEBayes
+    msg <- "runEBayes must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runEBayes        = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runEBayes        = "FALSE"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runEBayes        = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## runDupCorTwice
+    msg <- "runDupCorTwice must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runDupCorTwice   = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runDupCorTwice        = "FALSE"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           runDupCorTwice   = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## qualityWeights
+    msg <- "qualityWeights must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           qualityWeights   = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           qualityWeights        = "FALSE"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           qualityWeights   = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## mvPlot
+    msg <- "mvPlot must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           mvPlot           = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           mvPlot           = "FALSE"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           mvPlot           = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## robust
+    msg <- "robust must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           robust           = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           robust           = "FALSE"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           robust           = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## runEBayes
+    msg <- "proportion must be a singular numeric value. Assigning default value 0.01"
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           proportion        = NULL),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           proportion       = "0.01"),
+                   regexp = msg)
+    expect_warning(runVoom(dgeObj           = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = dupcorBlock,
+                           proportion       = c(0.01, 0.01)),
+                   regexp = msg)
 })

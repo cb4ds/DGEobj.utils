@@ -83,6 +83,48 @@ runVoom <- function(dgeObj,
         dgelist <- DGEobj::getItem(dgeObj, "DGEList")
     }
 
+    if (any(is.null(runDupCorTwice),
+            !is.logical(runDupCorTwice),
+            length(runDupCorTwice) != 1)) {
+        warning("runDupCorTwice must be a singular logical value. Assigning default value TRUE")
+        runDupCorTwice = TRUE
+    }
+
+    if (any(is.null(qualityWeights),
+            !is.logical(qualityWeights),
+            length(qualityWeights) != 1)) {
+        warning("qualityWeights must be a singular logical value. Assigning default value TRUE")
+        qualityWeights = TRUE
+    }
+
+    if (any(is.null(mvPlot),
+            !is.logical(mvPlot),
+            length(mvPlot) != 1)) {
+        warning("mvPlot must be a singular logical value. Assigning default value TRUE")
+        mvPlot = TRUE
+    }
+
+    if (any(is.null(runEBayes),
+            !is.logical(runEBayes),
+            length(runEBayes) != 1)) {
+        warning("runEBayes must be a singular logical value. Assigning default value TRUE")
+        runEBayes = TRUE
+    }
+
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE")
+        robust = TRUE
+    }
+
+    if (any(is.null(proportion),
+            !is.numeric(proportion),
+            length(proportion) != 1)) {
+        warning("proportion must be a singular numeric value. Assigning default value 0.01")
+        proportion = 0.01
+    }
+
     # Collect calling args for documentation
     funArgs <- match.call()
 
