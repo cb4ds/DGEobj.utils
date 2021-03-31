@@ -71,8 +71,16 @@ convertCounts <- function(countsMatrix,
         }
     }
     # Make normalize method case insensitive (calcNormFactors is case sensitive)
+    if (!is.null(normalize) &&
+        any(!(is.character(normalize) || is.logical(normalize)),
+            length(normalize) != 1,
+            is.character(normalize) && !tolower(normalize) %in% c('tmm', 'rle', 'upperquartile', 'tmmwzp', 'none'))) {
+        warning("normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', TRUE, FALSE or NULL. Assigning default values 'none'")
+        normalize = "none"
+    }
+
     if (is.null(normalize)) {
-        normalize = 'none'
+        normalize = "none"
     }
 
     if (toupper(normalize) %in% c("TMM", "RLE")) {

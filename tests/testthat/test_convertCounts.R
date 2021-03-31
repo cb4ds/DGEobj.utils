@@ -218,6 +218,24 @@ test_that("convertCounts.R: convertCounts()", {
                                  unit        = "CPM",
                                  log         = c(FALSE, FALSE)),
                    regexp = msg)
+    ## normalize
+    msg <- "normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', TRUE, FALSE or NULL. Assigning default values 'none'"
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = "NULL"),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = c(FALSE, TRUE)),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = c("TMM", "RLE")),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = 123),
+                   regexp = msg)
 
 })
 
