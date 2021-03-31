@@ -147,7 +147,35 @@ runPower <- function(countsMatrix,
                             events               = events,
                             afterRender          = list(list("switchNumericToString",
                                                              list("depth",FALSE))))
-        list(PowerData = pdat, ROC = roc)
+        ndat     <- ndat %>%
+            dplyr::arrange(n)
+        cx_data  <- ndat %>%
+            dplyr::select(n, power)
+        var_data <- ndat %>%
+            dplyr::select(depth, FDR, effect)
+        var_data$FDR    <- paste0("FDR:", var_data$FDR)
+        var_data$effect <- paste0("effect: ", var_data$effect)
+        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
+                                                     if (o != null && o != false) {
+                                                        t.showInfoSpan(e, '<b>N</b>: ' + o.y.data[0][0] +
+                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                     };}}")
+        NvP <- canvasXpress(data                 = cx_data,
+                            varAnnot             = var_data,
+                            segregateVariablesBy = list("FDR", "effect"),
+                            layoutType           = "rows",
+                            dataPointSize        = 5,
+                            spiderBy             = "depth",
+                            shapeBy              = "depth",
+                            colorBy              = "depth",
+                            title                = "N vs Power",
+                            xAxisTitle           = "N",
+                            yAxisTitle           = "Power",
+                            events               = events,
+                            afterRender          = list(list("switchNumericToString",
+                                                             list("depth",FALSE))))
+
+        list(PowerData = pdat, ROC = roc, NvP = NvP)
     } else if (plot_type == "ggplot") {
         roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
