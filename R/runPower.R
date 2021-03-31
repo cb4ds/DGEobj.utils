@@ -59,6 +59,33 @@ runPower <- function(countsMatrix,
                             !is.null(designMatrix),
                             class(designMatrix)[[1]] %in% c("matrix","data.frame"),
                             msg = "designMatrix must be specified and must be of class matrix or dataframe.")
+    if (any(is.null(depth),
+            !is.numeric(depth),
+            length(depth)  != 3)) {
+        warning("depth must be a vector of 3 integer values. Assigning default values 10, 100, 1000.")
+        depth  <-  c(10, 100, 1000)
+    }
+
+    if (any(is.null(N),
+            !is.numeric(N),
+            length(N)  != 4)) {
+        warning("N must be a vector of 4 integer values. Assigning default values 3, 6, 10, 20.")
+        N  <-  c(3, 6, 10, 20)
+    }
+
+    if (any(is.null(FDR),
+            !is.numeric(FDR),
+            length(FDR)  != 2)) {
+        warning("FDR must be a vector of 2 integer values. Assigning default values 0.05, 0.1.")
+        FDR  <-  c(0.05, 0.1)
+    }
+
+    if (any(is.null(effectSize),
+            !is.numeric(effectSize),
+            length(effectSize)  != 3)) {
+        warning("effectiveSize must be a vector of 3 integer values. Assigning default values 1.2, 1.5, 2.")
+        effectSize  <-  c(1.2, 1.5, 2)
+    }
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
     dgelist <- countsMatrix %>%
