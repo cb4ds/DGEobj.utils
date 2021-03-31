@@ -18,6 +18,17 @@ test_that('extractCol: extractCol()', {
 
     expect_error(extractCol(extractCol_three_test),
                  regexp = "object 'extractCol_three_test' not found")
+    # Testing assert
+    msg <- "robust must be a singular logical value. Assigning default value TRUE."
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = NULL),
+                   regexp = msg)
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = "FALSE"),
+                   regexp = msg)
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = c(FALSE, FALSE)),
+                   regexp = msg)
 })
 
 

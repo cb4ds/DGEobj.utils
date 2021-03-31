@@ -32,6 +32,12 @@
 #'
 #' @export
 extractCol <- function(contrastList, colName, robust = TRUE){
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE.")
+        robust = TRUE
+    }
     ifelse(robust,
            return(.extractCol2(contrastList, colName)),
            return(.extractCol1(contrastList, colName))
