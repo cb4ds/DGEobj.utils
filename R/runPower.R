@@ -111,12 +111,45 @@ runPower <- function(countsMatrix,
         warning("includePlots must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
         plot_type <- "none"
     }
+    rocdat <- dplyr::filter(pdat, n %in% N)
+    rocdat$depth <- as.factor(rocdat$depth)
+    # N vs Power
+    # Filter to just a few FDR thresholds
+    ndat <- dplyr::filter(pdat, alpha %in% FDR)
+    ndat$depth <- as.factor(ndat$depth)
+    ndat$FDR <- ndat$alpha
 
-    if (plot_type == "ggplot") {
-        rocdat <- dplyr::filter(pdat, n %in% N)
-        rocdat$depth <- as.factor(rocdat$depth)
-
-        roc <- ggplot(rocdat, aes(x = alpha, y = powerVal, fill = depth, shape = depth, color = depth)) +
+    if (plot_type == "canvasxpress") {
+        rocdat   <- rocdat %>%
+            dplyr::arrange(alpha)
+        cx_data  <- rocdat %>%
+            dplyr::select(alpha, power)
+        var_data <- rocdat %>%
+            dplyr::select(depth, n, effect)
+        var_data$n      <- paste0("n:", var_data$n)
+        var_data$effect <- paste0("effect: ", var_data$effect)
+        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
+                                                     if (o != null && o != false) {
+                                                        t.showInfoSpan(e, '<b>Alpha</b>: ' + o.y.data[0][0] +
+                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                     };}}")
+        roc <- canvasXpress(data                 = cx_data,
+                            varAnnot             = var_data,
+                            segregateVariablesBy = list("effect", "n"),
+                            layoutType           = "rows",
+                            dataPointSize        = 5,
+                            spiderBy             = "depth",
+                            shapeBy              = "depth",
+                            colorBy              = "depth",
+                            title                = "ROC curves",
+                            xAxisTitle           = "FDR",
+                            yAxisTitle           = "Power",
+                            events               = events,
+                            afterRender          = list(list("switchNumericToString",
+                                                             list("depth",FALSE))))
+        list(PowerData = pdat, ROC = roc)
+    } else if (plot_type == "ggplot") {
+        roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_x_continuous(breaks = seq(0, 1, 0.2)) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
@@ -127,15 +160,7 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
             theme_gray(18)
-
-        # N vs Power
-        # Filter to just a few FDR thresholds
-        ndat <- dplyr::filter(pdat, alpha %in% FDR)
-
-        ndat$depth <- as.factor(ndat$depth)
-        ndat$FDR <- ndat$alpha
-
-        NvP <- ggplot(ndat, aes(x = n, y = powerVal, fill = depth, shape = depth, color = depth)) +
+        NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
             facet_grid(FDR ~ effect, labeller = label_both) +
