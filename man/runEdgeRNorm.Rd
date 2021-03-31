@@ -7,7 +7,7 @@
 runEdgeRNorm(
   dgeObj,
   normMethod = "TMM",
-  itemName = NULL,
+  itemName = "DGEList",
   includePlot = FALSE,
   plotLabels = NULL
 )

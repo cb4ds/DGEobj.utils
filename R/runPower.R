@@ -39,9 +39,11 @@
 #' @import magrittr ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter arrange select
 #' @importFrom stats approx
 #' @importFrom assertthat assert_that
+#' @importFrom htmlwidgets JS
+#' @importFrom canvasXpress canvasXpress
 #'
 #' @export
 runPower <- function(countsMatrix,
@@ -160,20 +162,20 @@ runPower <- function(countsMatrix,
                                                         t.showInfoSpan(e, '<b>Alpha</b>: ' + o.y.data[0][0] +
                                                                           '<br><b>Power</b>: ' + o.y.data[0][1]);
                                                      };}}")
-        roc <- canvasXpress(data                 = cx_data,
-                            varAnnot             = var_data,
-                            segregateVariablesBy = list("effect", "n"),
-                            layoutType           = "rows",
-                            dataPointSize        = 5,
-                            spiderBy             = "depth",
-                            shapeBy              = "depth",
-                            colorBy              = "depth",
-                            title                = "ROC curves",
-                            xAxisTitle           = "FDR",
-                            yAxisTitle           = "Power",
-                            events               = events,
-                            afterRender          = list(list("switchNumericToString",
-                                                             list("depth",FALSE))))
+        roc <- canvasXpress::canvasXpress(data                 = cx_data,
+                                          varAnnot             = var_data,
+                                          segregateVariablesBy = list("effect", "n"),
+                                          layoutType           = "rows",
+                                          dataPointSize        = 5,
+                                          spiderBy             = "depth",
+                                          shapeBy              = "depth",
+                                          colorBy              = "depth",
+                                          title                = "ROC curves",
+                                          xAxisTitle           = "FDR",
+                                          yAxisTitle           = "Power",
+                                          events               = events,
+                                          afterRender          = list(list("switchNumericToString",
+                                                                           list("depth",FALSE))))
         ndat     <- ndat %>%
             dplyr::arrange(n)
         cx_data  <- ndat %>%
@@ -187,20 +189,20 @@ runPower <- function(countsMatrix,
                                                         t.showInfoSpan(e, '<b>N</b>: ' + o.y.data[0][0] +
                                                                           '<br><b>Power</b>: ' + o.y.data[0][1]);
                                                      };}}")
-        NvP <- canvasXpress(data                 = cx_data,
-                            varAnnot             = var_data,
-                            segregateVariablesBy = list("FDR", "effect"),
-                            layoutType           = "rows",
-                            dataPointSize        = 5,
-                            spiderBy             = "depth",
-                            shapeBy              = "depth",
-                            colorBy              = "depth",
-                            title                = "N vs Power",
-                            xAxisTitle           = "N",
-                            yAxisTitle           = "Power",
-                            events               = events,
-                            afterRender          = list(list("switchNumericToString",
-                                                             list("depth",FALSE))))
+        NvP <- canvasXpress::canvasXpress(data                 = cx_data,
+                                          varAnnot             = var_data,
+                                          segregateVariablesBy = list("FDR", "effect"),
+                                          layoutType           = "rows",
+                                          dataPointSize        = 5,
+                                          spiderBy             = "depth",
+                                          shapeBy              = "depth",
+                                          colorBy              = "depth",
+                                          title                = "N vs Power",
+                                          xAxisTitle           = "N",
+                                          yAxisTitle           = "Power",
+                                          events               = events,
+                                          afterRender          = list(list("switchNumericToString",
+                                                                           list("depth",FALSE))))
 
         list(PowerData = pdat, ROC = roc, NvP = NvP)
     } else if (plot_type == "ggplot") {
