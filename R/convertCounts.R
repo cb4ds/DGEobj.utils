@@ -98,7 +98,10 @@ convertCounts <- function(countsMatrix,
     }
 
     # Set defaults
-    if (missing(log)) {
+    if (any(is.null(log),
+            !is.logical(log),
+            length(log) != 1)) {
+        warning("log must be a singular logical value. Assigning default values FALSE")
         log = FALSE
     }
 

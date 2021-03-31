@@ -203,6 +203,22 @@ test_that("convertCounts.R: convertCounts()", {
                                   geneLength  = genelength[1:100])
     expect_true("matrix" %in% class(count_matrix))
     expect_identical(dim(t_obj1$counts[1:100,]), dim(count_matrix))
+    # Testing assert
+    ## log
+    msg <- "log must be a singular logical value. Assigning default values FALSE"
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = NULL),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = "FALSE"),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = c(FALSE, FALSE)),
+                   regexp = msg)
+
 })
 
 test_that("convertCounts.R: tpm.on.subset()", {
