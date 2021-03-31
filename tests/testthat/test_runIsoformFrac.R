@@ -16,4 +16,32 @@ test_that("isoformFrac.R: isoformFrac()", {
     attr(dgeObj, "level") <- "isoform"
     iso_data <- isoformFrac(dgeObj)
     expect_equal(dim(iso_data), c(959, 48))
+    ## dataType
+    msg <- "dataType must be only a singular value from 'fpkm', 'tpm'. Assigning default value 'fpkm'"
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               dataType = NULL),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               dataType = 1),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               dataType = "NULL"),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               dataType = c("fpkm", "fpkm")),
+                   regexp = msg)
+    ## normalize
+    msg <- "normalize must be only a singular value from 'TMM', 'RLE', 'upperquartile', 'none'. Assigning default value 'TMM'"
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               normalize = NULL),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               normalize = 1),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               normalize = "NULL"),
+                   regexp = msg)
+    expect_warning(isoformFrac(dgeObj   = dgeObj,
+                               normalize = c("TMM", "TMM")),
+                   regexp = msg)
 })
