@@ -14,10 +14,34 @@ test_that('runIHW: runIHW()', {
 
     expect_error(runIHW(runIWH_test_two),
                  regexp = "object 'runIWH_test_two' not found")
+    ## alpha
+    msg <- "alpha must be a singular numeric value. Assigning default value 0.1"
+    expect_warning(runIHW(runIHW_contrastList,
+                          alpha = NULL),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          alpha  = "0.1"),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          alpha = c(0.1, 0.01)),
+                   regexp = msg)
+    ## FDRthreshold
+    msg <- "FDRthreshold must be a singular numeric value. Assigning default value 0.1"
+    expect_warning(runIHW(runIHW_contrastList,
+                          FDRthreshold = NULL),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          FDRthreshold  = "0.1"),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          FDRthreshold = c(0.1, 0.01)),
+                   regexp = msg)
 })
 
 
 test_that('runIHW: incorrect usage', {
     expect_error(runIHW(),
-                 regexp = "argument \"contrastList\" is missing, with no default")
+                 regexp = "contrastList must be specified and should be of class 'List'")
+    expect_error(runIHW(NULL),
+                 regexp = "contrastList must be specified and should be of class 'List'")
 })

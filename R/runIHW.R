@@ -39,6 +39,22 @@ runIHW <- function(contrastList,
                    alpha = 0.1,
                    FDRthreshold = 0.1,
                    ...){
+    assertthat::assert_that(!missing(contrastList),
+                            is.list(contrastList),
+                            msg = "contrastList must be specified and should be of class 'List'.")
+    if (any(is.null(alpha),
+            !is.numeric(alpha),
+            length(alpha) != 1)) {
+        warning("alpha must be a singular numeric value. Assigning default value 0.1")
+        alpha = 0.1
+    }
+
+    if (any(is.null(FDRthreshold),
+            !is.numeric(FDRthreshold),
+            length(FDRthreshold) != 1)) {
+        warning("FDRthreshold must be a singular numeric value. Assigning default value 0.1")
+        FDRthreshold = 0.1
+    }
 
     getProportion <- function(ttdf, threshold) {
         # Get the proportion for one df
