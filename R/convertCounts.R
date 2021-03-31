@@ -109,7 +109,7 @@ convertCounts <- function(countsMatrix,
     if (any(is.null(log),
             !is.logical(log),
             length(log) != 1)) {
-        warning("log must be a singular logical value. Assigning default values FALSE")
+        warning("log must be a singular logical value. Assigning default value FALSE")
         log = FALSE
     }
 
@@ -171,6 +171,12 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
                             msg = "dgeObj should be of class 'DGEobj'.")
     assertthat::assert_that(attr(dgeObj, "level") %in% c("isoform", "gene"),
                             msg = "The level of dgeObj should be of type 'isoform' or type 'gene'.")
+    if (any(is.null(applyFilter),
+            !is.logical(applyFilter),
+            length(applyFilter) != 1)) {
+        warning("applyFilter must be a singular logical value. Assigning default value TRUE.")
+        applyFilter = TRUE
+    }
 
     # Default to gene level
     level <- "gene"
@@ -235,7 +241,6 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
 tpm.direct <- function(countsMatrix,
                        geneLength,
                        collapse = FALSE) {
-
     if (!is.matrix(countsMatrix)) {
         result <- countsMatrix <- as.matrix(countsMatrix)
         assertthat::assert_that("matrix" %in% class(result),
@@ -253,6 +258,13 @@ tpm.direct <- function(countsMatrix,
             assertthat::assert_that(all(dim(countsMatrix) == dim(geneLength)),
                                     msg = "The dimensions of countsMatrix and geneLength should match.")
         }
+    }
+
+    if (any(is.null(collapse),
+            !is.logical(collapse),
+            length(collapse) != 1)) {
+        warning("collapse must be a singular logical value. Assigning default value FALSE.")
+        collapse = FALSE
     }
 
     if (collapse & is.matrix(geneLength)) {

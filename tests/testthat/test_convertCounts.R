@@ -205,7 +205,7 @@ test_that("convertCounts.R: convertCounts()", {
     expect_identical(dim(t_obj1$counts[1:100,]), dim(count_matrix))
     # Testing assert
     ## log
-    msg <- "log must be a singular logical value. Assigning default values FALSE"
+    msg <- "log must be a singular logical value. Assigning default value FALSE"
     expect_warning(convertCounts(counts      = t_obj1$counts_orig,
                                  unit        = "CPM",
                                  log         = NULL),
@@ -271,6 +271,23 @@ test_that("convertCounts.R: tpm.on.subset()", {
     attr(isoform_dgeObj, "source") <- "XYZ"
     expect_error(tpm.on.subset(isoform_dgeObj),
                  regexp = "object 'geneLength' not found")
+    # Testing assert
+    ## applyFilter
+    msg <- "applyFilter must be a singular logical value. Assigning default value TRUE."
+    isoform_dgeObj <- t_obj1
+    isoform_dgeObj <- addItem(dgeObj   = isoform_dgeObj,
+                              item     = isoform_dgeObj$geneData_orig,
+                              itemName = "isoformData_orig",
+                              itemType = "meta")
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = NULL),
+                   regexp = msg)
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = "FALSE"),
+                   regexp = msg)
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = c(FALSE, FALSE)),
+                   regexp = msg)
 })
 
 test_that("convertCounts.R: tpm.direct()", {
@@ -289,4 +306,19 @@ test_that("convertCounts.R: tpm.direct()", {
     # testing collapse parameter
     tpmObj <- tpm.direct(t_obj1$counts, geneLength = as.matrix(genelength), collapse = TRUE)
     expect_true("matrix" %in% class(tpmObj))
+
+    # Testing assert
+    ## collapse
+    genelength <- getItem(t_obj1, "geneData")$ExonLength
+    tpmObj <- tpm.direct(t_obj1$counts, geneLength = genelength)
+    msg <- "collapse must be a singular logical value. Assigning default value FALSE."
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = NULL),
+                   regexp = msg)
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = "FALSE"),
+                   regexp = msg)
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = c(FALSE, FALSE)),
+                   regexp = msg)
 })
