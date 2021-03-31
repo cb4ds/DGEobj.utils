@@ -52,4 +52,124 @@ test_that('runContrasts.R: runContrasts()', {
                               designMatrixName    = "XYZ",
                               contrastList        = contrastList),
                  regexp = "The specified designMatrixName not found in dgeObj.")
+    ## runEBayes
+    msg <- "runEBayes must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                runEBayes        = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                runEBayes        = "FALSE"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                runEBayes        = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## robust
+    msg <- "robust must be a singular logical value. Assigning default value TRUE"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                robust           = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                robust           = "FALSE"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                robust           = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## proportion
+    msg <- "proportion must be a singular numeric value. Assigning default value 0.01"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                proportion        = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                proportion       = "0.1"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                proportion       = c(0.1, 0.01)),
+                   regexp = msg)
+    ## qValue
+    msg <- "qValue must be a singular logical value. Assigning default value FALSE"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                qValue           = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                qValue           = "FALSE"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                qValue           = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## IHW
+    msg <- "IHW must be a singular logical value. Assigning default value FALSE"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                IHW              = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                IHW              = "FALSE"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                IHW              = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## runEBayes
+    msg <- "verbose must be a singular logical value. Assigning default value FALSE"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                verbose          = NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                verbose          = "FALSE"),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  = "ReplicateGroup_Contrasts",
+                                verbose          = c(FALSE, FALSE)),
+                   regexp = msg)
 })
