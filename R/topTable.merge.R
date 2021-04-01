@@ -34,6 +34,8 @@ topTable.merge <- function(contrastList,
                             "list" %in% class(contrastList),
                             "data.frame" %in% class(contrastList[[1]]),
                             !is.null(names(contrastList)),
+                            length(unique(lapply(contrastList, colnames))) == 1,
+                            length(unique(lapply(contrastList, dim))) == 1,
                             msg = "contrastList must be specified, be of class 'list' and be a named list specifically, and include items of class 'data.frame'.")
     assertthat::assert_that(length(digits) %in% c(1, length(colNames)),
                             msg = "digits must be either of length 1 or the same length as colNames.")
