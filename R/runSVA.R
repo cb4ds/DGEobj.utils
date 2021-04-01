@@ -33,11 +33,14 @@ runSVA <- function(dgeObj,
                    method = "leek") {
 
     assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             with(dgeObj, exists("design")),
                             msg = "dgeObj must be specified, be of class 'DGEobj', and should have a 'design' attribute.")
     assertthat::assert_that(!missing(designMatrixName),
+                            !is.null(designMatrixName),
                             "character" %in% class(designMatrixName),
+                            length(designMatrixName) == 1,
                             with(dgeObj, exists(designMatrixName)),
                             msg = "designMatrixName must be specified, should be of class 'character', and must exist as an attribute on the dgeObj.")
     assertthat::assert_that(tolower(method) %in% c("leek", "be"),
