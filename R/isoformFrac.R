@@ -42,7 +42,9 @@ isoformFrac <- function(dgeObj,
                         dataType = "fpkm",
                         normalize = "tmm") {
 
-    assertthat::assert_that("DGEobj" %in% class(dgeObj),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be of class 'DGEobj.")
     assertthat::assert_that(attr(dgeObj, "level") == "isoform",
                             msg = "The levels attribute of dgeObj must be 'isoform'.")
