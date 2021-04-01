@@ -56,7 +56,7 @@ convertCounts <- function(countsMatrix,
                           prior.count = NULL) {
     assertthat::assert_that(!missing(countsMatrix),
                             !is.null(countsMatrix),
-                            "matrix" %in% class(countsMatrix) || "data.frame" %in% class(countsMatrix),
+                            any(c("data.frame", "matrix") %in% class(countsMatrix)),
                             length(countsMatrix) != 0,
                             nrow(countsMatrix) != 0,
                             is.numeric(countsMatrix),

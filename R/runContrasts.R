@@ -68,7 +68,7 @@
 runContrasts <- function(dgeObj,
                          designMatrixName,
                          contrastList,
-                         contrastSetName = fitName,
+                         contrastSetName = "fitName_cf",
                          runTopTable = TRUE,
                          runTopTreat = FALSE,
                          foldChangeThreshold = 1.5,
@@ -78,12 +78,16 @@ runContrasts <- function(dgeObj,
                          qValue = FALSE,
                          IHW = FALSE,
                          verbose = FALSE) {
-
     assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be specified and should be of class 'DGEobj'.")
     assertthat::assert_that(!missing(designMatrixName),
-                            msg = "designMatrixName must be specified.")
+                            !is.null(designMatrixName),
+                            is.character(designMatrixName),
+                            length(designMatrixName) == 1,
+                            designMatrixName %in% names(dgeObj),
+                            msg = "designMatrixName must be a signular character value and one of dgeobj names.")
     assertthat::assert_that("list" %in% class(contrastList),
                             !missing(contrastList),
                             !is.null(names(contrastList)),
@@ -137,6 +141,13 @@ runContrasts <- function(dgeObj,
             length(verbose) != 1)) {
         warning("verbose must be a singular logical value. Assigning default value FALSE")
         verbose = FALSE
+    }
+
+    if (any(is.null(contrastSetName),
+            !is.character(contrastSetName),
+            length(contrastSetName) != 1)) {
+        warning("contrastSetName must be a character value. Assigning default value 'fitName_cf'")
+        contrastSetName = "fitName_cf"
     }
 
     funArgs <- match.call()

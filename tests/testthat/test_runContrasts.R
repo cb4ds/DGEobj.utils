@@ -29,29 +29,38 @@ test_that('runContrasts.R: runContrasts()', {
     expect_s3_class(dgeObj_output, "DGEobj")
 
     # testing assert statements
+    ## dgeobj
+    expect_error(runContrasts(),
+                 regexp = "dgeObj must be specified and should be of class 'DGEobj'.")
     expect_error(runContrasts(dgeObj = NULL),
                  regexp = "dgeObj must be specified and should be of class 'DGEobj'.")
+    ## designMatrixName
+    msg <- "designMatrixName must be a signular character value and one of dgeobj names."
     expect_error(runContrasts(dgeObj = t_obj1),
-                 regexp = "designMatrixName must be specified.")
+                 regexp = msg)
+    expect_error(runContrasts(dgeObj = t_obj1, designMatrixName = NULL),
+                 regexp = msg)
+    expect_error(runContrasts(dgeObj = t_obj1, designMatrixName = 123),
+                 regexp = msg)
+    expect_error(runContrasts(dgeObj = t_obj1, designMatrixName = "abc"),
+                 regexp = msg)
+    expect_error(runContrasts(dgeObj = t_obj1, designMatrixName = c("ReplicateGroup", "ReplicateGroup")),
+                 regexp = msg)
     expect_error(runContrasts(dgeObj           = t_obj1,
-                              designMatrixName = "ReplicateGroup",
+                              designMatrixName = "ReplicateGroupDesign",
                               contrastList     = "XYZ"),
                  regexp = "contrastList must specified and must be a named list.")
     expect_error(runContrasts(dgeObj              = t_obj1,
-                              designMatrixName    = "ReplicateGroup",
+                              designMatrixName    = "ReplicateGroupDesign",
                               contrastList        = contrastList,
                               foldChangeThreshold = -1),
                  regexp = "foldChangeThreshold must be greater than or equal to 0.")
     expect_error(runContrasts(dgeObj              = t_obj1,
-                              designMatrixName    = "ReplicateGroup",
+                              designMatrixName    = "ReplicateGroupDesign",
                               contrastList        = contrastList,
                               runTopTable         = FALSE,
                               runTopTreat         = FALSE),
                  regexp = "One of runTopTable or runTopTreat must be TRUE.")
-    expect_error(runContrasts(dgeObj              = t_obj1,
-                              designMatrixName    = "XYZ",
-                              contrastList        = contrastList),
-                 regexp = "The specified designMatrixName not found in dgeObj.")
     ## runEBayes
     msg <- "runEBayes must be a singular logical value. Assigning default value TRUE"
     expect_warning(runContrasts(dgeObj           = t_obj1,
@@ -92,13 +101,30 @@ test_that('runContrasts.R: runContrasts()', {
                                 contrastSetName  = "ReplicateGroup_Contrasts",
                                 robust           = c(FALSE, FALSE)),
                    regexp = msg)
+    ## contrastSetName
+    msg <- "contrastSetName must be a character value. Assigning default value 'fitName_cf'"
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  =  NULL),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  =  123),
+                   regexp = msg)
+    expect_warning(runContrasts(dgeObj           = t_obj1,
+                                designMatrixName = "ReplicateGroupDesign",
+                                contrastList     = contrastList,
+                                contrastSetName  =  c("ReplicateGroup_Contrasts", "ReplicateGroup_Contrasts")),
+                   regexp = msg)
     ## proportion
     msg <- "proportion must be a singular numeric value. Assigning default value 0.01"
     expect_warning(runContrasts(dgeObj           = t_obj1,
                                 designMatrixName = "ReplicateGroupDesign",
                                 contrastList     = contrastList,
                                 contrastSetName  = "ReplicateGroup_Contrasts",
-                                proportion        = NULL),
+                                proportion       = NULL),
                    regexp = msg)
     expect_warning(runContrasts(dgeObj           = t_obj1,
                                 designMatrixName = "ReplicateGroupDesign",
