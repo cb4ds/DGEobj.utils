@@ -15,7 +15,7 @@ test_that('runIHW: runIHW()', {
     expect_error(runIHW(runIWH_test_two),
                  regexp = "object 'runIWH_test_two' not found")
     ## alpha
-    msg <- "alpha must be a singular numeric value. Assigning default value 0.1"
+    msg <- "alpha must be a singular numeric value between 0 and 1. Assigning default value 0.1"
     expect_warning(runIHW(runIHW_contrastList,
                           alpha = NULL),
                    regexp = msg)
@@ -25,8 +25,14 @@ test_that('runIHW: runIHW()', {
     expect_warning(runIHW(runIHW_contrastList,
                           alpha = c(0.1, 0.01)),
                    regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          alpha = -1),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          alpha = 2),
+                   regexp = msg)
     ## FDRthreshold
-    msg <- "FDRthreshold must be a singular numeric value. Assigning default value 0.1"
+    msg <- "FDRthreshold must be a singular numeric value between 0 and 1. Assigning default value 0.1"
     expect_warning(runIHW(runIHW_contrastList,
                           FDRthreshold = NULL),
                    regexp = msg)
@@ -35,6 +41,12 @@ test_that('runIHW: runIHW()', {
                    regexp = msg)
     expect_warning(runIHW(runIHW_contrastList,
                           FDRthreshold = c(0.1, 0.01)),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          FDRthreshold = 2),
+                   regexp = msg)
+    expect_warning(runIHW(runIHW_contrastList,
+                          FDRthreshold = -1),
                    regexp = msg)
 })
 
