@@ -36,8 +36,9 @@ runEdgeRNorm <- function(dgeObj,
                          itemName    = "DGEList",
                          includePlot = FALSE,
                          plotLabels  = NULL) {
-    funArgs <- match.call()
-    assertthat::assert_that(class(dgeObj) == "DGEobj",
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            class(dgeObj) == "DGEobj",
                             msg = "dgeObj must be of class 'DGEobj'.")
     assertthat::assert_that(!is.null(normMethod),
                             is.character(normMethod),
@@ -48,6 +49,7 @@ runEdgeRNorm <- function(dgeObj,
                             !itemName %in% names(dgeObj),
                             length(itemName) == 1,
                             msg = "itemName must be a singular, unique and not NULL character value.")
+    funArgs <- match.call()
     if (is.null(includePlot)) {
         plot_type <- "none"
     } else if (is.logical(includePlot) && length(includePlot) == 1) {
@@ -83,7 +85,7 @@ runEdgeRNorm <- function(dgeObj,
             angle  <-  45
         } else {
             if (!is.null(plotLabels) && length(plotLabels) != ncol(dgeObj)) {
-                warning(paste("plotLabels must be a character vectore and",
+                warning(paste("plotLabels must be a character vector and",
                               "its length must be equal to dgeobj number of columns.",
                               "Assiging default values from 1 to dgeobj columns number."))
             }

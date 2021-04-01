@@ -47,7 +47,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
                                                          normMethod = "upperquartile",
                                                          includePlot = "canvasXpress",
                                                          plotLabels = plot_labels(ncol(dgeobj) - 1)),
-                   regexp = "plotLabels must be a character vectore and its length must be equal to dgeobj number of columns. Assiging default values from 1 to dgeobj columns number.")
+                   regexp = "plotLabels must be a character vector and its length must be equal to dgeobj number of columns. Assiging default values from 1 to dgeobj columns number.")
     expect_true(is.list(runEdgeRNorm_two_test))
     expect_equal(length(runEdgeRNorm_two_test), 2)
     expect_equal(length(runEdgeRNorm_two_test[[1]]$DGEList), 2)
@@ -89,8 +89,13 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
 
     # Testing asserts
     ## DGEobj
+    msg <- "dgeObj must be of class 'DGEobj'."
+    expect_error(runEdgeRNorm(),
+                 regexp = msg)
+    expect_error(runEdgeRNorm(NULL),
+                 regexp = msg)
     expect_error(runEdgeRNorm(list()),
-                 regexp = "dgeObj must be of class 'DGEobj'.")
+                 regexp = msg)
     ## normMethod
     msg <- "normMethod must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'none'."
     expect_error(runEdgeRNorm(dgeobj, normMethod = NULL),
@@ -123,10 +128,4 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
                    regexp = msg)
     expect_warning(runEdgeRNorm(dgeobj, normMethod = "RLE", includePlot = c("canvasXpress", "ggplot")),
                    regexp = msg)
-})
-
-
-test_that('runEdgeRNorm: incorrect usage', {
-    expect_error(runEdgeRNorm(),
-                 regexp = "argument \"dgeObj\" is missing, with no default")
 })
