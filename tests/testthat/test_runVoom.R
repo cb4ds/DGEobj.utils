@@ -100,10 +100,28 @@ test_that('runVoom.R: runVoom()', {
     expect_s4_class(voom_dgeObj$designMat_Elist, "EList")
 
     # testing assert statements
+    ## dgeObj
+    msg <- "dgeObj must be specified and must be of class 'DGEobj'."
+    expect_error(runVoom(),
+                 regexp = msg)
     expect_error(runVoom(dgeObj = NULL),
-                 regexp = "dgeObj must be specified and must be of class 'DGEobj'.")
+                 regexp = msg)
+    ## designMatrixName
+    msg <- "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options."
     expect_error(runVoom(dgeObj = dgeObj, designMatrixName = "xyz"),
-                 regexp = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.",
+                 regexp = msg,
+                 fixed = TRUE)
+    expect_error(runVoom(dgeObj = dgeObj),
+                 regexp = msg,
+                 fixed = TRUE)
+    expect_error(runVoom(dgeObj = dgeObj, designMatrixName = NULL),
+                 regexp = msg,
+                 fixed = TRUE)
+    expect_error(runVoom(dgeObj = dgeObj, designMatrixName = 123),
+                 regexp = msg,
+                 fixed = TRUE)
+    expect_error(runVoom(dgeObj = dgeObj, designMatrixName = c("designMat", "designMat")),
+                 regexp = msg,
                  fixed = TRUE)
     ## runEBayes
     msg <- "runEBayes must be a singular logical value. Assigning default value TRUE"

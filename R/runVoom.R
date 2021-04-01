@@ -70,10 +70,15 @@ runVoom <- function(dgeObj,
                     robust = TRUE,
                     proportion = 0.01) {
 
-    assertthat::assert_that(!missing("dgeObj"),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be specified and must be of class 'DGEobj'.")
-    assertthat::assert_that(designMatrixName %in% names(dgeObj),
+    assertthat::assert_that(!missing(designMatrixName),
+                            !is.null(designMatrixName),
+                            is.character(designMatrixName),
+                            length(designMatrixName) == 1,
+                            designMatrixName %in% names(dgeObj),
                             msg = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.")
     assertthat::assert_that("DGEList" %in% DGEobj::showTypes(dgeObj)$Type,
                             msg = "No DGEList found in dgeObj. Specify a DGEobj that contains a DGEList.")
