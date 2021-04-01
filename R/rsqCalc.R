@@ -18,10 +18,13 @@
 #'
 #' @export
 rsqCalc <- function(normMatrix, fit) {
-
-    assertthat::assert_that(any(c("data.frame", "matrix") %in% class(normMatrix)),
+    assertthat::assert_that(!missing(normMatrix),
+                            !is.null(normMatrix),
+                            any(c("data.frame", "matrix") %in% class(normMatrix)),
                             msg = "normMatrix must be of class 'data.frame' or 'matrix'.")
-    assertthat::assert_that("MArrayLM" %in% class(fit),
+    assertthat::assert_that(!missing(fit),
+                            !is.null(fit),
+                            "MArrayLM" %in% class(fit),
                             msg = "fit must be of class 'MArrayLM'.")
     assertthat::assert_that(is.numeric(as.matrix(normMatrix)),
                             msg = "All of the entries in normMatrix must be numeric.")
