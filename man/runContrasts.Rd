@@ -8,7 +8,7 @@ runContrasts(
   dgeObj,
   designMatrixName,
   contrastList,
-  contrastSetName = fitName,
+  contrastSetName = "fitName_cf",
   runTopTable = TRUE,
   runTopTreat = FALSE,
   foldChangeThreshold = 1.5,
