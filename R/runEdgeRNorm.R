@@ -1,20 +1,28 @@
-#' Run edgeR TMM normalization on DGEobj
+#' Run edgeR normalization on DGEobj
 #'
 #' Returns a DGEobj containing DGEList object representing the result of
-#'  edgeR TMM normalization.
+#' edgeR normalizationn (calcNormFactors).
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")
 #' @param plotFile Enable a bar plot of the norm.factors produced. (Default = TRUE)
-#' @param plotLabels Sample labels for the plot. Length must equal the number of
-#'   samples. (Default = NULL; sample number will be displayed)
+#' @param plotLabels Sample text labels for the plot. Length must equal the number of
+#'   samples. (Default: sample number will be displayed)
 #'
 #' @return A DGEobj with a normalized DGEList added.
 #'
 #' @examples
-#' \dontrun{
+#'    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+#'
+#'    # Default TMM normalization
 #'    myDGEobj <- runEdgeRNorm(myDGEobj)
-#' }
+#'
+#'    # Set some options
+#'    myDGEobj <- runEdgeRNorm(myDGEobj,
+#'                             normMethod = "upperquartile",
+#'                             plotFile = FALSE,
+#'                             plotLabels = myDGEobj$design$Sample.name)
 #'
 #' @import magrittr
 #' @importFrom edgeR calcNormFactors DGEList
@@ -24,8 +32,8 @@
 #' @export
 runEdgeRNorm <- function(dgeObj,
                          normMethod = "TMM",
-                         plotFile = TRUE,
-                         plotLabels = NULL) {
+                         plotFile   = TRUE,
+                         plotLabels) {
 
     funArgs <- match.call()
 
@@ -51,7 +59,7 @@ runEdgeRNorm <- function(dgeObj,
                               parent = "counts")
 
     # Plot the Norm factors
-    if (!is.null(plotLabels)  && length(plotLabels == ncol(dgeObj))) {
+    if (!missing(plotLabels)  && length(plotLabels == ncol(dgeObj))) {
         x = plotLabels
         angle = 45
     } else {

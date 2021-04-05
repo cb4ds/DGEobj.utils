@@ -25,11 +25,17 @@
 #' @return A list of result objects as defined by the "return" argument.
 #'
 #' @examples
-#' \dontrun{
-#'    myPowerResults <- runPower(countsMatrix, designMatrix)
-#' }
+#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'     counts <- dgeObj$counts
+#'     dm <- getType(dgeObj, type = "designMatrix")[[1]]
+#'     resultList <- runPower(countsMatrix = counts,
+#'                            designMatrix = dm,
+#'                            return = "plots")
+#'
+#'     cowplot::plot_grid(plotlist = resultList)
 #'
 #' @import magrittr
+#' @import ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter

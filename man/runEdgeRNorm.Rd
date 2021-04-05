@@ -2,9 +2,9 @@
 % Please edit documentation in R/runEdgeRNorm.R
 \name{runEdgeRNorm}
 \alias{runEdgeRNorm}
-\title{Run edgeR TMM normalization on DGEobj}
+\title{Run edgeR normalization on DGEobj}
 \usage{
-runEdgeRNorm(dgeObj, normMethod = "TMM", plotFile = TRUE, plotLabels = NULL)
+runEdgeRNorm(dgeObj, normMethod = "TMM", plotFile = TRUE, plotLabels)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing counts, design data, and gene annotation.}
@@ -13,19 +13,27 @@ runEdgeRNorm(dgeObj, normMethod = "TMM", plotFile = TRUE, plotLabels = NULL)
 
 \item{plotFile}{Enable a bar plot of the norm.factors produced. (Default = TRUE)}
 
-\item{plotLabels}{Sample labels for the plot. Length must equal the number of
-samples. (Default = NULL; sample number will be displayed)}
+\item{plotLabels}{Sample text labels for the plot. Length must equal the number of
+samples. (Default: sample number will be displayed)}
 }
 \value{
 A DGEobj with a normalized DGEList added.
 }
 \description{
 Returns a DGEobj containing DGEList object representing the result of
- edgeR TMM normalization.
+edgeR normalizationn (calcNormFactors).
 }
 \examples{
-\dontrun{
+   myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+
+   # Default TMM normalization
    myDGEobj <- runEdgeRNorm(myDGEobj)
-}
+
+   # Set some options
+   myDGEobj <- runEdgeRNorm(myDGEobj,
+                            normMethod = "upperquartile",
+                            plotFile = FALSE,
+                            plotLabels = myDGEobj$design$Sample.name)
 
 }

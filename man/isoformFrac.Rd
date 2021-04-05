@@ -9,18 +9,17 @@ isoformFrac(dgeObj, dataType = "fpkm", normalize = "tmm")
 \arguments{
 \item{dgeObj}{An isoform level DGEobj created by function initDGEobj().
 Counts and isoformData must be present in the DGEobj (Required).
-isoformData$ExonLength must be present or assay = "effectiveLength" must be present.}
+isoformData$ExonLength must be present also.}
 
 \item{dataType}{One of "fpkm" or "tpm" (Default = "fpkm")}
 
 \item{normalize}{Default = "TMM" and invokes TMM normalization. Other allowed
 values are: "RLE", "upperquartile", "none". Invokes edgeR::calcNormFactors for
 normalization.  Only invoked when dataType = "fpkm".  This is because
-applying TPM essentially erases any prior column scaling so TMM and similar
-normalizations have no effect.}
+applying TPM overrides any prior column scaling.}
 }
 \value{
-A DGEobj with an isoform fraction dataframe added
+An isoform fraction dataframe
 }
 \description{
 Takes a DGEobj as input (transcript level data) and returns a matrix
@@ -30,7 +29,9 @@ containing isoform fraction data.
 Isoform fraction is calculated using length normalized data (FPKM or TPM).
 Length normalized data is required because different isoforms have different
 total exon lengths. If FPKM is specified, a normalization can be specified
-via edgeR::calcNormFactors. Isoform fraction is calculated
+via edgeR::calcNormFactors.
+
+Isoform fraction is calculated
 as the isoform intensity divided by the summed gene intensity for all
 isoforms of a given gene.
 

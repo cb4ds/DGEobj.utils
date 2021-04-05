@@ -49,8 +49,13 @@ thresholds.  If return = "plots" or "both", a list is returned with two
 ggplots (plots) or the plots plus the dataframe (both).
 }
 \examples{
-\dontrun{
-   myPowerResults <- runPower(countsMatrix, designMatrix)
-}
+    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+    counts <- dgeObj$counts
+    dm <- getType(dgeObj, type = "designMatrix")[[1]]
+    resultList <- runPower(countsMatrix = counts,
+                           designMatrix = dm,
+                           return = "plots")
+
+    cowplot::plot_grid(plotlist = resultList)
 
 }

@@ -22,14 +22,28 @@ dgeObj containing an updated design table, the svobj and a new design
   matrix.
 }
 \description{
-Takes an DGEobj from runVoom and tests for surrogate variables. Adds a new
+Takes a DGEobj from runVoom and tests for surrogate variables. Adds a new
 design matrix to the DGEobj with the surrogate variable columns appended using cbind.
 runVoom should then be run again with the new design matrix to complete the
 analysis.
 }
 \examples{
-\dontrun{
-   myDGEobj <- runSVA(myDGEobj)
-}
+    ###  Create a model based on surgery status, intentionally omitting the compound treatments
+    dgeObj$design$SurgeryStatus <- "BDL"
+    dgeObj$design$SurgeryStatus[dgeObj$design$ReplicateGroup == "Sham"] <- "Sham"
+    formula <- '~ 0 + SurgeryStatus'
+    designMatrix <- model.matrix (as.formula(formula), dgeObj$design)
+    # Make sure the column names in the design matrix are legal
+    colnames(designMatrix) <- make.names(colnames(designMatrix))
+    #capture the formula as an attribute of the design matrix
+    attr(designMatrix, "formula") <- formula
+    #add the designMatrix to the DGEobj
+    dgeObj <- addItem(dgeObj, item=designMatrix,
+                      itemName="SurgeryStatusDesign",
+                      itemType="designMatrix",
+                      parent="design",
+                      overwrite=TRUE)
+
+    dgeObj <- runSVA(dgeObj, designMatrixName = "SurgeryStatusDesign")
 
 }

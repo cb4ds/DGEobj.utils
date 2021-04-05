@@ -2,12 +2,12 @@
 % Please edit documentation in R/runIHW.R
 \name{runIHW}
 \alias{runIHW}
-\title{Apply Independent Hypothesis Weighting (IHW) to a list of dfs}
+\title{Apply Independent Hypothesis Weighting (IHW) to a list of topTable dataframes}
 \usage{
 runIHW(contrastList, alpha = 0.1, FDRthreshold = 0.1, ...)
 }
 \arguments{
-\item{contrastList}{A list of topTable dataframes.}
+\item{contrastList}{A named list of topTable dataframes.}
 
 \item{alpha}{Alpha should be the desired FDR level to interrogate (range 0-1; Default = 0.1)}
 
@@ -32,17 +32,31 @@ to weight FDR values based on a covariate (AveExpr in this case).
 
 The IHW FDR values are added as additional columns to the topTable data frames.
 
+Function runIHW is normally called by runContrasts with argument IHW=T.  It
+can also be used independently on a list of topTable dataframes.  A list of
+topTable dataframes is conveniently retrieved with the DGEobj::getType
+function with the type argument set to "topTable".
+
+This function expects the following columns are present in each data frame:
+P.value, adj.P.Val, AveExpr.
+
 Note that it is impractical to run IHW on a list of genes less than ~5000.
-Operationally, IHW breaks the data into bins of 1500 genes for the
-analysis. If bins = 1, IHW converges on the BH FDR value.
-Instead, run IHW on the complete set of detected genes from topTable results
-(not topTreat).
+Operationally, IHW breaks the data into bins of 1500 genes for the analysis.
+If bins = 1, IHW converges on the BH FDR value. Instead, run IHW on the
+complete set of detected genes from topTable (not topTreat) results.
 }
 \examples{
-\dontrun{
-   IHWresults <- runIHW(MyContrastList)
-   MyContrastList <- IHWresults[[1]]
-   IHWdf <- IHWresults[[2]]
-}
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   contrastList <- getType(dgeObj, type = "topTable")
+   contrastList <- lapply(contrastList, dplyr::select,
+                          -ihw.adj_pvalue,
+                          -ihw.weight,
+                          -ihw.weighted_pvalue)
+   colnames(contrastList[[1]])
+
+   contrastList <- runIHW(contrastList)
+
+   # note new columns added
+   colnames(contrastList[[1]])
 
 }
