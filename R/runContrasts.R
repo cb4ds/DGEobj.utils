@@ -108,6 +108,9 @@ runContrasts <- function(dgeObj,
     fitName <- paste(designMatrixName, "_fit", sep = "")
     assertthat::assert_that(fitName %in% names(dgeObj),
                             msg = "The specified fitName object not found in dgeObj.")
+    if (missing(contrastSetName) || is.null(contrastSetName)) {
+        contrastSetName <- fitName
+    }
 
     funArgs <- match.call()
 
