@@ -82,8 +82,8 @@ convertCounts <- function(countsMatrix,
     if (!is.null(normalize) &&
         any(!(is.character(normalize) || is.logical(normalize)),
             length(normalize) != 1,
-            is.character(normalize) && !tolower(normalize) %in% c('tmm', 'rle', 'upperquartile', 'tmmwzp', 'none'))) {
-        warning("normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', TRUE, FALSE or NULL. Assigning default values 'none'")
+            is.character(normalize) && length(normalize) == 1 && !tolower(normalize) %in% c('tmm', 'rle', 'upperquartile', 'tmmwzp', 'none'))) {
+        warning("normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', 'none', TRUE, FALSE or NULL. Assigning default values 'none'")
         normalize = "none"
     }
 
