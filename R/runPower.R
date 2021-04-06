@@ -39,9 +39,11 @@
 #' @import magrittr ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter arrange select
 #' @importFrom stats approx
 #' @importFrom assertthat assert_that
+#' @importFrom htmlwidgets JS
+#' @importFrom canvasXpress canvasXpress
 #'
 #' @export
 runPower <- function(countsMatrix,
@@ -59,6 +61,33 @@ runPower <- function(countsMatrix,
                             !is.null(designMatrix),
                             class(designMatrix)[[1]] %in% c("matrix","data.frame"),
                             msg = "designMatrix must be specified and must be of class matrix or dataframe.")
+    if (any(is.null(depth),
+            !is.numeric(depth),
+            length(depth)  != 3)) {
+        warning("depth must be a vector of 3 integer values. Assigning default values 10, 100, 1000.")
+        depth  <-  c(10, 100, 1000)
+    }
+
+    if (any(is.null(N),
+            !is.numeric(N),
+            length(N)  != 4)) {
+        warning("N must be a vector of 4 integer values. Assigning default values 3, 6, 10, 20.")
+        N  <-  c(3, 6, 10, 20)
+    }
+
+    if (any(is.null(FDR),
+            !is.numeric(FDR),
+            length(FDR)  != 2)) {
+        warning("FDR must be a vector of 2 integer values. Assigning default values 0.05, 0.1.")
+        FDR  <-  c(0.05, 0.1)
+    }
+
+    if (any(is.null(effectSize),
+            !is.numeric(effectSize),
+            length(effectSize)  != 3)) {
+        warning("effectiveSize must be a vector of 3 integer values. Assigning default values 1.2, 1.5, 2.")
+        effectSize  <-  c(1.2, 1.5, 2)
+    }
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
     dgelist <- countsMatrix %>%
@@ -69,9 +98,9 @@ runPower <- function(countsMatrix,
 
     # Get a fitted CV values for each input value of depth
     # BCV is the sqrt of Dispersion
-    GeoMeanLibSize <- dgelist$samples$lib.size %>% log %>% mean %>% exp
+    GeoMeanLibSize  <- dgelist$samples$lib.size %>% log %>% mean %>% exp
     depth_avelogcpm <- edgeR::aveLogCPM(depth, GeoMeanLibSize)
-    depthBCV <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
+    depthBCV        <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
                             xout = depth_avelogcpm, rule = 2, ties = mean)$y)
 
     n <- seq(min(N),max(N),1)   # For the N vs P plot
@@ -84,20 +113,18 @@ runPower <- function(countsMatrix,
                        alpha = double(),
                        powerVal = double(),
                        stringsAsFactors = FALSE)
-    cnames <- colnames(pdat)
-
     for (D in depth) {
         cv <- depthBCV[D == depth]
-        for (Nf in n)
-            for (E in effectSize)
+        for (Nf in n) {
+            for (E in effectSize) {
                 for (A in alpha) {
-                    P <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
+                    P    <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
                     pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, powerVal = P))
                 }
+            }
+        }
     }
-    colnames(pdat) <- cnames
-    PowerData <- pdat
-    colnames(PowerData) <- c("depth", "n", "effect", "alpha", "power")
+    colnames(pdat) <- c("depth", "n", "effect", "alpha", "power")
     if (is.null(includePlots)) {
         plot_type <- "none"
     } else if (is.logical(includePlots) && length(includePlots) == 1) {
@@ -113,12 +140,73 @@ runPower <- function(countsMatrix,
         warning("includePlots must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
         plot_type <- "none"
     }
+    rocdat <- dplyr::filter(pdat, n %in% N)
+    rocdat$depth <- as.factor(rocdat$depth)
+    # N vs Power
+    # Filter to just a few FDR thresholds
+    ndat <- dplyr::filter(pdat, alpha %in% FDR)
+    ndat$depth <- as.factor(ndat$depth)
+    ndat$FDR <- ndat$alpha
 
-    if (plot_type == "ggplot") {
-        rocdat <- dplyr::filter(pdat, n %in% N)
-        rocdat$depth <- as.factor(rocdat$depth)
+    if (plot_type == "canvasxpress") {
+        rocdat   <- rocdat %>%
+            dplyr::arrange(alpha)
+        cx_data  <- rocdat %>%
+            dplyr::select(alpha, power)
+        var_data <- rocdat %>%
+            dplyr::select(depth, n, effect)
+        var_data$n      <- paste0("n:", var_data$n)
+        var_data$effect <- paste0("effect: ", var_data$effect)
+        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
+                                                     if (o != null && o != false) {
+                                                        t.showInfoSpan(e, '<b>Alpha</b>: ' + o.y.data[0][0] +
+                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                     };}}")
+        roc <- canvasXpress::canvasXpress(data                 = cx_data,
+                                          varAnnot             = var_data,
+                                          segregateVariablesBy = list("effect", "n"),
+                                          layoutType           = "rows",
+                                          dataPointSize        = 5,
+                                          spiderBy             = "depth",
+                                          shapeBy              = "depth",
+                                          colorBy              = "depth",
+                                          title                = "ROC curves",
+                                          xAxisTitle           = "FDR",
+                                          yAxisTitle           = "Power",
+                                          events               = events,
+                                          afterRender          = list(list("switchNumericToString",
+                                                                           list("depth",FALSE))))
+        ndat     <- ndat %>%
+            dplyr::arrange(n)
+        cx_data  <- ndat %>%
+            dplyr::select(n, power)
+        var_data <- ndat %>%
+            dplyr::select(depth, FDR, effect)
+        var_data$FDR    <- paste0("FDR:", var_data$FDR)
+        var_data$effect <- paste0("effect: ", var_data$effect)
+        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
+                                                     if (o != null && o != false) {
+                                                        t.showInfoSpan(e, '<b>N</b>: ' + o.y.data[0][0] +
+                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                     };}}")
+        NvP <- canvasXpress::canvasXpress(data                 = cx_data,
+                                          varAnnot             = var_data,
+                                          segregateVariablesBy = list("FDR", "effect"),
+                                          layoutType           = "rows",
+                                          dataPointSize        = 5,
+                                          spiderBy             = "depth",
+                                          shapeBy              = "depth",
+                                          colorBy              = "depth",
+                                          title                = "N vs Power",
+                                          xAxisTitle           = "N",
+                                          yAxisTitle           = "Power",
+                                          events               = events,
+                                          afterRender          = list(list("switchNumericToString",
+                                                                           list("depth",FALSE))))
 
-        roc <- ggplot(rocdat, aes(x = alpha, y = powerVal, fill = depth, shape = depth, color = depth)) +
+        list(PowerData = pdat, ROC = roc, NvP = NvP)
+    } else if (plot_type == "ggplot") {
+        roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_x_continuous(breaks = seq(0, 1, 0.2)) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
@@ -129,15 +217,7 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
             theme_gray(18)
-
-        # N vs Power
-        # Filter to just a few FDR thresholds
-        ndat <- dplyr::filter(pdat, alpha %in% FDR)
-
-        ndat$depth <- as.factor(ndat$depth)
-        ndat$FDR <- ndat$alpha
-
-        NvP <- ggplot(ndat, aes(x = n, y = powerVal, fill = depth, shape = depth, color = depth)) +
+        NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_y_continuous(breaks = seq(0, 1, 0.2)) +
             facet_grid(FDR ~ effect, labeller = label_both) +
@@ -147,8 +227,8 @@ runPower <- function(countsMatrix,
             expand_limits(x = 0, y = 0) +
             theme_gray()
 
-        list(PowerData = PowerData, ROC = roc, NvP = NvP)
+        list(PowerData = pdat, ROC = roc, NvP = NvP)
     } else {
-        PowerData
+        pdat
     }
 }

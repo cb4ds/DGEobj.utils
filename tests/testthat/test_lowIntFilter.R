@@ -46,13 +46,43 @@ test_that('lowIntFilter: lowIntFilter()', {
 
     expect_error(lowIntFilter(lowIntFilter_five_test),
                  regexp = "object 'lowIntFilter_five_test' not found")
+    expect_error(lowIntFilter(NULL),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    expect_error(lowIntFilter(),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    # Testing assert
+    ## sampleFraction
+    msg <- "sampleFraction must be a singular numeic value. Assigning default value 0.5"
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold   = 5,
+                                sampleFraction = NULL),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold    = 5,
+                                sampleFraction  = "0.5"),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold   = 5,
+                                sampleFraction = c(0.5, 0.5)),
+                   regexp = msg)
+    ## verbose
+    msg <- "verbose must be a singular logical value. Assigning default value FALSE"
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose      = NULL),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose      = "FALSE"),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose         = c(FALSE, FALSE)),
+                   regexp = msg)
 })
 
 
 test_that('lowIntFilter: incorrect usage', {
-    expect_error(lowIntFilter(),
-                 regexp = "argument \"dgeObj\" is missing, with no default")
-
     expect_error(lowIntFilter(t_obj1, zfpkmThreshold = 3.0, tpmThreshold = 1),
                  regexp = "Must use zfpkmThreshold or tpmThreshold, but not both.")
 })

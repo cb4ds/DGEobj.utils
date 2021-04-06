@@ -45,13 +45,29 @@ lowIntFilter <- function(dgeObj,
                          geneLength,
                          verbose = FALSE)
 {
-    assertthat::assert_that("DGEobj" %in% class(dgeObj),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be of class 'DGEobj'.")
 
     if (!missing(zfpkmThreshold) && !missing(tpmThreshold)) {
         assertthat::assert_that(is.null(zfpkmThreshold) & !is.null(tpmThreshold),
                                 is.null(tpmThreshold) & !is.null(zfpkmThreshold),
                                 msg = "Must use zfpkmThreshold or tpmThreshold, but not both.")
+    }
+
+    if (any(is.null(sampleFraction),
+            !is.numeric(sampleFraction),
+            length(sampleFraction) != 1)) {
+        warning("sampleFraction must be a singular numeic value. Assigning default value 0.5")
+        sampleFraction = 0.5
+    }
+
+    if (any(is.null(verbose),
+            !is.logical(verbose),
+            length(verbose) != 1)) {
+        warning("verbose must be a singular logical value. Assigning default value FALSE")
+        verbose = FALSE
     }
     counts <- getItem(dgeObj, "counts")
     starting_rowcount <- nrow(counts)

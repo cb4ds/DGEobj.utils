@@ -70,10 +70,15 @@ runVoom <- function(dgeObj,
                     robust = TRUE,
                     proportion = 0.01) {
 
-    assertthat::assert_that(!missing("dgeObj"),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be specified and must be of class 'DGEobj'.")
-    assertthat::assert_that(designMatrixName %in% names(dgeObj),
+    assertthat::assert_that(!missing(designMatrixName),
+                            !is.null(designMatrixName),
+                            is.character(designMatrixName),
+                            length(designMatrixName) == 1,
+                            designMatrixName %in% names(dgeObj),
                             msg = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.")
     assertthat::assert_that("DGEList" %in% DGEobj::showTypes(dgeObj)$Type,
                             msg = "No DGEList found in dgeObj. Specify a DGEobj that contains a DGEList.")
@@ -81,6 +86,48 @@ runVoom <- function(dgeObj,
 
     if ("DGEList" %in% attr(dgeObj, "type")) {
         dgelist <- DGEobj::getItem(dgeObj, "DGEList")
+    }
+
+    if (any(is.null(runDupCorTwice),
+            !is.logical(runDupCorTwice),
+            length(runDupCorTwice) != 1)) {
+        warning("runDupCorTwice must be a singular logical value. Assigning default value TRUE")
+        runDupCorTwice = TRUE
+    }
+
+    if (any(is.null(qualityWeights),
+            !is.logical(qualityWeights),
+            length(qualityWeights) != 1)) {
+        warning("qualityWeights must be a singular logical value. Assigning default value TRUE")
+        qualityWeights = TRUE
+    }
+
+    if (any(is.null(mvPlot),
+            !is.logical(mvPlot),
+            length(mvPlot) != 1)) {
+        warning("mvPlot must be a singular logical value. Assigning default value TRUE")
+        mvPlot = TRUE
+    }
+
+    if (any(is.null(runEBayes),
+            !is.logical(runEBayes),
+            length(runEBayes) != 1)) {
+        warning("runEBayes must be a singular logical value. Assigning default value TRUE")
+        runEBayes = TRUE
+    }
+
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE")
+        robust = TRUE
+    }
+
+    if (any(is.null(proportion),
+            !is.numeric(proportion),
+            length(proportion) != 1)) {
+        warning("proportion must be a singular numeric value. Assigning default value 0.01")
+        proportion = 0.01
     }
 
     # Collect calling args for documentation
