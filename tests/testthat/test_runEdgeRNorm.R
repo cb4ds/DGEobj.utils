@@ -40,7 +40,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
                                                          normMethod = "upperquartile",
                                                          includePlot = "canvasXpress",
                                                          plotLabels = plot_labels(ncol(dgeobj) - 1)),
-                   regexp = "plotLabels must be a character vectore and its length must be equal to dgeobj number of columns. Assiging default values from 1 to dgeobj columns number.")
+                   regexp = "plotLabels must be a character vector with length equal to the number of columns in dgeObj.  Assigning default values.")
     expect_true(is.list(runEdgeRNorm_two_test))
     expect_equal(length(runEdgeRNorm_two_test), 2)
     expect_equal(length(runEdgeRNorm_two_test[[1]]$DGEList), 2)

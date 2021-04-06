@@ -1,7 +1,7 @@
-#' Run edgeR TMM normalization on DGEobj
+#' Run edgeR normalization on DGEobj
 #'
 #' Returns a DGEobj containing DGEList object representing the result of
-#'  edgeR TMM normalization.
+#' edgeR normalizationn (calcNormFactors).
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")
@@ -12,15 +12,23 @@
 #'   \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
 #'   \item \strong{"ggplot"}: returns "ggplot" bar plot of the norm.factors produced.
 #' }
-#' @param plotLabels Sample labels for the plot. Length must equal the number of
+#' @param plotLabels Sample text labels for the plot. Length must equal the number of
 #'   samples. (Default = NULL; sample number will be displayed)
 #'
 #' @return A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 #'
 #' @examples
-#' \dontrun{
+#'    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+#'
+#'    # Default TMM normalization
 #'    myDGEobj <- runEdgeRNorm(myDGEobj)
-#' }
+#'
+#'    # Set some options
+#'    myDGEobj <- runEdgeRNorm(myDGEobj,
+#'                             normMethod = "upperquartile",
+#'                             plotFile = FALSE,
+#'                             plotLabels = myDGEobj$design$Sample.name)
 #'
 #' @import magrittr ggplot2
 #' @importFrom edgeR calcNormFactors DGEList
@@ -30,9 +38,9 @@
 #'
 #' @export
 runEdgeRNorm <- function(dgeObj,
-                         normMethod = "TMM",
+                         normMethod  = "TMM",
                          includePlot = FALSE,
-                         plotLabels = NULL) {
+                         plotLabels  = NULL) {
     funArgs <- match.call()
     assertthat::assert_that(class(dgeObj) == "DGEobj",
                             msg = "dgeObj must be of class 'DGEobj'.")
@@ -56,6 +64,7 @@ runEdgeRNorm <- function(dgeObj,
         warning("includePlot must be only one of the following values TRUE, FALSE, 'canvasXpress' or 'ggplot'.  Assigning default value FALSE.")
         plot_type <- "none"
     }
+
     MyDGElist  <-  as.matrix(DGEobj::getItem(dgeObj, "counts")) %>%
         edgeR::DGEList() %>%
         edgeR::calcNormFactors(method = normMethod)
@@ -63,29 +72,29 @@ runEdgeRNorm <- function(dgeObj,
 
     # Capture the DGEList
     itemAttr <- list(normalization = normMethod)
-    dgeObj   <- DGEobj::addItem(dgeObj,
-                                item = MyDGElist,
-                                itemName = "DGEList",
-                                itemType = "DGEList",
-                                funArgs = funArgs,
-                                itemAttr = itemAttr,
-                                parent = "counts")
-    if (plot_type != "none") {
-        if (!is.null(plotLabels) && length(plotLabels) == ncol(dgeObj)) {
-            labels <-  plotLabels
-            angle  <-  45
-        } else {
-            if (!is.null(plotLabels) && length(plotLabels) != ncol(dgeObj)) {
-                warning(paste("plotLabels must be a character vectore and",
-                              "its length must be equal to dgeobj number of columns.",
-                              "Assiging default values from 1 to dgeobj columns number."))
-            }
-            labels <- 1:ncol(dgeObj)
-            angle  <- ifelse(plot_type == "canvasxpress", 90, 0)
+    dgeObj <- DGEobj::addItem(dgeObj,
+                              item = MyDGElist,
+                              itemName = "DGEList",
+                              itemType = "DGEList",
+                              funArgs = funArgs,
+                              itemAttr = itemAttr,
+                              parent = "counts")
+
+    # Plot the Norm factors
+    if (!missing(plotLabels) && (length(plotLabels) == ncol(dgeObj))) {
+        labels <- plotLabels
+        angle  <- 45
+    } else {
+        if (!is.null(plotLabels) && length(plotLabels) != ncol(dgeObj)) {
+            warning(paste("plotLabels must be a character vector with length equal to",
+                          "the number of columns in dgeObj.  Assigning default values."))
         }
-        plot_data <- data.frame(row.names = factor(labels),
-                         Norm.Factors = MyDGElist$samples$norm.factors)
+        labels <- 1:ncol(dgeObj)
+        angle  <- ifelse(plot_type == "canvasxpress", 90, 0)
     }
+
+    plot_data <- data.frame(row.names = factor(labels),
+                            Norm.Factors = MyDGElist$samples$norm.factors)
 
     if (plot_type == "canvasxpress") {
         plot <- canvasXpress::canvasXpress(data = as.data.frame(t(plot_data)),
@@ -121,3 +130,4 @@ runEdgeRNorm <- function(dgeObj,
         dgeObj
     }
 }
+

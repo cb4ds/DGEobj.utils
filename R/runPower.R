@@ -32,11 +32,17 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#' \dontrun{
-#'    myPowerResults <- runPower(countsMatrix, designMatrix)
-#' }
+#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'     counts <- dgeObj$counts
+#'     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
+#'     resultList <- runPower(countsMatrix = counts,
+#'                            designMatrix = dm,
+#'                            return = "plots")
 #'
-#' @import magrittr ggplot2
+#'     cowplot::plot_grid(plotlist = resultList)
+#'
+#' @import magrittr
+#' @import ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter
