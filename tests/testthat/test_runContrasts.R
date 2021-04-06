@@ -102,18 +102,23 @@ test_that('runContrasts.R: runContrasts()', {
                                 robust           = c(FALSE, FALSE)),
                    regexp = msg)
     ## contrastSetName
-    msg <- "contrastSetName must be a character value. Assigning default value 'fitName_cf'"
-    expect_warning(runContrasts(dgeObj           = t_obj1,
+    msg <- "contrastSetName must be a character value. Assigning default value: ReplicateGroupDesign_fit"
+
+    expect_warning(
+        expect_error(runContrasts(dgeObj           = t_obj1,
+                                  designMatrixName = "ReplicateGroupDesign",
+                                  contrastList     = contrastList),
+                       regexp = "The contrastSetName already exists in dgeObj."),
+        msg)
+
+    test <- DGEobj::rmItem(t_obj1, 'ReplicateGroupDesign_fit_cm')
+    test <- DGEobj::rmItem(test,   'ReplicateGroupDesign_fit_cf')
+
+    expect_warning(runContrasts(dgeObj           = test,
                                 designMatrixName = "ReplicateGroupDesign",
-                                contrastList     = contrastList,
-                                contrastSetName  =  NULL),
+                                contrastList     = contrastList),
                    regexp = msg)
-    expect_warning(runContrasts(dgeObj           = t_obj1,
-                                designMatrixName = "ReplicateGroupDesign",
-                                contrastList     = contrastList,
-                                contrastSetName  =  123),
-                   regexp = msg)
-    expect_warning(runContrasts(dgeObj           = t_obj1,
+    expect_warning(runContrasts(dgeObj           = test,
                                 designMatrixName = "ReplicateGroupDesign",
                                 contrastList     = contrastList,
                                 contrastSetName  =  c("ReplicateGroup_Contrasts", "ReplicateGroup_Contrasts")),

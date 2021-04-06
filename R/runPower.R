@@ -32,15 +32,23 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#' \dontrun{
-#'    myPowerResults <- runPower(countsMatrix, designMatrix)
-#' }
+#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'     counts <- dgeObj$counts
+#'     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
+#'     resultList <- runPower(countsMatrix = counts,
+#'                            designMatrix = dm,
+#'                            includePlots = TRUE)
 #'
-#' @import magrittr ggplot2
+#'     head(resultList[[1]]) # dataframe
+#'     resultList[[2]]       # ROC Curves Plot
+#'     resultList[[3]]       # N vs Power Plot
+#'
+#' @import magrittr
+#' @import ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter arrange select
-#' @importFrom stats approx
+#' @importFrom stats approx power
 #' @importFrom assertthat assert_that
 #' @importFrom htmlwidgets JS
 #' @importFrom canvasXpress canvasXpress
@@ -206,6 +214,7 @@ runPower <- function(countsMatrix,
 
         list(PowerData = pdat, ROC = roc, NvP = NvP)
     } else if (plot_type == "ggplot") {
+        effect <- NULL
         roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
             geom_line(size = 1) +
             scale_x_continuous(breaks = seq(0, 1, 0.2)) +

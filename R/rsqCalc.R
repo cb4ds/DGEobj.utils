@@ -9,9 +9,10 @@
 #' @return A vector of R-squared values for each gene fit.
 #'
 #' @examples
-#' \dontrun{
-#'   rsq <- rsqCalc (log2cpm, fitObject)
-#' }
+#'    dgeObj    <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    log2cpm   <- convertCounts(dgeObj$counts, unit = "cpm", log=TRUE, normalize = "tmm")
+#'    fitObject <- dgeObj$ReplicateGroupDesign_fit
+#'    rsq       <- rsqCalc (log2cpm, fitObject)
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom stringr str_c

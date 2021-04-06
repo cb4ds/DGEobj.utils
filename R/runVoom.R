@@ -1,17 +1,16 @@
 #' Run functions in a typical voom/lmfit workflow
 #'
-#' In the recommended workflow, this function runs voomWithQualityWeights followed by
+#' In the default workflow, this function runs voomWithQualityWeights followed by
 #' lmFit and optionally eBayes. If the contrasts of interest are already represented
 #' in the model, enable eBayes. To use contrasts.fit downstream, run eBayes
 #' after that step instead. eBayes should always be run last.
 #'
 #' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized),
-#' and a formula (text representation).  Other arguments can invoke
-#' duplicateCorrelation and modify use of quality weights.
+#' and a formula (character representation).  Other arguments can invoke
+#' the duplicateCorrelation method and modify use of quality weights.
 #'
-#' Returns a DGEobj class object containing the designMatrix, VoomElist (voom
-#' output), and Fit object (lmFit output). Appends data items to the input
-#' DGEobj.
+#' Returns a DGEobj class object containing the VoomElist (voom
+#' output), and Fit object (lmFit output).
 #'
 #' Quality weights should be enabled unless there is a good reason to turn them
 #' off. If all samples are equal quality, the weights will all approach 1.0 with no
@@ -48,9 +47,13 @@
 #' @return A DGEobj now containing designMatrix, Elist, and fit object.
 #'
 #' @examples
-#' \dontrun{
-#' #TODO
-#' }
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    for (name in names(dgeObj)[11:length(dgeObj)]) dgeObj <- rmItem(dgeObj, name)
+#'
+#'    dgeObj <- runVoom(dgeObj, designMatrixName = "ReplicateGroupDesign", mvPlot = TRUE)
+#'
+#'    # Note the Elist and fit objects have been added
+#'    inventory(dgeObj)
 #'
 #' @import magrittr
 #' @importFrom limma voom lmFit eBayes voomWithQualityWeights duplicateCorrelation

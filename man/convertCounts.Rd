@@ -43,26 +43,28 @@ for the conversion to TPM which is converted from FPKM using the formula provide
 by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 }
 \details{
-geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a RSE effectiveLength
-matrix is passed as input, rowMeans(effectiveLength) is used (because edgeR functions
-only accept a vector for effectiveLength).
+geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a
+RSEM effectiveLength matrix is passed as input, rowMeans(effectiveLength) is
+used (because edgeR functions only accept a vector for effectiveLength).
 
 Note that log2 values for CPM, TPM, and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 }
 \examples{
-\dontrun{
-    # TMM normalized Log2FPKM
-    Log2FPKM <- convertCounts(mycounts,
-                              unit = "fpkm",
-                              geneLength = gene.annotation$ExonLength,
-                              log = TRUE,
-                              normalize = "tmm")
+# Simulate some data
+counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
+geneLength <- rowMeans(counts)
 
-    # Non-normalized CPM (not logged)
-    RawCPM <- convertCounts(MyCounts,
-                            unit = "CPM",
-                            log = FALSE,
-                            normalize = "none")
-}
+# TMM normalized Log2FPKM
+Log2FPKM <- convertCounts(counts,
+                          unit = "fpkm",
+                          geneLength = geneLength,
+                          log = TRUE,
+                          normalize = "tmm")
+
+# Non-normalized CPM (not logged)
+RawCPM <- convertCounts(counts,
+                        unit = "CPM",
+                        log = FALSE,
+                        normalize = "none")
 
 }

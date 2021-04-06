@@ -2,7 +2,7 @@
 % Please edit documentation in R/runEdgeRNorm.R
 \name{runEdgeRNorm}
 \alias{runEdgeRNorm}
-\title{Run edgeR TMM normalization on DGEobj}
+\title{Run edgeR normalization on DGEobj}
 \usage{
 runEdgeRNorm(
   dgeObj,
@@ -18,7 +18,7 @@ runEdgeRNorm(
 \item{normMethod}{One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")}
 
 \item{itemName}{optional string represents the name of the new DGEList. It must be unique and not exist
-in the passed DGEobj (Default = NULL; defualt name will be used)}
+in the passed DGEobj (Default = "DGEList")}
 
 \item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors
 produced (Default = FALSE). Possible values to pass:
@@ -28,7 +28,7 @@ produced (Default = FALSE). Possible values to pass:
   \item \strong{"ggplot"}: returns "ggplot" bar plot of the norm.factors produced.
 }}
 
-\item{plotLabels}{Sample labels for the plot. Length must equal the number of
+\item{plotLabels}{Sample text labels for the plot. Length must equal the number of
 samples. (Default = NULL; sample number will be displayed)}
 }
 \value{
@@ -36,11 +36,21 @@ A DGEobj with a normalized DGEList added or a list containing the normalized DGE
 }
 \description{
 Returns a DGEobj containing DGEList object representing the result of
- edgeR TMM normalization.
+edgeR normalizationn (calcNormFactors).
 }
 \examples{
-\dontrun{
+   myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+
+   # Default TMM normalization
    myDGEobj <- runEdgeRNorm(myDGEobj)
-}
+
+   # Set some options
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+   obj_plus_plot <- runEdgeRNorm(myDGEobj,
+                                 normMethod = "upperquartile",
+                                 includePlot = TRUE)
+   myDGEobj <- obj_plus_plot[[1]]
+   obj_plus_plot[[2]]
 
 }
