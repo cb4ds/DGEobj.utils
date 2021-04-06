@@ -28,7 +28,7 @@
 #'
 #' @examples
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-#'    contrastList <- getType(dgeObj, type = "topTable")
+#'    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
 #'    contrastList <- lapply(contrastList, dplyr::select,
 #'                           -Qvalue,
 #'                           -qvalue.lfdr)
@@ -46,7 +46,9 @@
 #' @export
 runQvalue <- function(contrastList, pvalField = "P.Value", ...){
     # Add Q-values to each topTable dataframe in contrastList
-    assertthat::assert_that("list" %in% class(contrastList),
+    assertthat::assert_that(!missing(contrastList),
+                            !is.null(contrastList),
+                            "list" %in% class(contrastList),
                             msg = "contrastList must be of class 'list'.")
 
     contrastNames = names(contrastList)
@@ -55,7 +57,7 @@ runQvalue <- function(contrastList, pvalField = "P.Value", ...){
         assertthat::assert_that(exists(pvalField, contrastList[[i]]),
                                 msg = "pvalField must exist as an item in contrastList.")
         p = contrastList[[i]][, pvalField]
-        q = qvalue::qvalue(p, lambda=0, ...)
+        q = qvalue::qvalue(p, lambda = 0, ...)
         # Add the q-value and lFDR columns to the topTable df
         contrastList[[i]]$Qvalue = q$qvalues
         contrastList[[i]]$qvalue.lfdr = q$lfdr

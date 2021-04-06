@@ -40,8 +40,8 @@ order.
 }
 \examples{
    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-   TopTableList <- getType(dgeObj, type = "topTable")
-   MyPvalues <- ExtractCol(TopTableList, colName = "P.Value")
+   TopTableList <- DGEobj::getType(dgeObj, type = "topTable")
+   MyPvalues    <- extractCol(TopTableList, colName = "P.Value")
    head(MyPvalues)
 
 }

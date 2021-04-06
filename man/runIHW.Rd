@@ -47,7 +47,7 @@ complete set of detected genes from topTable (not topTreat) results.
 }
 \examples{
    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-   contrastList <- getType(dgeObj, type = "topTable")
+   contrastList <- DGEobj::getType(dgeObj, type = "topTable")
    contrastList <- lapply(contrastList, dplyr::select,
                           -ihw.adj_pvalue,
                           -ihw.weight,

@@ -43,14 +43,33 @@ isoformFrac <- function(dgeObj,
                         dataType = "fpkm",
                         normalize = "tmm") {
 
-    assertthat::assert_that("DGEobj" %in% class(dgeObj),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be of class 'DGEobj.")
     assertthat::assert_that(attr(dgeObj, "level") == "isoform",
                             msg = "The levels attribute of dgeObj must be 'isoform'.")
     assertthat::assert_that(!is.null(dgeObj$isoformData$ExonLength),
                             msg = "An ExonLength column must be present in the isoformData table. ")
+
+    if (any(is.null(dataType),
+            !is.character(dataType),
+            length(dataType) != 1,
+            !tolower(dataType) %in% c("fpkm", "tpm"))) {
+        warning("dataType must be only a singular value from 'fpkm', 'tpm'. Assigning default value 'fpkm'")
+        dataType  <- "fpkm"
+    }
+
+    if (any(is.null(normalize),
+            !is.character(normalize),
+            length(normalize) != 1,
+            !tolower(normalize) %in% c("tmm", "rle", "upperquartile", "none"))) {
+        warning("normalize must be only a singular value from 'TMM', 'RLE', 'upperquartile', 'none'. Assigning default value 'TMM'")
+        normalize  <- "tmm"
+    }
+
     # Calculate sum of isoforms for each gene and sample
-    counts <- DGEobj::getItem(dgeObj, "counts")
+    counts      <- DGEobj::getItem(dgeObj, "counts")
     isoformData <- DGEobj::getItem(dgeObj, "isoformData")
 
     omicData <- switch(tolower(dataType),
@@ -68,17 +87,20 @@ isoformFrac <- function(dgeObj,
     omicData$TranscriptID <- rownames(omicData)
 
     # Calculate isoform fraction
-    omictidy <- tidyr::gather(omicData, key = sample, value = intensity, -GeneID, -TranscriptID) %>%
-        dplyr::group_by(sample, GeneID) %>%
-        dplyr::mutate(geneTotal = sum(intensity),
-                      isofrac = intensity / geneTotal)
+    omictidy <- tidyr::gather(omicData,
+                              key   = "sample",
+                              value = "intensity",
+                              -.data$GeneID, -.data$TranscriptID) %>%
+        dplyr::group_by(.data$sample, .data$GeneID) %>%
+        dplyr::mutate(geneTotal = sum(.data$intensity),
+                      isofrac = .data$intensity / .data$geneTotal)
 
     # Drop uneeded columns
     omictidy$intensity <- NULL
     omictidy$geneTotal <- NULL
 
     # Now spread to an isoformPct matrix
-    IsoformFrac <- spread(omictidy, sample, isofrac) %>% as.data.frame
+    IsoformFrac <- tidyr::spread(omictidy, .data$sample, .data$isofrac) %>% as.data.frame
     # Set row names to transcript ID and remove ID columns
     rownames(IsoformFrac) <- IsoformFrac$TranscriptID
     IsoformFrac$GeneID <- NULL

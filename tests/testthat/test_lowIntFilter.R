@@ -9,7 +9,7 @@ test_that('lowIntFilter: lowIntFilter()', {
     #verbose is enabled
     lowIntFilter_one_test <- lowIntFilter(t_obj1, verbose = TRUE, zfpkmThreshold = -3.0)
     expect_s3_class(lowIntFilter_one_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_one_test$counts), 950)
+    expect_equal(nrow(lowIntFilter_one_test$counts), 931)
 
     # NULL gene length
     lowIntFilter_one_test <- lowIntFilter(t_obj1, tpmThreshold = 1, verbose = TRUE)
@@ -30,29 +30,59 @@ test_that('lowIntFilter: lowIntFilter()', {
     lowIntFilter_two_test <- lowIntFilter(t_obj1, zfpkmThreshold = -3.0)
 
     expect_s3_class(lowIntFilter_two_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_two_test$counts), 950)
+    expect_equal(nrow(lowIntFilter_two_test$counts), 931)
 
     lowIntFilter_three_test <- lowIntFilter(t_obj1,
                                             fpkThreshold = 5,
                                             verbose = TRUE)
 
     expect_s3_class(lowIntFilter_three_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_three_test$counts), 936)
+    expect_equal(nrow(lowIntFilter_three_test$counts), 937)
 
     lowIntFilter_four_test <- lowIntFilter(t_obj1, countThreshold = 10, zfpkmThreshold = -3.0, sampleFraction = 0.75)
 
     expect_s3_class(lowIntFilter_four_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_four_test$counts), 903)
+    expect_equal(nrow(lowIntFilter_four_test$counts), 878)
 
     expect_error(lowIntFilter(lowIntFilter_five_test),
                  regexp = "object 'lowIntFilter_five_test' not found")
+    expect_error(lowIntFilter(NULL),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    expect_error(lowIntFilter(),
+                 regexp = "dgeObj must be of class 'DGEobj'.")
+    # Testing assert
+    ## sampleFraction
+    msg <- "sampleFraction must be a singular numeic value. Assigning default value 0.5"
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold   = 5,
+                                sampleFraction = NULL),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold    = 5,
+                                sampleFraction  = "0.5"),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold   = 5,
+                                sampleFraction = c(0.5, 0.5)),
+                   regexp = msg)
+    ## verbose
+    msg <- "verbose must be a singular logical value. Assigning default value FALSE"
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose      = NULL),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose      = "FALSE"),
+                   regexp = msg)
+    expect_warning(lowIntFilter(t_obj1,
+                                fpkThreshold = 5,
+                                verbose         = c(FALSE, FALSE)),
+                   regexp = msg)
 })
 
 
 test_that('lowIntFilter: incorrect usage', {
-    expect_error(lowIntFilter(),
-                 regexp = "argument \"dgeObj\" is missing, with no default")
-
     expect_error(lowIntFilter(t_obj1, zfpkmThreshold = 3.0, tpmThreshold = 1),
                  regexp = "Must use zfpkmThreshold or tpmThreshold, but not both.")
 })

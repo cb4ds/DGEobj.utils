@@ -28,12 +28,23 @@
 #'
 #' @examples
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-#'    TopTableList <- getType(dgeObj, type = "topTable")
-#'    MyPvalues <- ExtractCol(TopTableList, colName = "P.Value")
+#'    TopTableList <- DGEobj::getType(dgeObj, type = "topTable")
+#'    MyPvalues    <- extractCol(TopTableList, colName = "P.Value")
 #'    head(MyPvalues)
 #'
 #' @export
 extractCol <- function(contrastList, colName, robust = TRUE){
+    assertthat::assert_that(!missing(contrastList),
+                            !is.null(contrastList),
+                            length(unique(lapply(contrastList, colnames))) == 1,
+                            length(unique(lapply(contrastList, dim))) == 1,
+                            msg = "contrastList must be a list of data.frames which all have the same colnames and same row counts.")
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE.")
+        robust = TRUE
+    }
     ifelse(robust,
            return(.extractCol2(contrastList, colName)),
            return(.extractCol1(contrastList, colName))

@@ -18,10 +18,33 @@ test_that('extractCol: extractCol()', {
 
     expect_error(extractCol(extractCol_three_test),
                  regexp = "object 'extractCol_three_test' not found")
-})
-
-
-test_that('extractCol: incorrect usage', {
+    # Testing assert
+    ## contrastList
+    msg <- "contrastList must be a list of data.frames which all have the same colnames and same row counts."
+    dataframe1 <- getType(t_obj1, "topTable")[[3]][1:10,]
+    extractCol_contrastList2 <- extractCol_contrastList
+    extractCol_contrastList2$dataframe1 <- dataframe1
+    dataframe2 <- getType(t_obj1, "topTable")[[3]]
+    extractCol_contrastList3 <- extractCol_contrastList
+    colnames(dataframe2) <- 1:length(dataframe2)
+    extractCol_contrastList3$dataframe2 <- dataframe2
     expect_error(extractCol(),
-                 regexp = "argument \"contrastList\" is missing, with no default")
+                   regexp = msg)
+    expect_error(extractCol(contrastList = NULL),
+                   regexp = msg)
+    expect_error(extractCol(contrastList = extractCol_contrastList2),
+                   regexp = msg)
+    expect_error(extractCol(contrastList = extractCol_contrastList3),
+                   regexp = msg)
+    ## robust
+    msg <- "robust must be a singular logical value. Assigning default value TRUE."
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = NULL),
+                   regexp = msg)
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = "FALSE"),
+                   regexp = msg)
+    expect_warning(extractCol(extractCol_contrastList, colName = "P.Value",
+                              robust = c(FALSE, FALSE)),
+                   regexp = msg)
 })

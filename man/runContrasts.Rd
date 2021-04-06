@@ -8,7 +8,7 @@ runContrasts(
   dgeObj,
   designMatrixName,
   contrastList,
-  contrastSetName,
+  contrastSetName = NULL,
   runTopTable = TRUE,
   runTopTreat = FALSE,
   foldChangeThreshold = 1.5,
@@ -103,6 +103,6 @@ The returned DGEobj list contains the new items:
                             runTopTable = TRUE,
                             runTopTreat = TRUE,
                             foldChangeThreshold = 1.25)
-   inventory(myDGEobj)
+   DGEobj::inventory(myDGEobj)
 
 }

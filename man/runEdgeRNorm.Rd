@@ -7,6 +7,7 @@
 runEdgeRNorm(
   dgeObj,
   normMethod = "TMM",
+  itemName = "DGEList",
   includePlot = FALSE,
   plotLabels = NULL
 )
@@ -16,8 +17,11 @@ runEdgeRNorm(
 
 \item{normMethod}{One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")}
 
-\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors produced (Default = FALSE).
- Possible values to pass:
+\item{itemName}{optional string represents the name of the new DGEList. It must be unique and not exist
+in the passed DGEobj (Default = "DGEList")}
+
+\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors
+produced (Default = FALSE). Possible values to pass:
  \itemize{
   \item \strong{FALSE or NULL}: Disable plot
   \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
@@ -42,9 +46,11 @@ edgeR normalizationn (calcNormFactors).
    myDGEobj <- runEdgeRNorm(myDGEobj)
 
    # Set some options
-   myDGEobj <- runEdgeRNorm(myDGEobj,
-                            normMethod = "upperquartile",
-                            plotFile = FALSE,
-                            plotLabels = myDGEobj$design$Sample.name)
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+   obj_plus_plot <- runEdgeRNorm(myDGEobj,
+                                 normMethod = "upperquartile",
+                                 includePlot = TRUE)
+   myDGEobj <- obj_plus_plot[[1]]
+   obj_plus_plot[[2]]
 
 }

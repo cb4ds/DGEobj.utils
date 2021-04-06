@@ -40,7 +40,7 @@ to FDRs and q-values.
 }
 \examples{
    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-   contrastList <- getType(dgeObj, type = "topTable")
+   contrastList <- DGEobj::getType(dgeObj, type = "topTable")
    contrastList <- lapply(contrastList, dplyr::select,
                           -Qvalue,
                           -qvalue.lfdr)

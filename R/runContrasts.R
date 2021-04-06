@@ -67,7 +67,7 @@
 #'                             runTopTable = TRUE,
 #'                             runTopTreat = TRUE,
 #'                             foldChangeThreshold = 1.25)
-#'    inventory(myDGEobj)
+#'    DGEobj::inventory(myDGEobj)
 #'
 #' @import magrittr
 #' @importFrom limma contrasts.fit eBayes makeContrasts topTable topTreat treat
@@ -79,7 +79,7 @@
 runContrasts <- function(dgeObj,
                          designMatrixName,
                          contrastList,
-                         contrastSetName,
+                         contrastSetName = NULL,
                          runTopTable = TRUE,
                          runTopTreat = FALSE,
                          foldChangeThreshold = 1.5,
@@ -89,12 +89,16 @@ runContrasts <- function(dgeObj,
                          qValue = FALSE,
                          IHW = FALSE,
                          verbose = FALSE) {
-
     assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be specified and should be of class 'DGEobj'.")
     assertthat::assert_that(!missing(designMatrixName),
-                            msg = "designMatrixName must be specified.")
+                            !is.null(designMatrixName),
+                            is.character(designMatrixName),
+                            length(designMatrixName) == 1,
+                            designMatrixName %in% names(dgeObj),
+                            msg = "designMatrixName must be a signular character value and one of dgeobj names.")
     assertthat::assert_that("list" %in% class(contrastList),
                             !missing(contrastList),
                             !is.null(names(contrastList)),
@@ -105,12 +109,62 @@ runContrasts <- function(dgeObj,
                             msg = "One of runTopTable or runTopTreat must be TRUE.")
     assertthat::assert_that(designMatrixName %in% names(dgeObj),
                             msg = "The specified designMatrixName not found in dgeObj.")
+
     fitName <- paste(designMatrixName, "_fit", sep = "")
     assertthat::assert_that(fitName %in% names(dgeObj),
                             msg = "The specified fitName object not found in dgeObj.")
-    if (missing(contrastSetName) || is.null(contrastSetName)) {
-        contrastSetName <- fitName
+
+    if (any(is.null(runEBayes),
+            !is.logical(runEBayes),
+            length(runEBayes) != 1)) {
+        warning("runEBayes must be a singular logical value. Assigning default value TRUE")
+        runEBayes = TRUE
     }
+
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE")
+        robust = TRUE
+    }
+
+    if (any(is.null(proportion),
+            !is.numeric(proportion),
+            length(proportion) != 1)) {
+        warning("proportion must be a singular numeric value. Assigning default value 0.01")
+        proportion = 0.01
+    }
+
+    if (any(is.null(qValue),
+            !is.logical(qValue),
+            length(qValue) != 1)) {
+        warning("qValue must be a singular logical value. Assigning default value FALSE")
+        qValue = FALSE
+    }
+
+    if (any(is.null(IHW),
+            !is.logical(IHW),
+            length(IHW) != 1)) {
+        warning("IHW must be a singular logical value. Assigning default value FALSE")
+        IHW = FALSE
+    }
+
+    if (any(is.null(verbose),
+            !is.logical(verbose),
+            length(verbose) != 1)) {
+        warning("verbose must be a singular logical value. Assigning default value FALSE")
+        verbose = FALSE
+    }
+
+    if (any(is.null(contrastSetName),
+            !is.character(contrastSetName),
+            length(contrastSetName) != 1)) {
+        warning("contrastSetName must be a character value. Assigning default value: ", fitName)
+            contrastSetName <- fitName
+    }
+
+    assertthat::assert_that(!(paste0(contrastSetName, '_cm') %in% names(dgeObj)),
+                            msg = "The contrastSetName already exists in dgeObj.")
 
     funArgs <- match.call()
 

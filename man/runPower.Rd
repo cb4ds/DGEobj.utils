@@ -61,8 +61,10 @@ If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an a
     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
     resultList <- runPower(countsMatrix = counts,
                            designMatrix = dm,
-                           return = "plots")
+                           includePlots = TRUE)
 
-    cowplot::plot_grid(plotlist = resultList)
+    head(resultList[[1]]) # dataframe
+    resultList[[2]]       # ROC Curves Plot
+    resultList[[3]]       # N vs Power Plot
 
 }

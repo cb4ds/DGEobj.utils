@@ -181,7 +181,7 @@ test_that("convertCounts.R: convertCounts()", {
                                   prior.count = NULL)
     expect_true("matrix" %in% class(count_matrix))
     expect_identical(dim(t_obj1$counts), dim(count_matrix))
-    expect_error(convertCounts(counts = t_obj1$counts, unit = "FPKM"), regexp = "geneLength is required for unit = FPK|FPKM|TPM")
+    expect_error(convertCounts(counts = t_obj1$counts, unit = "FPKM"), regexp = "geneLength must be specified when unit is 'FPK', 'FPKM', or 'TPM.'")
     ## Full Count Matrix normalize "TMM"
     count_matrix <- convertCounts(counts = t_obj1$counts,
                                   unit = "FPKM",
@@ -203,6 +203,67 @@ test_that("convertCounts.R: convertCounts()", {
                                   geneLength  = genelength[1:100])
     expect_true("matrix" %in% class(count_matrix))
     expect_identical(dim(t_obj1$counts[1:100,]), dim(count_matrix))
+    # Testing assert
+    ## countsMatrix
+    msg  <-  "countsMatrix must be a numeric matrix or dataframe of N genes x M Samples. All columns must be numeric."
+    expect_error(convertCounts(),
+                 regexp = msg)
+    expect_error(convertCounts(NULL),
+                 regexp = msg)
+    expect_error(convertCounts(data.frame()),
+                 regexp = msg)
+    expect_error(convertCounts(matrix()),
+                 regexp = msg)
+    expect_error(convertCounts(t_obj1$Sora_vs_BDL),
+                 regexp = msg)
+    expect_error(convertCounts(t_obj1$counts_orig %>% as.list()),
+                 regexp = msg)
+    ## unit
+    msg <- "unit must be specified and must be one of 'CPM', 'FPKM', 'FPK' or 'TPM'."
+    expect_error(convertCounts(counts = t_obj1$counts_orig),
+                 regexp = msg)
+    expect_error(convertCounts(counts = t_obj1$counts_orig,
+                               unit = NULL),
+                 regexp = msg)
+    expect_error(convertCounts(counts = t_obj1$counts_orig,
+                               unit = 123),
+                 regexp = msg)
+    expect_error(convertCounts(counts = t_obj1$counts_orig,
+                               unit = c("CPM", "FPKM")),
+                 regexp = msg)
+    ## log
+    msg <- "log must be a singular logical value. Assigning default value FALSE"
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = NULL),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = "FALSE"),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 log         = c(FALSE, FALSE)),
+                   regexp = msg)
+    ## normalize
+    msg <- "normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', 'none', TRUE, FALSE or NULL. Assigning default values 'none'"
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = "NULL"),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = c(FALSE, TRUE)),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = c("TMM", "RLE")),
+                   regexp = msg)
+    expect_warning(convertCounts(counts      = t_obj1$counts_orig,
+                                 unit        = "CPM",
+                                 normalize   = 123),
+                   regexp = msg)
+
 })
 
 test_that("convertCounts.R: tpm.on.subset()", {
@@ -226,7 +287,11 @@ test_that("convertCounts.R: tpm.on.subset()", {
     tpmObj <- tpm.on.subset(isoform_dgeObj)
     expect_true("matrix" %in% class(tpmObj))
 
-    expect_error(tpm.on.subset("XYZ"), regexp = "dgeObj should be of class 'DGEobj'.")
+    ## dgeobj
+    msg <- "dgeObj must be specified and should be of class 'DGEobj'."
+    expect_error(tpm.on.subset("XYZ"), regexp = msg)
+    expect_error(tpm.on.subset(), regexp = msg)
+    expect_error(tpm.on.subset(NULL), regexp = msg)
     # testing level exon
     exon_dgeObj <- t_obj1
     attr(exon_dgeObj, "level") <- "exon"
@@ -237,6 +302,23 @@ test_that("convertCounts.R: tpm.on.subset()", {
     attr(isoform_dgeObj, "source") <- "XYZ"
     expect_error(tpm.on.subset(isoform_dgeObj),
                  regexp = "object 'geneLength' not found")
+    # Testing assert
+    ## applyFilter
+    msg <- "applyFilter must be a singular logical value. Assigning default value TRUE."
+    isoform_dgeObj <- t_obj1
+    isoform_dgeObj <- addItem(dgeObj   = isoform_dgeObj,
+                              item     = isoform_dgeObj$geneData_orig,
+                              itemName = "isoformData_orig",
+                              itemType = "meta")
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = NULL),
+                   regexp = msg)
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = "FALSE"),
+                   regexp = msg)
+    expect_warning(tpm.on.subset(isoform_dgeObj,
+                                 applyFilter = c(FALSE, FALSE)),
+                   regexp = msg)
 })
 
 test_that("convertCounts.R: tpm.direct()", {
@@ -255,4 +337,36 @@ test_that("convertCounts.R: tpm.direct()", {
     # testing collapse parameter
     tpmObj <- tpm.direct(t_obj1$counts, geneLength = as.matrix(genelength), collapse = TRUE)
     expect_true("matrix" %in% class(tpmObj))
+
+    #Testing assert
+    ## countsMatrix
+    msg  <-  "countsMatrix must be a numeric matrix of N genes x M Samples. All columns must be numeric."
+    expect_error(tpm.direct(),
+                 regexp = msg)
+    expect_error(tpm.direct(NULL),
+                 regexp = msg)
+    expect_error(tpm.direct(data.frame()),
+                 regexp = msg)
+    expect_error(tpm.direct(matrix()),
+                 regexp = msg)
+    expect_error(tpm.direct(t_obj1$Sora_vs_BDL),
+                 regexp = msg)
+    expect_error(tpm.direct(t_obj1$counts_orig %>% as.list()),
+                 regexp = msg)
+    ## genelength
+    expect_error(tpm.direct(t_obj1$counts), regexp = "geneLength must be specified")
+    expect_error(tpm.direct(t_obj1$counts, geneLength = NULL), regexp = "geneLength must be specified")
+    ## collapse
+    genelength <- getItem(t_obj1, "geneData")$ExonLength
+    tpmObj <- tpm.direct(t_obj1$counts, geneLength = genelength)
+    msg <- "collapse must be a singular logical value. Assigning default value FALSE."
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = NULL),
+                   regexp = msg)
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = "FALSE"),
+                   regexp = msg)
+    expect_warning(tpm.direct(t_obj1$counts, geneLength = genelength,
+                              collapse         = c(FALSE, FALSE)),
+                   regexp = msg)
 })
