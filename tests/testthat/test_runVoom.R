@@ -225,4 +225,14 @@ test_that('runVoom.R: runVoom()', {
                            dupCorBlock      = dupcorBlock,
                            proportion       = c(0.01, 0.01)),
                    regexp = msg)
+    ## dubCorBlock & var.design
+    msg <- "runVoom did not complete successfully due to: "
+    expect_message(runVoom(dgeObj             = dgeObj,
+                           designMatrixName = "designMat",
+                           dupCorBlock      = "abc"),
+                   regexp = msg)
+    expect_message(runVoom(dgeObj           = dgeObj,
+                         designMatrixName = "designMat",
+                         var.design       = "abc"),
+                 regexp = msg)
 })
