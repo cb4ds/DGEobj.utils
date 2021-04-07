@@ -39,11 +39,16 @@ See \url{http://genomine.org/papers/Storey_FDR_2011.pdf} for a brief introductio
 to FDRs and q-values.
 }
 \examples{
-\dontrun{
-   myContrastList <- runQvalue(myContrastList)
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   contrastList <- DGEobj::getType(dgeObj, type = "topTable")
+   contrastList <- lapply(contrastList, dplyr::select,
+                          -Qvalue,
+                          -qvalue.lfdr)
+   colnames(contrastList[[1]])
 
-   # The magrittr way:
-   myContrastList <- myContrastList \%>\% runQvalue()
-}
+   contrastList <- runQvalue(contrastList)
+
+   # note new columns added
+   colnames(contrastList[[1]])
 
 }

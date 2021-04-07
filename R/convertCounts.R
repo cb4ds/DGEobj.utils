@@ -6,9 +6,9 @@
 #' for the conversion to TPM which is converted from FPKM using the formula provided
 #' by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 #'
-#' geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a RSE effectiveLength
-#' matrix is passed as input, rowMeans(effectiveLength) is used (because edgeR functions
-#' only accept a vector for effectiveLength).
+#' geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a
+#' RSEM effectiveLength matrix is passed as input, rowMeans(effectiveLength) is
+#' used (because edgeR functions only accept a vector for effectiveLength).
 #'
 #' Note that log2 values for CPM, TPM, and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 #'
@@ -28,20 +28,22 @@
 #' @return A matrix in the new unit space
 #'
 #' @examples
-#' \dontrun{
-#'     # TMM normalized Log2FPKM
-#'     Log2FPKM <- convertCounts(mycounts,
-#'                               unit = "fpkm",
-#'                               geneLength = gene.annotation$ExonLength,
-#'                               log = TRUE,
-#'                               normalize = "tmm")
+#' # Simulate some data
+#' counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
+#' geneLength <- rowMeans(counts)
 #'
-#'     # Non-normalized CPM (not logged)
-#'     RawCPM <- convertCounts(MyCounts,
-#'                             unit = "CPM",
-#'                             log = FALSE,
-#'                             normalize = "none")
-#' }
+#' # TMM normalized Log2FPKM
+#' Log2FPKM <- convertCounts(counts,
+#'                           unit = "fpkm",
+#'                           geneLength = geneLength,
+#'                           log = TRUE,
+#'                           normalize = "tmm")
+#'
+#' # Non-normalized CPM (not logged)
+#' RawCPM <- convertCounts(counts,
+#'                         unit = "CPM",
+#'                         log = FALSE,
+#'                         normalize = "none")
 #'
 #' @import magrittr
 #' @importFrom edgeR cpm rpkm expandAsMatrix calcNormFactors DGEList
@@ -54,11 +56,19 @@ convertCounts <- function(countsMatrix,
                           log = FALSE,
                           normalize = "none",
                           prior.count = NULL) {
-
-    assertthat::assert_that(!(nrow(countsMatrix) == 0),
-                            msg = "countsMatrix must be specified.")
-    assertthat::assert_that(!is.null(unit),
-                            msg = "unit must be specified.")
+    assertthat::assert_that(!missing(countsMatrix),
+                            !is.null(countsMatrix),
+                            any(c("data.frame", "matrix") %in% class(countsMatrix)),
+                            length(countsMatrix) != 0,
+                            nrow(countsMatrix) != 0,
+                            is.numeric(countsMatrix),
+                            msg = "countsMatrix must be a numeric matrix or dataframe of N genes x M Samples. All columns must be numeric.")
+    assertthat::assert_that(!missing(unit),
+                            !is.null(unit),
+                            is.character(unit),
+                            length(unit) == 1,
+                            toupper(unit) %in% c("CPM", "FPKM", "FPK", "TPM"),
+                            msg = "unit must be specified and must be one of 'CPM', 'FPKM', 'FPK' or 'TPM'.")
 
     unit <- toupper(unit)
     if (unit %in% c('FPKM', 'TPM', 'FPK')) {
@@ -71,8 +81,16 @@ convertCounts <- function(countsMatrix,
         }
     }
     # Make normalize method case insensitive (calcNormFactors is case sensitive)
+    if (!is.null(normalize) &&
+        any(!(is.character(normalize) || is.logical(normalize)),
+            length(normalize) != 1,
+            is.character(normalize) && length(normalize) == 1 && !tolower(normalize) %in% c('tmm', 'rle', 'upperquartile', 'tmmwzp', 'none'))) {
+        warning("normalize must be only one of the following values 'TMM', 'RLE', 'upperquartile', 'TMMwzp', 'none', TRUE, FALSE or NULL. Assigning default values 'none'")
+        normalize = "none"
+    }
+
     if (is.null(normalize)) {
-        normalize = 'none'
+        normalize = "none"
     }
 
     if (toupper(normalize) %in% c("TMM", "RLE")) {
@@ -98,7 +116,10 @@ convertCounts <- function(countsMatrix,
     }
 
     # Set defaults
-    if (missing(log)) {
+    if (any(is.null(log),
+            !is.logical(log),
+            length(log) != 1)) {
+        warning("log must be a singular logical value. Assigning default value FALSE")
         log = FALSE
     }
 
@@ -155,11 +176,18 @@ convertCounts <- function(countsMatrix,
 #' @importFrom assertthat assert_that
 #' @export
 tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
-
-    assertthat::assert_that("DGEobj" %in% class(dgeObj),
-                            msg = "dgeObj should be of class 'DGEobj'.")
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
+                            "DGEobj" %in% class(dgeObj),
+                            msg = "dgeObj must be specified and should be of class 'DGEobj'.")
     assertthat::assert_that(attr(dgeObj, "level") %in% c("isoform", "gene"),
                             msg = "The level of dgeObj should be of type 'isoform' or type 'gene'.")
+    if (any(is.null(applyFilter),
+            !is.logical(applyFilter),
+            length(applyFilter) != 1)) {
+        warning("applyFilter must be a singular logical value. Assigning default value TRUE.")
+        applyFilter = TRUE
+    }
 
     # Default to gene level
     level <- "gene"
@@ -224,13 +252,18 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
 tpm.direct <- function(countsMatrix,
                        geneLength,
                        collapse = FALSE) {
-
-    if (!is.matrix(countsMatrix)) {
-        result <- countsMatrix <- as.matrix(countsMatrix)
-        assertthat::assert_that("matrix" %in% class(result),
-                                msg = "countsMatrix must be able to be coerced to a matrix.")
+    assertthat::assert_that(!missing(countsMatrix),
+                            !is.null(countsMatrix),
+                            "matrix" %in% class(countsMatrix) || "matrix" %in% class(as.matrix(countsMatrix)),
+                            length(countsMatrix) != 0,
+                            is.numeric(countsMatrix),
+                            msg = "countsMatrix must be a numeric matrix of N genes x M Samples. All columns must be numeric.")
+    if (!"matrix" %in% class(countsMatrix)) {
+        countsMatrix <- as.matrix(countsMatrix)
     }
-
+    assertthat::assert_that(!missing(geneLength),
+                            !is.null(geneLength),
+                            msg = "geneLength must be specified")
     if (is.vector(geneLength)) {
         assertthat::assert_that(length(geneLength) == nrow(countsMatrix),
                                 msg = "geneLength should be of the same length as the number of rows in countsMatrix.")
@@ -242,6 +275,13 @@ tpm.direct <- function(countsMatrix,
             assertthat::assert_that(all(dim(countsMatrix) == dim(geneLength)),
                                     msg = "The dimensions of countsMatrix and geneLength should match.")
         }
+    }
+
+    if (any(is.null(collapse),
+            !is.logical(collapse),
+            length(collapse) != 1)) {
+        warning("collapse must be a singular logical value. Assigning default value FALSE.")
+        collapse = FALSE
     }
 
     if (collapse & is.matrix(geneLength)) {

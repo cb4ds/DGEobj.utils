@@ -1,6 +1,6 @@
 #' Test for surrogate variables
 #'
-#' Takes an DGEobj from runVoom and tests for surrogate variables. Adds a new
+#' Takes a DGEobj from runVoom and tests for surrogate variables. Adds a new
 #' design matrix to the DGEobj with the surrogate variable columns appended using cbind.
 #' runVoom should then be run again with the new design matrix to complete the
 #' analysis.
@@ -16,9 +16,29 @@
 #'   matrix.
 #'
 #' @examples
-#' \dontrun{
-#'    myDGEobj <- runSVA(myDGEobj)
-#' }
+#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'
+#'     ###  Create a model based on surgery status, intentionally omitting the compound treatments
+#'     dgeObj$design$SurgeryStatus <- "BDL"
+#'     dgeObj$design$SurgeryStatus[dgeObj$design$ReplicateGroup == "Sham"] <- "Sham"
+#'     formula <- '~ 0 + SurgeryStatus'
+#'     designMatrix <- model.matrix (as.formula(formula), dgeObj$design)
+#'
+#'     # Make sure the column names in the design matrix are legal
+#'     colnames(designMatrix) <- make.names(colnames(designMatrix))
+#'
+#'     #capture the formula as an attribute of the design matrix
+#'     attr(designMatrix, "formula") <- formula
+#'
+#'     #add the designMatrix to the DGEobj
+#'     dgeObj <- DGEobj::addItem(dgeObj,
+#'                               item      = designMatrix,
+#'                               itemName  = "SurgeryStatusDesign",
+#'                               itemType  = "designMatrix",
+#'                               parent    = "design",
+#'                               overwrite = TRUE)
+#'
+#'     dgeObj <- runSVA(dgeObj, designMatrixName = "SurgeryStatusDesign")
 #'
 #' @importFrom sva sva num.sv
 #' @import magrittr
@@ -33,11 +53,14 @@ runSVA <- function(dgeObj,
                    method = "leek") {
 
     assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             with(dgeObj, exists("design")),
                             msg = "dgeObj must be specified, be of class 'DGEobj', and should have a 'design' attribute.")
     assertthat::assert_that(!missing(designMatrixName),
+                            !is.null(designMatrixName),
                             "character" %in% class(designMatrixName),
+                            length(designMatrixName) == 1,
                             with(dgeObj, exists(designMatrixName)),
                             msg = "designMatrixName must be specified, should be of class 'character', and must exist as an attribute on the dgeObj.")
     assertthat::assert_that(tolower(method) %in% c("leek", "be"),
@@ -93,7 +116,5 @@ runSVA <- function(dgeObj,
     error = function(e) {
         message(paste("runSVA failed due to: ", e))
     })
-
-
-    return(dgeObj)
+    dgeObj
 }

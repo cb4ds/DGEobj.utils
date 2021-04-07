@@ -27,7 +27,7 @@
 #' @examples
 #' \dontrun{
 #'    # Get a contrast list from a dgeObj
-#'    myContrastList <- getType(DGEobj, "topTable")
+#'    myContrastList <- DGEobj::getType(DGEobj, "topTable")
 #'
 #'    # All default thresholds, no fold change threshold
 #'    mySigSummary <- summarizeSigCounts(myContrastList)

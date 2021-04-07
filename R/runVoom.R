@@ -1,17 +1,16 @@
 #' Run functions in a typical voom/lmfit workflow
 #'
-#' In the recommended workflow, this function runs voomWithQualityWeights followed by
+#' In the default workflow, this function runs voomWithQualityWeights followed by
 #' lmFit and optionally eBayes. If the contrasts of interest are already represented
 #' in the model, enable eBayes. To use contrasts.fit downstream, run eBayes
 #' after that step instead. eBayes should always be run last.
 #'
 #' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized),
-#' and a formula (text representation).  Other arguments can invoke
-#' duplicateCorrelation and modify use of quality weights.
+#' and a formula (character representation).  Other arguments can invoke
+#' the duplicateCorrelation method and modify use of quality weights.
 #'
-#' Returns a DGEobj class object containing the designMatrix, VoomElist (voom
-#' output), and Fit object (lmFit output). Appends data items to the input
-#' DGEobj.
+#' Returns a DGEobj class object containing the VoomElist (voom
+#' output), and Fit object (lmFit output).
 #'
 #' Quality weights should be enabled unless there is a good reason to turn them
 #' off. If all samples are equal quality, the weights will all approach 1.0 with no
@@ -48,9 +47,13 @@
 #' @return A DGEobj now containing designMatrix, Elist, and fit object.
 #'
 #' @examples
-#' \dontrun{
-#' #TODO
-#' }
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    for (name in names(dgeObj)[11:length(dgeObj)]) dgeObj <- rmItem(dgeObj, name)
+#'
+#'    dgeObj <- runVoom(dgeObj, designMatrixName = "ReplicateGroupDesign", mvPlot = TRUE)
+#'
+#'    # Note the Elist and fit objects have been added
+#'    inventory(dgeObj)
 #'
 #' @import magrittr
 #' @importFrom limma voom lmFit eBayes voomWithQualityWeights duplicateCorrelation
@@ -70,10 +73,15 @@ runVoom <- function(dgeObj,
                     robust = TRUE,
                     proportion = 0.01) {
 
-    assertthat::assert_that(!missing("dgeObj"),
+    assertthat::assert_that(!missing(dgeObj),
+                            !is.null(dgeObj),
                             "DGEobj" %in% class(dgeObj),
                             msg = "dgeObj must be specified and must be of class 'DGEobj'.")
-    assertthat::assert_that(designMatrixName %in% names(dgeObj),
+    assertthat::assert_that(!missing(designMatrixName),
+                            !is.null(designMatrixName),
+                            is.character(designMatrixName),
+                            length(designMatrixName) == 1,
+                            designMatrixName %in% names(dgeObj),
                             msg = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.")
     assertthat::assert_that("DGEList" %in% DGEobj::showTypes(dgeObj)$Type,
                             msg = "No DGEList found in dgeObj. Specify a DGEobj that contains a DGEList.")
@@ -81,6 +89,48 @@ runVoom <- function(dgeObj,
 
     if ("DGEList" %in% attr(dgeObj, "type")) {
         dgelist <- DGEobj::getItem(dgeObj, "DGEList")
+    }
+
+    if (any(is.null(runDupCorTwice),
+            !is.logical(runDupCorTwice),
+            length(runDupCorTwice) != 1)) {
+        warning("runDupCorTwice must be a singular logical value. Assigning default value TRUE")
+        runDupCorTwice = TRUE
+    }
+
+    if (any(is.null(qualityWeights),
+            !is.logical(qualityWeights),
+            length(qualityWeights) != 1)) {
+        warning("qualityWeights must be a singular logical value. Assigning default value TRUE")
+        qualityWeights = TRUE
+    }
+
+    if (any(is.null(mvPlot),
+            !is.logical(mvPlot),
+            length(mvPlot) != 1)) {
+        warning("mvPlot must be a singular logical value. Assigning default value TRUE")
+        mvPlot = TRUE
+    }
+
+    if (any(is.null(runEBayes),
+            !is.logical(runEBayes),
+            length(runEBayes) != 1)) {
+        warning("runEBayes must be a singular logical value. Assigning default value TRUE")
+        runEBayes = TRUE
+    }
+
+    if (any(is.null(robust),
+            !is.logical(robust),
+            length(robust) != 1)) {
+        warning("robust must be a singular logical value. Assigning default value TRUE")
+        robust = TRUE
+    }
+
+    if (any(is.null(proportion),
+            !is.numeric(proportion),
+            length(proportion) != 1)) {
+        warning("proportion must be a singular numeric value. Assigning default value 0.01")
+        proportion = 0.01
     }
 
     # Collect calling args for documentation
