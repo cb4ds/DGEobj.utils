@@ -48,12 +48,16 @@
 #'
 #' @examples
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-#'    for (name in names(dgeObj)[11:length(dgeObj)]) dgeObj <- rmItem(dgeObj, name)
+#'    for (name in names(dgeObj)[11:length(dgeObj)]) {
+#'        dgeObj <- DGEobj::rmItem(dgeObj, name)
+#'    }
 #'
-#'    dgeObj <- runVoom(dgeObj, designMatrixName = "ReplicateGroupDesign", mvPlot = TRUE)
+#'    dgeObj <- runVoom(dgeObj,
+#'                      designMatrixName = "ReplicateGroupDesign",
+#'                      mvPlot = TRUE)
 #'
 #'    # Note the Elist and fit objects have been added
-#'    inventory(dgeObj)
+#'    DGEobj::inventory(dgeObj)
 #'
 #' @import magrittr
 #' @importFrom limma voom lmFit eBayes voomWithQualityWeights duplicateCorrelation
