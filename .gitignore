@@ -23,3 +23,6 @@ inst/doc
 /**/*.rds
 /**/*.RDS
 /**/*.Rds
+
+#vignette dataset
+!vignettes/supporting/simple.RDS
