@@ -20,7 +20,7 @@ test_that("isoformFrac.R: isoformFrac()", {
 
     attr(dgeObj, "level") <- "isoform"
     iso_data <- isoformFrac(dgeObj)
-    expect_equal(dim(iso_data), c(959, 48))
+    expect_equal(dim(iso_data), c(951, 48))
     ## dataType
     msg <- "dataType must be only a singular value from 'fpkm', 'tpm'. Assigning default value 'fpkm'"
     expect_warning(isoformFrac(dgeObj   = dgeObj,

@@ -5,14 +5,14 @@ test_that('extractCol: extractCol()', {
     extractCol_one_test <- extractCol(extractCol_contrastList, colName = "P.Value")
 
     expect_true(is.data.frame(extractCol_one_test))
-    expect_equal(nrow(extractCol_one_test), 959)
+    expect_equal(nrow(extractCol_one_test), 951)
     expect_equal(ncol(extractCol_one_test), 2)
     expect_equal(names(extractCol_one_test), c("BDL_vs_Sham", "EXT1024_vs_BDL"))
 
     extractCol_two_test <- extractCol(extractCol_contrastList, colName = "P.Value", robust = FALSE)
 
     expect_true(is.data.frame(extractCol_two_test))
-    expect_equal(nrow(extractCol_two_test), 959)
+    expect_equal(nrow(extractCol_two_test), 951)
     expect_equal(ncol(extractCol_two_test), 2)
     expect_equal(names(extractCol_two_test), c("BDL_vs_Sham", "EXT1024_vs_BDL"))
 
