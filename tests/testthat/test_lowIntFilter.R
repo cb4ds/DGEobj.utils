@@ -4,12 +4,12 @@ context("DGEobj.utils - tests for lowIntFilter.R functions")
 test_that('lowIntFilter: lowIntFilter()', {
     lowIntFilter_one_test <- lowIntFilter(t_obj1, countThreshold = 10)
     expect_s3_class(lowIntFilter_one_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_one_test$counts), 959)
+    expect_equal(nrow(lowIntFilter_one_test$counts), 951)
 
     #verbose is enabled
     lowIntFilter_one_test <- lowIntFilter(t_obj1, verbose = TRUE, zfpkmThreshold = -3.0)
     expect_s3_class(lowIntFilter_one_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_one_test$counts), 931)
+    expect_equal(nrow(lowIntFilter_one_test$counts), 933)
 
     # NULL gene length
     lowIntFilter_one_test <- lowIntFilter(t_obj1, tpmThreshold = 1, verbose = TRUE)
@@ -19,30 +19,30 @@ test_that('lowIntFilter: lowIntFilter()', {
                               geneLength = t_obj1$geneData$ExonLength[1:100]),
                  regexp = "geneLength must be specified and should be the same length as the number of rows in counts.")
     expect_s3_class(lowIntFilter_one_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_one_test$counts), 959)
+    expect_equal(nrow(lowIntFilter_one_test$counts), 951)
     # test TPM threshold
     lowIntFilter_one_test <- lowIntFilter(t_obj1,
                                           countThreshold = 10,
                                           verbose = TRUE)
     expect_s3_class(lowIntFilter_one_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_one_test$counts), 959)
+    expect_equal(nrow(lowIntFilter_one_test$counts), 951)
 
     lowIntFilter_two_test <- lowIntFilter(t_obj1, zfpkmThreshold = -3.0)
 
     expect_s3_class(lowIntFilter_two_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_two_test$counts), 931)
+    expect_equal(nrow(lowIntFilter_two_test$counts), 933)
 
     lowIntFilter_three_test <- lowIntFilter(t_obj1,
                                             fpkThreshold = 5,
                                             verbose = TRUE)
 
     expect_s3_class(lowIntFilter_three_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_three_test$counts), 937)
+    expect_equal(nrow(lowIntFilter_three_test$counts), 933)
 
     lowIntFilter_four_test <- lowIntFilter(t_obj1, countThreshold = 10, zfpkmThreshold = -3.0, sampleFraction = 0.75)
 
     expect_s3_class(lowIntFilter_four_test, "DGEobj")
-    expect_equal(nrow(lowIntFilter_four_test$counts), 878)
+    expect_equal(nrow(lowIntFilter_four_test$counts), 881)
 
     expect_error(lowIntFilter(lowIntFilter_five_test),
                  regexp = "object 'lowIntFilter_five_test' not found")
