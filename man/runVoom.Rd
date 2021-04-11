@@ -88,5 +88,4 @@ subject correlation and includes this in the model.
 
    # Note the Elist and fit objects have been added
    DGEobj::inventory(dgeObj)
-
 }
