@@ -45,7 +45,8 @@ edgeR normalizationn (calcNormFactors).
    # Default TMM normalization
    myDGEobj <- runEdgeRNorm(myDGEobj)
 
-   # Set some options
+   # With some options and plot output
+   require(canvasXpress)
    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
    obj_plus_plot <- runEdgeRNorm(myDGEobj,
                                  normMethod = "upperquartile",

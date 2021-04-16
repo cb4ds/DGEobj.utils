@@ -59,10 +59,10 @@
 #'    # Note the Elist and fit objects have been added
 #'    DGEobj::inventory(dgeObj)
 #'
-#' @import magrittr
 #' @importFrom limma voom lmFit eBayes voomWithQualityWeights duplicateCorrelation
 #' @importFrom stringr str_c
 #' @importFrom DGEobj getItem addItem
+#' @importFrom dplyr %>%
 #' @importFrom assertthat assert_that
 #'
 #' @export

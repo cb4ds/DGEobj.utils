@@ -39,7 +39,6 @@
 #'    # note new columns added
 #'    colnames(contrastList[[1]])
 #'
-#' @import magrittr
 #' @importFrom qvalue qvalue
 #' @importFrom assertthat assert_that
 #'

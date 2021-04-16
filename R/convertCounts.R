@@ -45,9 +45,9 @@
 #'                         log = FALSE,
 #'                         normalize = "none")
 #'
-#' @import magrittr
 #' @importFrom edgeR cpm rpkm expandAsMatrix calcNormFactors DGEList
 #' @importFrom assertthat assert_that
+#' @importFrom dplyr %>%
 #'
 #' @export
 convertCounts <- function(countsMatrix,
@@ -172,7 +172,7 @@ convertCounts <- function(countsMatrix,
 #' \dontrun{
 #'    myTPM <- tpm(DGEobj)
 #' }
-#' @import DGEobj magrittr
+#' @import DGEobj
 #' @importFrom assertthat assert_that
 #' @export
 tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
@@ -244,7 +244,6 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
 #'   myTPM <- tpm.direct(myCounts, myGeneLength)
 #' }
 #'
-#' @import magrittr
 #' @importFrom edgeR expandAsMatrix
 #' @importFrom assertthat assert_that
 #'

@@ -19,7 +19,6 @@
 #'     myContrastTable <- topTable.merge(topTablelist)
 #' }
 #'
-#' @import magrittr
 #' @importFrom stringr str_c
 #'
 #' @export
@@ -48,16 +47,14 @@ topTable.merge <- function(contrastList,
     contrastNames <- names(contrastList)
 
     # Get the first set of columns
-    dat <- extractCol(contrastList, colName = colNames[1], robust = TRUE) %>%
-        as.data.frame
+    dat <- as.data.frame(extractCol(contrastList, colName = colNames[1], robust = TRUE))
     colnames(dat) <- stringr::str_c(colNames[1], "_", colnames(dat))
     dat <- round(dat, digits[1])
     dat <- cbind(rowID = rownames(dat), data.frame(dat, row.names = NULL))
 
     if (length(colNames)  > 1) {
         for (i in 1:length(colNames)) {
-            dat2 <- extractCol(contrastList, colName = colNames[i], robust = TRUE) %>%
-                as.data.frame
+            dat2 <- as.data.frame(extractCol(contrastList, colName = colNames[i], robust = TRUE))
             # Add datatype as prefix on colname e.g. logFC_contrastname
             colnames(dat2) <- stringr::str_c(colNames[i], "_", colnames(dat2))
             dat2 <- round(dat2, digits[i])

@@ -39,7 +39,7 @@ extractCol <- function(contrastList, colName, robust = TRUE){
                             length(unique(lapply(contrastList, colnames))) == 1,
                             length(unique(lapply(contrastList, dim))) == 1,
                             msg = "contrastList must be a list of data.frames which all have the same colnames and same row counts.")
-    if (any(is.null(robust),
+if (any(is.null(robust),
             !is.logical(robust),
             length(robust) != 1)) {
         warning("robust must be a singular logical value. Assigning default value TRUE.")
@@ -60,7 +60,7 @@ extractCol <- function(contrastList, colName, robust = TRUE){
     assertthat::assert_that("character" %in% class(colName),
                             msg = "colName must be a column in the data of class 'character'.")
 
-    MyMatrix = lapply(contrastList, `[[`, colName) %>% do.call(what = cbind)
+    MyMatrix = do.call("cbind", lapply(contrastList, `[[`, colName))
     # Get gene ids from first df
     rownames(MyMatrix) <- rownames(contrastList[[1]])
     # Transfer the contrast names

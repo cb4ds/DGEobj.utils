@@ -41,7 +41,6 @@
 #'     dgeObj <- runSVA(dgeObj, designMatrixName = "SurgeryStatusDesign")
 #'
 #' @importFrom sva sva num.sv
-#' @import magrittr
 #' @importFrom assertthat assert_that
 #' @importFrom DGEobj getItem addItem
 #' @importFrom stats model.matrix as.formula

@@ -69,7 +69,6 @@
 #'                             foldChangeThreshold = 1.25)
 #'    DGEobj::inventory(myDGEobj)
 #'
-#' @import magrittr
 #' @importFrom limma contrasts.fit eBayes makeContrasts topTable topTreat treat
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
@@ -192,7 +191,7 @@ runContrasts <- function(dgeObj,
             .tsmsg("Running topTable...")
         }
         # Run topTable via lapply to generate a bunch of contrasts.
-        MyCoef <- 1:length(contrastList) %>% as.list
+        MyCoef <- as.list(1:length(contrastList))
         topTableList <- lapply(MyCoef, function(x) (limma::topTable(MyFit.Contrasts, coef = x,
                                                                     confint = T, number = Inf, p.value = 1, sort.by = "none")))
 
@@ -213,8 +212,8 @@ runContrasts <- function(dgeObj,
             .tsmsg("Running topTreat...")
         }
         # Run topTreat via lapply to generate a bunch of contrasts.
-        LFC = log2(foldChangeThreshold)
-        MyCoef = 1:length(contrastList) %>% as.list
+        LFC    <- log2(foldChangeThreshold)
+        MyCoef <- as.list(1:length(contrastList))
         topTreatList = lapply(MyCoef, function(x) (limma::topTreat(MyFit.Contrasts.treat, coef = x,
                                                                    confint = T, lfc = LFC, number = Inf, p.value = 1, sort.by = "none")))
         # Transfer the contrast names

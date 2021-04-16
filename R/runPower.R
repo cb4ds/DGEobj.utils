@@ -43,15 +43,11 @@
 #'     resultList[[2]]       # ROC Curves Plot
 #'     resultList[[3]]       # N vs Power Plot
 #'
-#' @import magrittr
-#' @import ggplot2
 #' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
-#' @importFrom dplyr filter arrange select
+#' @importFrom dplyr filter arrange select %>%
 #' @importFrom stats approx power
 #' @importFrom assertthat assert_that
-#' @importFrom htmlwidgets JS
-#' @importFrom canvasXpress canvasXpress
 #'
 #' @export
 runPower <- function(countsMatrix,
@@ -156,88 +152,104 @@ runPower <- function(countsMatrix,
     ndat$depth <- as.factor(ndat$depth)
     ndat$FDR <- ndat$alpha
 
+    result <- pdat
+
     if (plot_type == "canvasxpress") {
-        rocdat   <- rocdat %>%
-            dplyr::arrange(alpha)
-        cx_data  <- rocdat %>%
-            dplyr::select(alpha, power)
-        var_data <- rocdat %>%
-            dplyr::select(depth, n, effect)
-        var_data$n      <- paste0("n:", var_data$n)
-        var_data$effect <- paste0("effect: ", var_data$effect)
-        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
-                                                     if (o != null && o != false) {
-                                                        t.showInfoSpan(e, '<b>Alpha</b>: ' + o.y.data[0][0] +
-                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
-                                                     };}}")
-        roc <- canvasXpress::canvasXpress(data                 = cx_data,
-                                          varAnnot             = var_data,
-                                          segregateVariablesBy = list("effect", "n"),
-                                          layoutType           = "rows",
-                                          dataPointSize        = 5,
-                                          spiderBy             = "depth",
-                                          shapeBy              = "depth",
-                                          colorBy              = "depth",
-                                          title                = "ROC curves",
-                                          xAxisTitle           = "FDR",
-                                          yAxisTitle           = "Power",
-                                          events               = events,
-                                          afterRender          = list(list("switchNumericToString",
-                                                                           list("depth",FALSE))))
-        ndat     <- ndat %>%
-            dplyr::arrange(n)
-        cx_data  <- ndat %>%
-            dplyr::select(n, power)
-        var_data <- ndat %>%
-            dplyr::select(depth, FDR, effect)
-        var_data$FDR    <- paste0("FDR:", var_data$FDR)
-        var_data$effect <- paste0("effect: ", var_data$effect)
-        events <- htmlwidgets::JS("{'mousemove' : function(o, e, t) {
-                                                     if (o != null && o != false) {
-                                                        t.showInfoSpan(e, '<b>N</b>: ' + o.y.data[0][0] +
-                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
-                                                     };}}")
-        NvP <- canvasXpress::canvasXpress(data                 = cx_data,
-                                          varAnnot             = var_data,
-                                          segregateVariablesBy = list("FDR", "effect"),
-                                          layoutType           = "rows",
-                                          dataPointSize        = 5,
-                                          spiderBy             = "depth",
-                                          shapeBy              = "depth",
-                                          colorBy              = "depth",
-                                          title                = "N vs Power",
-                                          xAxisTitle           = "N",
-                                          yAxisTitle           = "Power",
-                                          events               = events,
-                                          afterRender          = list(list("switchNumericToString",
-                                                                           list("depth",FALSE))))
+        if ("canvasXpress" %in% .packages(all.available = T)) {
+            do.call("require", list("canvasXpress"))
+            do.call("require", list("htmlwidgets"))
 
-        list(PowerData = pdat, ROC = roc, NvP = NvP)
+            rocdat   <- rocdat %>%
+                dplyr::arrange(alpha)
+            cx_data  <- rocdat %>%
+                dplyr::select(alpha, power)
+            var_data <- rocdat %>%
+                dplyr::select(depth, n, effect)
+            var_data$n      <- paste0("n:", var_data$n)
+            var_data$effect <- paste0("effect: ", var_data$effect)
+            events <- do.call("JS",
+                              list("{'mousemove' : function(o, e, t) {
+                                                       if (o != null && o != false) {
+                                                           t.showInfoSpan(e, '<b>Alpha</b>: ' + o.y.data[0][0] +
+                                                                             '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                        };}}"))
+            roc <- do.call("canvasXpress", list(data                 = cx_data,
+                                              varAnnot             = var_data,
+                                              segregateVariablesBy = list("effect", "n"),
+                                              layoutType           = "rows",
+                                              dataPointSize        = 5,
+                                              spiderBy             = "depth",
+                                              shapeBy              = "depth",
+                                              colorBy              = "depth",
+                                              title                = "ROC curves",
+                                              xAxisTitle           = "FDR",
+                                              yAxisTitle           = "Power",
+                                              events               = events,
+                                              afterRender          = list(list("switchNumericToString",
+                                                                               list("depth",FALSE)))))
+            ndat     <- ndat %>%
+                dplyr::arrange(n)
+            cx_data  <- ndat %>%
+                dplyr::select(n, power)
+            var_data <- ndat %>%
+                dplyr::select(depth, FDR, effect)
+            var_data$FDR    <- paste0("FDR:", var_data$FDR)
+            var_data$effect <- paste0("effect: ", var_data$effect)
+            events <- do.call("JS",
+                              list("{'mousemove' : function(o, e, t) {
+                                                       if (o != null && o != false) {
+                                                           t.showInfoSpan(e, '<b>N</b>: ' + o.y.data[0][0] +
+                                                                          '<br><b>Power</b>: ' + o.y.data[0][1]);
+                                                        };}}"))
+            NvP <- do.call("canvasXpress", list(data                 = cx_data,
+                                              varAnnot             = var_data,
+                                              segregateVariablesBy = list("FDR", "effect"),
+                                              layoutType           = "rows",
+                                              dataPointSize        = 5,
+                                              spiderBy             = "depth",
+                                              shapeBy              = "depth",
+                                              colorBy              = "depth",
+                                              title                = "N vs Power",
+                                              xAxisTitle           = "N",
+                                              yAxisTitle           = "Power",
+                                              events               = events,
+                                              afterRender          = list(list("switchNumericToString",
+                                                                               list("depth",FALSE)))))
+
+            result <- list(PowerData = pdat, ROC = roc, NvP = NvP)
+        } else {
+            message('The canvasXpress package is not available, unable to create plots.')
+        }
     } else if (plot_type == "ggplot") {
-        effect <- NULL
-        roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
-            geom_line(size = 1) +
-            scale_x_continuous(breaks = seq(0, 1, 0.2)) +
-            scale_y_continuous(breaks = seq(0, 1, 0.2)) +
-            facet_grid(effect ~ n, labeller = label_both) +
-            ggtitle("ROC curves") +
-            xlab("\nFDR") +
-            ylab("Power") +
-            expand_limits(x = 0, y = 0) +
-            theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-            theme_gray(18)
-        NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
-            geom_line(size = 1) +
-            scale_y_continuous(breaks = seq(0, 1, 0.2)) +
-            facet_grid(FDR ~ effect, labeller = label_both) +
-            ggtitle("N vs Power") +
-            xlab("\nN") +
-            ylab("Power") +
-            expand_limits(x = 0, y = 0) +
-            theme_gray()
+        if ("ggplot2" %in% .packages(all.available = T)) {
+            do.call("require", list("ggplot2"))
 
-        list(PowerData = pdat, ROC = roc, NvP = NvP)
-    } else {
-        pdat
+            effect <- NULL
+            roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
+                geom_line(size = 1) +
+                scale_x_continuous(breaks = seq(0, 1, 0.2)) +
+                scale_y_continuous(breaks = seq(0, 1, 0.2)) +
+                facet_grid(effect ~ n, labeller = label_both) +
+                ggtitle("ROC curves") +
+                xlab("\nFDR") +
+                ylab("Power") +
+                expand_limits(x = 0, y = 0) +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+                theme_gray(18)
+            NvP <- ggplot(ndat, aes(x = n, y = power, fill = depth, shape = depth, color = depth)) +
+                geom_line(size = 1) +
+                scale_y_continuous(breaks = seq(0, 1, 0.2)) +
+                facet_grid(FDR ~ effect, labeller = label_both) +
+                ggtitle("N vs Power") +
+                xlab("\nN") +
+                ylab("Power") +
+                expand_limits(x = 0, y = 0) +
+                theme_gray()
+
+            result <- list(PowerData = pdat, ROC = roc, NvP = NvP)
+        } else {
+            message('The canvasXpress package is not available, unable to create plots.')
+        }
     }
+    result
 }

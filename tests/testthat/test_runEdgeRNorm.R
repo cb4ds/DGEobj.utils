@@ -6,7 +6,7 @@ test_that('runEdgeRNorm: runEdgeRNorm()', {
     dgeobj <- t_obj1
     dgeobj <- rmItem(dgeobj, "DGEList")
     plot_labels <- function(n = 50) {
-        a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
+        a <- do.call("paste0", replicate(5, sample(LETTERS, n, TRUE), FALSE))
         paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE))
     }
 

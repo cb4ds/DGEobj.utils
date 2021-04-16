@@ -21,7 +21,6 @@
 #'
 #' @return data.frame with one summary row per contrast.
 #'
-#' @import magrittr
 #' @importFrom assertthat assert_that
 #'
 #' @examples
@@ -89,7 +88,7 @@ summarizeSigCounts <- function(contrastList,
     }
 
     # Put rows into a matrix
-    DF <- do.call(rbind, myrows)
+    DF <- do.call("rbind", myrows)
 
     rownames(DF) <- names(contrastList)
     colnames(DF) <- columns

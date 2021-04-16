@@ -26,7 +26,8 @@
 #'    # Default TMM normalization
 #'    myDGEobj <- runEdgeRNorm(myDGEobj)
 #'
-#'    # Set some options
+#'    # With some options and plot output
+#'    require(canvasXpress)
 #'    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
 #'    obj_plus_plot <- runEdgeRNorm(myDGEobj,
 #'                                  normMethod = "upperquartile",
@@ -34,11 +35,10 @@
 #'    myDGEobj <- obj_plus_plot[[1]]
 #'    obj_plus_plot[[2]]
 #'
-#' @import magrittr ggplot2
+#' @importFrom dplyr %>%
 #' @importFrom edgeR calcNormFactors DGEList
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
-#' @importFrom canvasXpress canvasXpress
 #'
 #' @export
 runEdgeRNorm <- function(dgeObj,
@@ -107,38 +107,54 @@ runEdgeRNorm <- function(dgeObj,
                                 Norm.Factors = MyDGElist$samples$norm.factors)
     }
 
+    plot <- NULL
+
     if (plot_type == "canvasxpress") {
-        plot <- canvasXpress::canvasXpress(data             = as.data.frame(t(plot_data)),
-                                           graphOrientation = "vertical",
-                                           graphType        = "Bar",
-                                           showLegend       = FALSE,
-                                           smpLabelRotate   = angle,
-                                           smpTitle         = "Samples",
-                                           theme            = "CanvasXpress",
-                                           widthFactor      = 1.5,
-                                           title            = "Normalization Factors",
-                                           xAxisTitle       = "Norm Factors",
-                                           color            = "dodgerblue3",
-                                           afterRender      = list(list("sortSamples",
-                                                                        list(sortDir = "ascending"))),
-                                           decorations      = list(line = list(list(value = 1,
-                                                                                    width = 2,
-                                                                                    color = "rgb(255,0,0)"))),
-                                           setMinX          = 0)
-        list(dgeObj = dgeObj, plot = plot)
+        if ("canvasXpress" %in% .packages(all.available = T)) {
+            do.call("require", list("canvasXpress"))
+            plot <- do.call("canvasXpress",
+                            list(data             = as.data.frame(t(plot_data)),
+                                 graphOrientation = "vertical",
+                                 graphType        = "Bar",
+                                 showLegend       = FALSE,
+                                 smpLabelRotate   = angle,
+                                 smpTitle         = "Samples",
+                                 theme            = "CanvasXpress",
+                                 widthFactor      = 1.5,
+                                 title            = "Normalization Factors",
+                                 xAxisTitle       = "Norm Factors",
+                                 color            = "dodgerblue3",
+                                 afterRender      = list(list("sortSamples",
+                                                              list(sortDir = "ascending"))),
+                                 decorations      = list(line = list(list(value = 1,
+                                                                          width = 2,
+                                                                          color = "rgb(255,0,0)"))),
+                                 setMinX          = 0))
+        } else {
+            message('The canvasXpress package is not available, unable to create plot.')
+        }
     } else if (plot_type == "ggplot") {
-        Norm.Factors <- NULL
-        plot <- ggplot(plot_data, aes(x = labels, y = Norm.Factors)) +
-            geom_bar(stat  = "identity",
-                     color = "dodgerblue4",
-                     fill  = "dodgerblue3",
-                     width = 0.7) +
-            geom_hline(yintercept = 1.0, color = "red") +
-            xlab("Samples") +
-            ylab("Norm Factors") +
-            ggtitle("Normalization Factors") +
-            theme_bw(12) +
-            theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
+        if ("ggplot2" %in% .packages(all.available = T)) {
+            do.call("require", list("ggplot2"))
+
+            Norm.Factors <- NULL
+            plot <- ggplot(plot_data, aes(x = labels, y = Norm.Factors)) +
+                geom_bar(stat  = "identity",
+                         color = "dodgerblue4",
+                         fill  = "dodgerblue3",
+                         width = 0.7) +
+                geom_hline(yintercept = 1.0, color = "red") +
+                xlab("Samples") +
+                ylab("Norm Factors") +
+                ggtitle("Normalization Factors") +
+                theme_bw(12) +
+                theme(axis.text.x = element_text(angle = angle, hjust = 1.0))
+        } else {
+            message('The ggplot2 package is not available, unable to create plot.')
+        }
+    }
+
+    if (plot_type != "none") {
         list(dgeObj = dgeObj, plot = plot)
     } else {
         dgeObj

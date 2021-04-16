@@ -32,8 +32,7 @@
 #'    myDGEobj <- isoformFrac(myDGEobj)
 #' }
 #'
-#' @import magrittr
-#' @importFrom dplyr group_by mutate
+#' @importFrom dplyr group_by mutate %>%
 #' @importFrom assertthat assert_that
 #' @importFrom tidyr gather spread
 #' @importFrom DGEobj getItem addItem
