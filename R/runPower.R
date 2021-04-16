@@ -224,6 +224,10 @@ runPower <- function(countsMatrix,
         if ("ggplot2" %in% .packages(all.available = T)) {
             do.call("require", list("ggplot2"))
 
+            # resolve notes in the package related to NSE: 'no visible global function definition'
+            ggplot = aes = geom_line = scale_x_continuous = scale_y_continuous = facet_grid <- NULL
+            label_both = ggtitle = xlab = ylab = expand_limits = theme = element_text = theme_gray <- NULL
+
             effect <- NULL
             roc <- ggplot(rocdat, aes(x = alpha, y = power, fill = depth, shape = depth, color = depth)) +
                 geom_line(size = 1) +

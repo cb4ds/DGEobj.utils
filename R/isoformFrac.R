@@ -85,6 +85,9 @@ isoformFrac <- function(dgeObj,
     omicData$GeneID <- isoformData$rgd_symbol
     omicData$TranscriptID <- rownames(omicData)
 
+    # resolve notes in the package related to NSE: 'no visible global function definition'
+    .data <- NULL
+
     # Calculate isoform fraction
     omictidy <- tidyr::gather(omicData,
                               key   = "sample",

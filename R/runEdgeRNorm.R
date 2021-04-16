@@ -137,6 +137,9 @@ runEdgeRNorm <- function(dgeObj,
         if ("ggplot2" %in% .packages(all.available = T)) {
             do.call("require", list("ggplot2"))
 
+            # resolve notes in the package related to NSE: 'no visible global function definition'
+            ggplot = aes = geom_bar = geom_hline = xlab = ylab = ggtitle = theme_bw = theme = element_text <- NULL
+
             Norm.Factors <- NULL
             plot <- ggplot(plot_data, aes(x = labels, y = Norm.Factors)) +
                 geom_bar(stat  = "identity",
