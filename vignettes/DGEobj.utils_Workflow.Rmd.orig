@@ -1,7 +1,7 @@
 ---
 title: "DGEobj.utils: An Example Workflow"
 author: "John R. Thompson"
-date: "2021-04-19"
+date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
@@ -14,7 +14,33 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(echo       = TRUE,
+                      include    = TRUE,
+                      warning    = FALSE,
+                      message    = FALSE,
+                      eval       = TRUE,
+                      fig.height = 3.5,
+                      fig.width  = 7,
+                      fig.path   = "vignettes/figure-")
 
+suppressPackageStartupMessages({
+    library(biomaRt)
+    library(dplyr)
+    library(glue)
+    library(DGEobj)
+    library(DGEobj.utils)
+    library(stringr)
+    library(knitr)
+    library(conflicted)
+    library(ggplot2)
+    library(sva)
+})
+
+conflict_prefer("select",    "dplyr",   quiet = TRUE)
+conflict_prefer("left_join", "dplyr",   quiet = TRUE)
+conflict_prefer("rename",    "dplyr",   quiet = TRUE)
+```
 
 
 # Introduction and Setup
@@ -37,26 +63,21 @@ The GEO data includes Ensembl gene IDs. Additional gene information such as chro
 
 The starting point for the discussions in this vignette is a DGEobj that is ready for analysis.  The demonstration dataset detailed above is used to create the DGEobj R object step-by-step in sections 1-4 of the DGEobj package vignette:  [DGEobj_Overview](https://cran.r-project.org/web/packages/DGEobj/vignettes/DGEobj_Overview.html).  This vignette can be accessed from inside an R session using `vignette("DGEobj_Overview", package = "DGEobj")`.  The detailed instructions are not be repeated in this vignette, but the starting R object named "dgeObj" is created with the same steps/data as detailed in sections 1-4.
 
-
+```{r testsub, include = F}
+dgeObj <- readRDS("supporting/simple.RDS")
+```
 
 Columns available in this object for building contrasts:
 
-
-```r
+```{r build_cols}
 designCol <- "ReplicateGroup"
 
 str_c(designCol, (unique(dgeObj$design[[designCol]])))
 ```
 
-```
-## [1] "ReplicateGroupBDL_Sora"     "ReplicateGroupBDL"          "ReplicateGroupBDL_Nint"    
-## [4] "ReplicateGroupBDL_EXT-1024" "ReplicateGroupSham"
-```
-
 If using formulas there may be a few additional steps that may be necessary depending on the data:
 
-
-```r
+```{r projconfig}
 ## This step is only necessary IF there is a numeric column that you want
 ## to treat as a factor in formulas
 dgeObj$design$ReplicateGroup <- as.factor(dgeObj$design$ReplicateGroup)
@@ -67,19 +88,6 @@ dgeObj$design$ReplicateGroup <- relevel(dgeObj$design$ReplicateGroup, "Sham")
 
 kable(inventory(dgeObj))
 ```
-
-
-
-|ItemName      |ItemType      |BaseType |Parent        |Class      |Row  |Col |DateCreated         |
-|:-------------|:-------------|:--------|:-------------|:----------|:----|:---|:-------------------|
-|counts_orig   |counts_orig   |meta     |              |matrix     |1000 |48  |2021-04-08 11:04:01 |
-|counts        |counts        |assay    |counts_orig   |matrix     |1000 |48  |2021-04-08 11:04:01 |
-|design_orig   |design_orig   |meta     |              |data.frame |48   |10  |2021-04-08 11:04:01 |
-|design        |design        |col      |design_orig   |data.frame |48   |10  |2021-04-08 11:04:01 |
-|geneData_orig |geneData_orig |meta     |              |data.frame |1000 |8   |2021-04-08 11:04:01 |
-|geneData      |geneData      |row      |geneData_orig |data.frame |1000 |8   |2021-04-08 11:04:01 |
-|granges_orig  |granges_orig  |meta     |geneData_orig |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
-|granges       |granges       |row      |geneData      |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
 
 ## Limma/Voom Workflow Reference
 
@@ -111,10 +119,9 @@ If using FPK, a length adjusted measure, you must also supply the geneLength arg
 
 In this example, only the counts were provided in the GEO source and thus the gene length information required to use FPK is not available.  Therefore, a simple count threshold will be used and 50% of samples are required to meet these criteria for the gene to be included.
 
-**Dimensions before filtering: 1000, 48 **
+**Dimensions before filtering: `r dim(dgeObj)` **
 
-
-```r
+```{r LowIntensityFilter}
 # Gene filter criteria
 countThreshold <- 10   # Must meet or exceed this value
 sampleFraction <- 0.5  # Fraction of samples that must meet the criteria
@@ -124,20 +131,19 @@ dgeObj <- lowIntFilter(dgeObj,
                        sampleFraction = sampleFraction)
 ```
 
-**Dimensions after filtering: 1000, 48 **
+**Dimensions after filtering: `r dim(dgeObj)` **
 
 
 ## Filter for Protein Coding Genes
 
 Often an analysis is focused on protein-coding genes.  Here the Ensembl gene_biotype column is used in the gene annotation to keep only protein-coding genes.
 
-
-```r
+```{r filterProteinCoding}
 idx    <- dgeObj$geneData$gene_biotype == "protein_coding"
 dgeObj <- dgeObj[idx,]
 ```
 
-**Dimensions after filtering for protein_coding: 951, 48 **
+**Dimensions after filtering for protein_coding: `r dim(dgeObj)` **
 
 
 <br/><br/>
@@ -148,22 +154,18 @@ dgeObj <- dgeObj[idx,]
 
 This step simply applies edgeR::calcNormFactors to effect TMM normalization. This results in a DGEList object being added to the DGEobj.  Note that the counts matrix within the DGEList object is NOT normalized counts.  Rather a separate item in the DGEList contains the norm factors and you should use the edgeR cpm function to extract normalized counts from the DGEList.
 
-
-```r
+```{r Normalize}
 data   <- runEdgeRNorm(dgeObj, includePlot = TRUE)
 dgeObj <- data[[1]]
 
 data[[2]]
 ```
 
-![plot of chunk Normalize](figure-Normalize-1.png)
-
 ## Define the Model Formula
 
 Provide a formula and construct the design matrix:
 
-
-```r
+```{r ModelDefinition}
 # Formula must be composed of column names from the design table
 formula <- '~ 0 + ReplicateGroup'
 
@@ -195,8 +197,7 @@ SVA looks for hidden structure in the data using PCA-like methods.  It  defines 
 
 The ReplicateGroup design column captures both disease status and drug treatment groups.  With this design, no SVs are detected.
 
-
-```r
+```{r checkForSV}
 log2cpm      <- convertCounts(dgeObj$counts,
                               unit      = "cpm",
                               log       = TRUE,
@@ -207,16 +208,11 @@ designMatrix <- DGEobj::getItem(dgeObj, designMatrixName)
 sva::num.sv(log2cpm, designMatrix, method = "leek")
 ```
 
-```
-## [1] 0
-```
-
 To illustrate SVA use, a model is constructed using only disease status and ignoring compound treatment.  The compound treatment effects should be discoverable as a surrogate variable.
 
 Note that here the SVA output is captured in a fork of the main DGEobj.
 
-
-```r
+```{r runSVA}
 # Formula must be composed of column names from the design table.
 formula <- '~ 0 + DiseaseStatus'
 
@@ -242,11 +238,7 @@ dgeObj_SVA <- addItem(dgeObj,
                       overwrite = TRUE)
 
 dgeObj_SVA <- runSVA(dgeObj_SVA, designMatrixName = designMatrixName)
-```
 
-```
-## Number of significant surrogate variables is:  1 
-## Iteration (out of 5 ):1  2  3  4  5
 ```
 
 Indeed SVA now identifies one surrogate variable.
@@ -259,25 +251,7 @@ If n.sv is >0, the runSVA function adds the following changes to the DGEobj:
 
 The user can then use the new design matrix to incorporate the SVs into the analysis.
 
-
-
-|ItemName                  |ItemType      |BaseType |Parent              |Class      |Row  |Col |DateCreated         |
-|:-------------------------|:-------------|:--------|:-------------------|:----------|:----|:---|:-------------------|
-|counts_orig               |counts_orig   |meta     |                    |matrix     |1000 |48  |2021-04-08 11:04:01 |
-|counts                    |counts        |assay    |counts_orig         |matrix     |951  |48  |2021-04-08 11:04:01 |
-|design_orig               |design_orig   |meta     |                    |data.frame |48   |10  |2021-04-08 11:04:01 |
-|design                    |design        |col      |design_orig         |data.frame |48   |11  |2021-04-08 11:04:01 |
-|geneData_orig             |geneData_orig |meta     |                    |data.frame |1000 |8   |2021-04-08 11:04:01 |
-|geneData                  |geneData      |row      |geneData_orig       |data.frame |951  |8   |2021-04-08 11:04:01 |
-|granges_orig              |granges_orig  |meta     |geneData_orig       |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
-|granges                   |granges       |row      |geneData            |GRanges    |951  |NA  |2021-04-08 11:04:01 |
-|DGEList                   |DGEList       |assay    |counts              |DGEList    |951  |48  |2021-04-19 15:06:12 |
-|ReplicateGroupDesign      |designMatrix  |col      |design              |matrix     |48   |5   |2021-04-19 15:06:14 |
-|DiseaseStatusDesign       |designMatrix  |col      |design              |matrix     |48   |2   |2021-04-19 15:06:14 |
-|DiseaseStatusDesign_svobj |svobj         |meta     |DiseaseStatusDesign |list       |4    |NA  |2021-04-19 15:06:14 |
-|DiseaseStatusDesign_sva   |designMatrix  |col      |DiseaseStatusDesign |matrix     |48   |3   |2021-04-19 15:06:14 |
-
-
+`r kable(inventory(dgeObj_SVA))`
 
 
 ## Run Voom and fit the model (lmfit)
@@ -286,8 +260,7 @@ The duplicateCorrelation method in Voom optionally allows the user to account fo
 
 To invoke duplicateCorrelation in the runVoom function, assign a blocking variable to the dupCorBlock argument.
 
-
-```r
+```{r runVoom}
 ## Use duplicateCorrelation when subjects have been sampled more than once even
 ## if under different conditions (e.g. treated, untreated)
 dupCorBlock <- dgeObj$design$AnimalNum
@@ -301,12 +274,6 @@ if (is.null(dupCorBlock)) {
 }
 ```
 
-![plot of chunk runVoom](figure-runVoom-1.png)
-
-```
-## Duplicate Correlation = 0.0232
-```
-
 The Mean-variance trend nicely shows the heteroscedasticity typical of RNA-Seq data (variance dependent on intensity).
 
 If a downward hook on the left end of this distribution is observed, it means a more stringent low intensity filter should be used.
@@ -316,21 +283,13 @@ If a downward hook on the left end of this distribution is observed, it means a 
 
 Function runContrasts takes a named list of contrasts (see config chunk).
 
-
-```r
+```{r runContrasts}
 # Name the design matrix to be used
 designMatrixName <- "ReplicateGroupDesign"
 
 # Print the available column names for constructing contrasts:
 print(colnames(dgeObj$ReplicateGroupDesign))
-```
 
-```
-## [1] "ReplicateGroupSham"         "ReplicateGroupBDL"          "ReplicateGroupBDL_EXT.1024"
-## [4] "ReplicateGroupBDL_Nint"     "ReplicateGroupBDL_Sora"
-```
-
-```r
 # Define the named contrasts from design matrix column names
 contrastList  <- list(BDL_vs_Sham    = "ReplicateGroupBDL - ReplicateGroupSham",
                       EXT1024_vs_BDL = "ReplicateGroupBDL_EXT.1024  - ReplicateGroupBDL",
@@ -346,30 +305,6 @@ dgeObj <- runContrasts(dgeObj,
 
 kable(inventory(dgeObj))
 ```
-
-
-
-|ItemName                    |ItemType       |BaseType |Parent                                           |Class      |Row  |Col |DateCreated         |
-|:---------------------------|:--------------|:--------|:------------------------------------------------|:----------|:----|:---|:-------------------|
-|counts_orig                 |counts_orig    |meta     |                                                 |matrix     |1000 |48  |2021-04-08 11:04:01 |
-|counts                      |counts         |assay    |counts_orig                                      |matrix     |951  |48  |2021-04-08 11:04:01 |
-|design_orig                 |design_orig    |meta     |                                                 |data.frame |48   |10  |2021-04-08 11:04:01 |
-|design                      |design         |col      |design_orig                                      |data.frame |48   |10  |2021-04-08 11:04:01 |
-|geneData_orig               |geneData_orig  |meta     |                                                 |data.frame |1000 |8   |2021-04-08 11:04:01 |
-|geneData                    |geneData       |row      |geneData_orig                                    |data.frame |951  |8   |2021-04-08 11:04:01 |
-|granges_orig                |granges_orig   |meta     |geneData_orig                                    |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
-|granges                     |granges        |row      |geneData                                         |GRanges    |951  |NA  |2021-04-08 11:04:01 |
-|DGEList                     |DGEList        |assay    |counts                                           |DGEList    |951  |48  |2021-04-19 15:06:12 |
-|ReplicateGroupDesign        |designMatrix   |col      |design                                           |matrix     |48   |5   |2021-04-19 15:06:14 |
-|ReplicateGroupDesign_Elist  |Elist          |assay    |DGEList             , ReplicateGroupDesign       |EList      |951  |48  |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_corFit |corFit         |meta     |ReplicateGroupDesign_Elist                       |list       |3    |NA  |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit    |fit            |row      |ReplicateGroupDesign_Elist, ReplicateGroupDesign |MArrayLM   |951  |5   |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit_cm |contrastMatrix |meta     |ReplicateGroupDesign_fit                         |matrix     |5    |4   |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit_cf |contrast_fit   |row      |ReplicateGroupDesign_fit                         |MArrayLM   |951  |4   |2021-04-19 15:06:19 |
-|BDL_vs_Sham                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|EXT1024_vs_BDL              |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|Nint_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|Sora_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
 
 After executing runContrasts, the topTable dataframes are present in the DGEobj and the DGE analysis is complete.
 

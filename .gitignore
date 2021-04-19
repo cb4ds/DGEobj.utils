@@ -26,6 +26,8 @@ inst/doc
 
 #vignette dataset
 !vignettes/supporting/simple.RDS
+!vignettes/figure-*
+!vignettes/precompiled_vignettes.R
 
 #ggplot output in tests
 tests/testthat/Rplots.pdf

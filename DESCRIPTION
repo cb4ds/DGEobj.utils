@@ -1,7 +1,7 @@
 Package: DGEobj.utils
 Type:    Package
 Title:   Differential Gene Expression (DGE) Analysis Plots
-Version: 1.0.0.9010
+Version: 1.0.0.9012
 Description:
     Provides a function toolkit to facilitate reproducible RNA-Seq DGE
     analysis.  The functions include workflow and mapping/unit conversion functions
@@ -20,14 +20,14 @@ Encoding: UTF-8
 Imports:
     assertthat,
     DGEobj  (>= 1.0.3),
-    dplyr   (>= 0.8),
+    dplyr,
     statmod,
     stats,
     stringr,
     tidyr,
     edgeR,
     IHW,
-    limma  (>= 3.38),
+    limma,
     qvalue,
     RNASeqPower,
     sva,
