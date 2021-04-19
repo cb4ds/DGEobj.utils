@@ -1,8 +1,9 @@
 #' Merge specified topTable df cols
 #'
-#' Take a list of topTable dataframes and consolidate output for specified
-#' columns. Should work on any named list of dataframes where each member of the list
-#' has the same columns.
+#' Take a named list of topTable dataframes and cbinds the requested columns
+#' from each file.  To avoid colname conflicts the names are used as suffixes on
+#' the colnames. Although written for topTable data, this should work on any
+#' named list of dataframes where each member of the list has the same columns.
 #'
 #' @param contrastList A named list of topTable data.frames which all have the same colnames and same row counts.
 #' The dataframes in the list should have rownames (geneIDs).
@@ -15,9 +16,11 @@
 #' @return A matrix containing the extracted columns.
 #'
 #' @examples
-#' \dontrun{
-#'     myContrastTable <- topTable.merge(topTablelist)
-#' }
+#' dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#' contrastList <- DGEobj::getType(dgeObj, type = "topTable")
+#'
+#' mergedData <- topTable.merge(contrastList)
+#' colnames(mergedData)
 #'
 #' @importFrom stringr str_c
 #'

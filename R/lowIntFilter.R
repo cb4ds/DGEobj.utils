@@ -9,8 +9,7 @@
 #' @param countThreshold Genes below this threshold are removed (10 is recommended).
 #' @param zfpkmThreshold Genes below this threshold are removed. (-3.0 is recommended)
 #' @param fpkThreshold Genes below this threshold are removed. (5 is recommended)
-#' @param tpmThreshold Genes below this threshold are removed (TPM is supported
-#'   by request, but FPK is a better length-normalized value to use as a filter)
+#' @param tpmThreshold Genes below this threshold are removed.
 #' @param sampleFraction The proportion of samples that must meet the thresholds
 #'   (Default = 0.5). Range > 0 and <= 1.
 #' @param geneLength Vector of geneLengths for rows of dgeObj. Required for FPK and

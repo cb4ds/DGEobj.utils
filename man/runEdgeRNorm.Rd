@@ -35,8 +35,8 @@ samples. (Default = NULL; sample number will be displayed)}
 A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 }
 \description{
-Returns a DGEobj containing DGEList object representing the result of
-edgeR normalizationn (calcNormFactors).
+Takes a DGEobj and adds a normalized DGEList object representing the result of
+edgeR normalization (calcNormFactors).
 }
 \examples{
    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))

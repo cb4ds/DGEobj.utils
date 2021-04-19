@@ -24,8 +24,7 @@ lowIntFilter(
 
 \item{fpkThreshold}{Genes below this threshold are removed. (5 is recommended)}
 
-\item{tpmThreshold}{Genes below this threshold are removed (TPM is supported
-by request, but FPK is a better length-normalized value to use as a filter)}
+\item{tpmThreshold}{Genes below this threshold are removed.}
 
 \item{sampleFraction}{The proportion of samples that must meet the thresholds
 (Default = 0.5). Range > 0 and <= 1.}

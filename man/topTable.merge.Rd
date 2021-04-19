@@ -25,13 +25,16 @@ for all columns.}
 A matrix containing the extracted columns.
 }
 \description{
-Take a list of topTable dataframes and consolidate output for specified
-columns. Should work on any named list of dataframes where each member of the list
-has the same columns.
+Take a named list of topTable dataframes and cbinds the requested columns
+from each file.  To avoid colname conflicts the names are used as suffixes on
+the colnames. Although written for topTable data, this should work on any
+named list of dataframes where each member of the list has the same columns.
 }
 \examples{
-\dontrun{
-    myContrastTable <- topTable.merge(topTablelist)
-}
+dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+contrastList <- DGEobj::getType(dgeObj, type = "topTable")
+
+mergedData <- topTable.merge(contrastList)
+colnames(mergedData)
 
 }

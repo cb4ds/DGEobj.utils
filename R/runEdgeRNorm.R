@@ -1,7 +1,7 @@
 #' Run edgeR normalization on DGEobj
 #'
-#' Returns a DGEobj containing DGEList object representing the result of
-#' edgeR normalizationn (calcNormFactors).
+#' Takes a DGEobj and adds a normalized DGEList object representing the result of
+#' edgeR normalization (calcNormFactors).
 #'
 #' @param dgeObj A DGEobj containing counts, design data, and gene annotation.
 #' @param normMethod One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")

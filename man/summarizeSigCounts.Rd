@@ -7,7 +7,7 @@
 summarizeSigCounts(
   contrastList,
   columns = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue"),
-  sigThresholds = c(0.01, 0.1, 0.1, 0.1, 0.1),
+  sigThresholds = c(0.01, 0.05, 0.05, 0.05, 0.05),
   fcThreshold = 0
 )
 }
@@ -19,7 +19,7 @@ Default = c("P.Value", "adj.P.Val", "Qvalue", "qvalue.lfdr", "ihw.adj_pvalue")}
 
 \item{sigThresholds}{Thresholds to use for each column specified in columns
 Must be same length at columns argument.
-Default = c(0.01, 0.1, 0.1, 0.1, 0.1)}
+Default = c(0.01, 0.05, 0.05, 0.05, 0.05)}
 
 \item{fcThreshold}{Fold-change threshold (absolute value, not logged.)}
 }
@@ -40,18 +40,17 @@ can be added and the p-value/FDR thresholds can be modified using the fcThreshol
 and sigThresholds arguments, respectively.
 }
 \examples{
-\dontrun{
-   # Get a contrast list from a dgeObj
-   myContrastList <- DGEobj::getType(DGEobj, "topTable")
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   contrastList <- DGEobj::getType(dgeObj, type = "topTable")
 
-   # All default thresholds, no fold change threshold
-   mySigSummary <- summarizeSigCounts(myContrastList)
+   #all defaults
+   sigSummary <- summarizeSigCounts(contrastList)
 
-   # All defaults with a foldchange threshold
-   mySigSummary <- summarizeSigCounts(myContrastList, fcThreshold = 1.5)
+   #add the fold-chage threshold
+   sigSummary <- summarizeSigCounts(contrastList, fcThreshold = 2)
 
-   # Change the p-value and fdr thresholds
-   mySigSummary <- summarizeSigCounts(myContrastList, sigThresholds = c(0.05, 0.2, 0.2, 0.2, 0.2))
-}
+   #change the significance thresholds
+   sigSummary <- summarizeSigCounts(contrastList,
+                                    sigThresholds = c(0.01, 0.1, 0.1, 0.1, 0.1))
 
 }

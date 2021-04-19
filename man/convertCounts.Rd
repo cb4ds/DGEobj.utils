@@ -37,10 +37,10 @@ A matrix in the new unit space
 }
 \description{
 Takes a count matrix as input and converts to other desired units.  Supported
-units include CPM, FPKM, FPK, and TPM.  Output units can be logged
-and/or normalized.  Calculations are performed using edgeR functions except
-for the conversion to TPM which is converted from FPKM using the formula provided
-by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+units include CPM, FPKM, FPK, and TPM.  Output units can be logged and/or
+normalized.  Calculations are performed using edgeR functions except for the
+conversion to TPM which is converted from FPKM using the formula provided by
+\href{https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/}{Harold Pimental}.
 }
 \details{
 geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a

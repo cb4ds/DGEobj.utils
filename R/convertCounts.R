@@ -1,10 +1,10 @@
 #' Convert count matrix to CPM, FPKM, FPK, or TPM
 #'
 #' Takes a count matrix as input and converts to other desired units.  Supported
-#' units include CPM, FPKM, FPK, and TPM.  Output units can be logged
-#' and/or normalized.  Calculations are performed using edgeR functions except
-#' for the conversion to TPM which is converted from FPKM using the formula provided
-#' by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+#' units include CPM, FPKM, FPK, and TPM.  Output units can be logged and/or
+#' normalized.  Calculations are performed using edgeR functions except for the
+#' conversion to TPM which is converted from FPKM using the formula provided by
+#' \href{https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/}{Harold Pimental}.
 #'
 #' geneLength is a vector where length(geneLength) == nrow(countsMatrix). If a
 #' RSEM effectiveLength matrix is passed as input, rowMeans(effectiveLength) is
@@ -159,6 +159,9 @@ convertCounts <- function(countsMatrix,
 #' Calculates TPM for a heavily subsetted DGEobj. The function will calculate TPM
 #' using the original data but returns a DGEobj with the subset.
 #'
+#' TPM should be calculated on a full dataset with only low signal genes removed.
+#' tpm.on.subset therefore allows calculation of TPM after heavy filtering of a DGEobj.
+#'
 #' Internally, convertCounts uses edgeR::fpkm() to calculate FPKM and converts to TPM
 #' using the formula provided by [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
 #'
@@ -166,12 +169,13 @@ convertCounts <- function(countsMatrix,
 #' @param applyFilter Default = TRUE. If TRUE, reduces to the filtered gene list. FALSE returns
 #'   all genes in the raw data.
 #'
-#' @return A matrix in the new unit space
+#' @return A matrix of TPM values
 #'
 #' @examples
-#' \dontrun{
-#'    myTPM <- tpm(DGEobj)
-#' }
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'
+#'    tpm <- tpm.on.subset(dgeObj)
+#'
 #' @import DGEobj
 #' @importFrom assertthat assert_that
 #' @export
@@ -226,7 +230,7 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
 #' Convert countsMatrix and geneLength to TPM units
 #'
 #' Takes a countsMatrix and geneLength as input and converts to TPM units using the equation from
-#' [Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+#' \href{https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/}{Harold Pimental}.
 #'
 #' The result should be the same as using convertCounts with normalize = 'tpm' and log = FALSE.
 #'
@@ -240,9 +244,11 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
 #' @return A matrix of TPM values
 #'
 #' @examples
-#' \dontrun{
-#'   myTPM <- tpm.direct(myCounts, myGeneLength)
-#' }
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'
+#'    counts <- DGEobj::getItem(dgeObj, "counts")
+#'    exonLength <- dgeObj$geneData$ExonLength
+#'    tpm <- tpm.direct(counts, geneLength = exonLength)
 #'
 #' @importFrom edgeR expandAsMatrix
 #' @importFrom assertthat assert_that
