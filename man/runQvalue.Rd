@@ -35,7 +35,7 @@ the false discovery rate is for a list of genes at a given threshold.
 The local FDR attempts to answer the question: what is the probability that
 this particular gene is a false discovery?
 
-See \url{http://genomine.org/papers/Storey_FDR_2011.pdf} for a brief introduction
+See \url{https://doi.org/10.1007/978-3-642-04898-2_248} for a brief introduction
 to FDRs and q-values.
 }
 \examples{

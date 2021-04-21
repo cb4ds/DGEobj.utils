@@ -1,7 +1,7 @@
 ## Comments from Maintainer
 
 * This is a new package to be added to CRAN, it contains utilities for running DE analysis 
-  in concert with the (newish) DGEobj package
+  in concert with the DGEobj package
 * Code Coverage is 99%
 
 ---  
@@ -17,7 +17,7 @@ Travis-CI (ubuntu 16.04.6)
 
 * R 3.6.3
 * R 4.0.2
-* R devel (2021-04-14 r80165)
+* R devel (2021-04-18 r80182)
 
 WinBuilder
 
