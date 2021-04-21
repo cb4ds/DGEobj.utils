@@ -5,7 +5,7 @@
 #' runVoom should then be run again with the new design matrix to complete the
 #' analysis.
 #'
-#' @param dgeObj A DGEobj with normalized counts and a DesignMatrix.
+#' @param dgeObj A DGEobj with normalized counts and a designMatrix.
 #' @param designMatrixName The itemName of the design matrix in DGEobj.
 #' @param n.sv  Optional; Use to override the default n.sv returned by num.sv
 #'    for the number of SV to analyze.

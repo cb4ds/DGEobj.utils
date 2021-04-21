@@ -12,18 +12,17 @@
 #'
 #' Note that log2 values for CPM, TPM, and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 #'
-#' @param countsMatrix A numeric matrix or dataframe of N genes x M Samples.  All columns
-#' must be numeric.
+#' @param countsMatrix A numeric matrix or dataframe of N genes x M Samples.  All columns must be numeric.
 #' @param unit  Required. One of CPM, FPKM, FPK or TPM.
 #' @param geneLength A vector or matrix of gene lengths. Required for length-normalized units (TPM, FPKM or FPK).
 #'    If geneLength is a matrix, the rowMeans are calculated and used.
 #' @param log Default = FALSE.  Set TRUE to return Log2 values.
 #'    Employs edgeR functions which use an prior.count of 0.25 scaled by the library size.
-#' @param normalize Default = "none". Other options: "TMM", "RLE", "upperquartile", "TMMwzp"
-#'  Invokes edgeR::calcNormFactors() for normalization. Upperquartile uses the 75th percentile.  Normalize settings are case insensitive.
+#' @param normalize Default = "none". Invokes edgeR::calcNormFactors() for normalization.
+#'    Other options are: "TMM", "RLE", "upperquartile" (uses 75th percentile), "TMMwzp" and are case-insensitive.
 #' @param prior.count Average count to be added to each observation to avoid taking log of zero.
-#'  Used only if log = TRUE. (Default dependent on method; 0 for TPM, 0.25 for CPM and FPKM)
-#'  The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM, and logFPKM calculations.
+#'    Used only if log = TRUE. (Default dependent on method; 0 for TPM, 0.25 for CPM and FPKM)
+#'    The prior.count is passed to edgeR cpm and rpkm functions and applies to logTPM, logCPM, and logFPKM calculations.
 #'
 #' @return A matrix in the new unit space
 #'

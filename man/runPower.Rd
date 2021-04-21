@@ -21,7 +21,7 @@ runPower(
 
 \item{depth}{A set of depth to use in the calculations.  The default depths of
 c(10, 100, 1000) respectively represent a detection limit, below average
-expression, and median expression levels, expressed in readcount units.}
+expression, and median expression levels, expressed in read count units.}
 
 \item{N}{A set of N value to report power for. (Default = c(3, 6, 10, 20))}
 

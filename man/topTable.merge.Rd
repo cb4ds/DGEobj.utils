@@ -26,8 +26,8 @@ A matrix containing the extracted columns.
 }
 \description{
 Take a named list of topTable dataframes and cbinds the requested columns
-from each file.  To avoid colname conflicts the names are used as suffixes on
-the colnames. Although written for topTable data, this should work on any
+from each file.  To avoid column name conflicts the names are used as suffixes
+to the colnames. Although written for topTable data, this should work on any
 named list of dataframes where each member of the list has the same columns.
 }
 \examples{

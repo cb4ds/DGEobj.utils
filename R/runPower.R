@@ -17,7 +17,7 @@
 #' @param designMatrix A design matrix or dataframe of numeric data. (Required)
 #' @param depth A set of depth to use in the calculations.  The default depths of
 #'        c(10, 100, 1000) respectively represent a detection limit, below average
-#'        expression, and median expression levels, expressed in readcount units.
+#'        expression, and median expression levels, expressed in read count units.
 #' @param N A set of N value to report power for. (Default = c(3, 6, 10, 20))
 #' @param FDR FDR thresholds to filter for for FDR vs. Power graph. (Default = c(0.05, 0.1))
 #' @param effectSize A set of fold change values to test. (Default = c(1.2, 1.5, 2))

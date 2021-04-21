@@ -1,13 +1,13 @@
 Package: DGEobj.utils
 Type:    Package
 Title:   Differential Gene Expression (DGE) Analysis Plots
-Version: 1.0.0.9012
+Version: 1.0.0.9013
 Description:
     Provides a function toolkit to facilitate reproducible RNA-Seq DGE
-    analysis.  The functions include workflow and mapping/unit conversion functions
-    including: runEdgeRNorm to normalize counts, runVoom  to run limma voom and lmfit,
-    runSVA for detrending unknown covariates, convertCounts to convert a counts
-    matrix to CPM/TPM/FPKM, and more.
+    analysis.  The functions include both analysis workflow and utility functions such as 
+    mapping/unit conversion functions including: runEdgeRNorm (to normalize counts), 
+    runVoom (to run limma voom and lmFit), runSVA (for detrending unknown covariates), 
+    convertCounts(to convert a counts matrix to CPM/TPM/FPKM), and more.
 Authors@R:
     c(person("John", "Thompson", role = "aut", email = "jrt@thompsonclan.org"),
       person("Connie", "Brett",  role = c("aut", "cre"), email = "connie@aggregate-genius.com"),

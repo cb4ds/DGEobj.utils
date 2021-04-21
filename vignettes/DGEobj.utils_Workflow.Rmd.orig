@@ -61,7 +61,7 @@ The GEO data includes Ensembl gene IDs. Additional gene information such as chro
 
 ## Starting DGEobj creation
 
-The starting point for the discussions in this vignette is a DGEobj that is ready for analysis.  The demonstration dataset detailed above is used to create the DGEobj R object step-by-step in sections 1-4 of the DGEobj package vignette:  [DGEobj_Overview](https://cran.r-project.org/web/packages/DGEobj/vignettes/DGEobj_Overview.html).  This vignette can be accessed from inside an R session using `vignette("DGEobj_Overview", package = "DGEobj")`.  The detailed instructions are not be repeated in this vignette, but the starting R object named "dgeObj" is created with the same steps/data as detailed in sections 1-4.
+The starting point for the discussions in this vignette is a DGEobj that is ready for analysis.  The demonstration dataset detailed above is used to create the DGEobj R object step-by-step in sections 1-4 of the DGEobj package vignette:  [DGEobj_Overview](https://CRAN.R-project.org/package=DGEobj/vignettes/DGEobj_Overview.html).  This vignette can be accessed from inside an R session using `vignette("DGEobj_Overview", package = "DGEobj")`.  The detailed instructions are not be repeated in this vignette, but the starting R object named "dgeObj" is created with the same steps/data as detailed in sections 1-4.
 
 ```{r testsub, include = F}
 dgeObj <- readRDS("supporting/simple.RDS")
@@ -109,7 +109,7 @@ Two methods for low intensity filtering are supplied; min counts, and FPK.  The 
 
 It is typically recommended to use counts >= 10 and FPK >=5.  But the filter should be set as close as possible to criteria the original analyst used.  A custom filter can also be substituted.
 
-Minimum counts >= 10 is commonly used to filter out low intensity genes.  But mincounts is biased against short genes.  In contrast, FPK (fragments per kilobase), described below, provides an intensity measure that is not length biased.
+Minimum counts >= 10 is commonly used to filter out low intensity genes.  But mincount is biased against short genes.  In contrast, FPK (fragments per kilobase), described below, provides an intensity measure that is not length biased.
 
 Fragments per kilobase (FPK) is another filtering criterion.  For an average size ~2kb mRNA FPK = 5 is equivalent to counts = 10, however, FPK is not length biased.   Another useful property of FPK is that FPK can be calculated for intergenic DNA and thus provides an empirical background level of stochastic or spurious transcription.  This estimate is surely conservative in that there is very likely some real transcription going on in intergenic regions.  Typically, the intergenic FPK level is below 5 so FPK >= 5 is an appropriate threshold.
 
@@ -254,7 +254,7 @@ The user can then use the new design matrix to incorporate the SVs into the anal
 `r kable(inventory(dgeObj_SVA))`
 
 
-## Run Voom and fit the model (lmfit)
+## Run Voom and fit the model (lmFit)
 
 The duplicateCorrelation method in Voom optionally allows the user to account for a random effect, such as repeated measurements on the same animal in this case.
 

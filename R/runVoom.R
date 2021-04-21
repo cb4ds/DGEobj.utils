@@ -1,4 +1,4 @@
-#' Run functions in a typical voom/lmfit workflow
+#' Run functions in a typical voom/lmFit workflow
 #'
 #' In the default workflow, this function runs voomWithQualityWeights followed by
 #' lmFit and optionally eBayes. If the contrasts of interest are already represented

@@ -33,7 +33,7 @@ The common use case for this is to provide a list of topTable
 data frames and extract one column from each file to create
 a matrix of LogRatios or P-values (genes x contrasts)..
 
-This should work as long as the requested colName is present in every
+This should work as long as the requested column name is present in every
 dataframe.  The default robust = TRUE should be used unless it has been
 verified that each dataframe in the input list has the same row count and row
 order.

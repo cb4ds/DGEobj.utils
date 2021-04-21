@@ -7,7 +7,7 @@
 runSVA(dgeObj, designMatrixName, n.sv, method = "leek")
 }
 \arguments{
-\item{dgeObj}{A DGEobj with normalized counts and a DesignMatrix.}
+\item{dgeObj}{A DGEobj with normalized counts and a designMatrix.}
 
 \item{designMatrixName}{The itemName of the design matrix in DGEobj.}
 

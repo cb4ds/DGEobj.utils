@@ -35,7 +35,7 @@ The GEO data includes Ensembl gene IDs. Additional gene information such as chro
 
 ## Starting DGEobj creation
 
-The starting point for the discussions in this vignette is a DGEobj that is ready for analysis.  The demonstration dataset detailed above is used to create the DGEobj R object step-by-step in sections 1-4 of the DGEobj package vignette:  [DGEobj_Overview](https://cran.r-project.org/web/packages/DGEobj/vignettes/DGEobj_Overview.html).  This vignette can be accessed from inside an R session using `vignette("DGEobj_Overview", package = "DGEobj")`.  The detailed instructions are not be repeated in this vignette, but the starting R object named "dgeObj" is created with the same steps/data as detailed in sections 1-4.
+The starting point for the discussions in this vignette is a DGEobj that is ready for analysis.  The demonstration dataset detailed above is used to create the DGEobj R object step-by-step in sections 1-4 of the DGEobj package vignette:  [DGEobj_Overview](https://CRAN.R-project.org/package=DGEobj/vignettes/DGEobj_Overview.html).  This vignette can be accessed from inside an R session using `vignette("DGEobj_Overview", package = "DGEobj")`.  The detailed instructions are not be repeated in this vignette, but the starting R object named "dgeObj" is created with the same steps/data as detailed in sections 1-4.
 
 
 
