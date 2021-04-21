@@ -2,8 +2,6 @@ context("DGEobj.utils - tests for runQvalue.R functions")
 
 
 test_that("runQvalue.R: runQvalue()", {
-    suppressWarnings(skip_if(is.null(getType(t_obj1, "topTable"))))
-
     contrast_list <- getType(t_obj1, "topTable")
     contrast_list_with_qvalue <- runQvalue(contrastList = contrast_list)
     expect_type(contrast_list_with_qvalue, "list")
@@ -13,8 +11,11 @@ test_that("runQvalue.R: runQvalue()", {
     for (contrast in contrasts_names) {
         expect_true(all(c("Qvalue", "qvalue.lfdr") %in% names(contrast_list_with_qvalue[[contrast]])))
     }
+    msg <- "contrastList must be of class 'list'."
+    expect_error(runQvalue(),
+                 regexp = msg)
     expect_error(runQvalue(contrastList = NULL),
-                 regexp = "contrastList must be of class 'list'.")
+                 regexp = msg)
     expect_error(runQvalue(contrastList = contrast_list, pvalField = "xyz"),
                  regexp = "pvalField must exist as an item in contrastList.")
 })

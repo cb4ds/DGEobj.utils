@@ -3,8 +3,6 @@ require(stats)
 
 require(DGEobj)
 require(DGEobj.utils)
-require(limma)
-require(edgeR)
 require(ggplot2)
 
 

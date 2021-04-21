@@ -2,13 +2,13 @@
 % Please edit documentation in R/runContrasts.R
 \name{runContrasts}
 \alias{runContrasts}
-\title{Calculate contrast fits and contrast matrix}
+\title{Build contrast matrix and calculate contrast fits}
 \usage{
 runContrasts(
   dgeObj,
   designMatrixName,
   contrastList,
-  contrastSetName = fitName,
+  contrastSetName = NULL,
   runTopTable = TRUE,
   runTopTreat = FALSE,
   foldChangeThreshold = 1.5,
@@ -28,13 +28,13 @@ contrast analysis. (Required)}
 
 \item{contrastList}{A named list of contrasts. (Required)}
 
-\item{contrastSetName}{Name for the set of contrasts specified in contrastList.  Defaults
-to "fitName_cf".,Should only be changed to create 2 or more contrast sets from the same fit.}
+\item{contrastSetName}{Name for the set of contrasts specified in
+contrastList.  Defaults to "<fitName>_cf". Only needed to create 2 or more
+contrast sets from the same initial fit.}
 
 \item{runTopTable}{Runs topTable on the specified contrasts. (Default = TRUE)}
 
-\item{runTopTreat}{Runs topTreat on the specified contrasts.
-]== (Default = FALSE)}
+\item{runTopTreat}{Runs topTreat on the specified contrasts. (Default = FALSE)}
 
 \item{foldChangeThreshold}{Only applies to topTreat (Default = 1.5)}
 
@@ -52,7 +52,7 @@ to "fitName_cf".,Should only be changed to create 2 or more contrast sets from t
 \item{verbose}{Set TRUE to print some information during processing. (Default = FALSE)}
 }
 \value{
-The DGEobj with contrast fits and topTable/topTreat dataframes added.
+The DGEobj with contrast matrix, fit and topTable/topTreat dataframes added.
 }
 \description{
 Takes a DGEobj and a named list of contrasts to build. The DGEobj must
@@ -60,8 +60,9 @@ contain a limma Fit object and associated designMatrix. Returns the DGEobj with
 contrast fit(s), contrast matrix, and topTable/topTreat dataframes added.
 }
 \details{
-The contrastList is a named list composed of column names from the designMatrix
-of the DGEobj.  Each contrast is named to give it a short, recognizable name.
+The contrastList is a named list.  The values are composed of column names
+from the designMatrix of the DGEobj.  Each contrast is named to give it a
+short, recognizable name to be used for display purposes.
 
 Example contrastList \cr
 
@@ -70,28 +71,38 @@ contrastList = list( \cr
    T2 = "treatment2 - control" \cr
 ) \cr
 
-where treatment1, treatment2, and control are columns in the designMatrix.
+where treatment1, treatment2, and control are column names in the designMatrix.
 
-The returned contrastAnalysis list contains the following objects:
+The returned DGEobj list contains the new items:
 \itemize{
     \item{"contrastMatrix"} {a matrix}
     \item{"Fit.Contrasts"} {a Fit object}
     \item{"topTableList"} {a List of dataframes}
-    \item{"topTreatList"} {a List of dataframes}
+    \item{"topTreatList"} {a List of dataframes: if enabled}
 }
 }
 \examples{
-\dontrun{
-   # Run defaults
+   myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+
+   # Name the design matrix to be used (see inventory(myDGEobj))
+   designMatrixName <- "ReplicateGroupDesign"
+
+   # Define the named contrasts from design matrix column names
+   contrastList  <- list(BDL_v_Sham = "ReplicateGroupBDL - ReplicateGroupSham",
+                         EXT1024_v_BDL = "ReplicateGroupBDL_EXT.1024  - ReplicateGroupBDL",
+                         Nint_v_BDL = "ReplicateGroupBDL_Nint - ReplicateGroupBDL",
+                         Sora_v_BDL = "ReplicateGroupBDL_Sora - ReplicateGroupBDL")
+
+
    myDGEobj <- runContrasts(myDGEobj,
-                            myFitName,
-                            ConstrastList)
-   myDGEobj <- runContrasts(myDGEobj,
-                            myFitName,
-                            ConstrastList,
-                            runTopTable = TRUE
+                            designMatrixName=designMatrixName,
+                            contrastList=contrastList,
+                            contrastSetName = "SecondContrastSet",
+                            qValue = TRUE,
+                            IHW = TRUE,
+                            runTopTable = TRUE,
                             runTopTreat = TRUE,
                             foldChangeThreshold = 1.25)
-}
+   DGEobj::inventory(myDGEobj)
 
 }

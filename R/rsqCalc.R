@@ -9,19 +9,23 @@
 #' @return A vector of R-squared values for each gene fit.
 #'
 #' @examples
-#' \dontrun{
-#'   rsq <- rsqCalc (log2cpm, fitObject)
-#' }
+#'    dgeObj    <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    log2cpm   <- convertCounts(dgeObj$counts, unit = "cpm", log=TRUE, normalize = "tmm")
+#'    fitObject <- dgeObj$ReplicateGroupDesign_fit
+#'    rsq       <- rsqCalc (log2cpm, fitObject)
 #'
 #' @importFrom assertthat assert_that
 #' @importFrom stringr str_c
 #'
 #' @export
 rsqCalc <- function(normMatrix, fit) {
-
-    assertthat::assert_that(any(c("data.frame", "matrix") %in% class(normMatrix)),
+    assertthat::assert_that(!missing(normMatrix),
+                            !is.null(normMatrix),
+                            any(c("data.frame", "matrix") %in% class(normMatrix)),
                             msg = "normMatrix must be of class 'data.frame' or 'matrix'.")
-    assertthat::assert_that("MArrayLM" %in% class(fit),
+    assertthat::assert_that(!missing(fit),
+                            !is.null(fit),
+                            "MArrayLM" %in% class(fit),
                             msg = "fit must be of class 'MArrayLM'.")
     assertthat::assert_that(is.numeric(as.matrix(normMatrix)),
                             msg = "All of the entries in normMatrix must be numeric.")

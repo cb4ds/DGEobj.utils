@@ -18,7 +18,7 @@ A matrix of TPM values
 }
 \description{
 Takes a countsMatrix and geneLength as input and converts to TPM units using the equation from
-[Harold Pimental](https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/).
+\href{https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/}{Harold Pimental}.
 }
 \details{
 The result should be the same as using convertCounts with normalize = 'tpm' and log = FALSE.
@@ -27,8 +27,10 @@ geneLength can be a vector (length == nrow(countsMatrix)) or a matrix (same dim 
 The geneLength is used as is, or optionally collapsed to a vector by rowMeans.
 }
 \examples{
-\dontrun{
-  myTPM <- tpm.direct(myCounts, myGeneLength)
-}
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+
+   counts <- DGEobj::getItem(dgeObj, "counts")
+   exonLength <- dgeObj$geneData$ExonLength
+   tpm <- tpm.direct(counts, geneLength = exonLength)
 
 }

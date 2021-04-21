@@ -8,7 +8,7 @@ extractCol(contrastList, colName, robust = TRUE)
 }
 \arguments{
 \item{contrastList}{A list of data.frames which all have the same colnames and same row counts.
-The dataframes in the list should have rownames(geneIDs).}
+The dataframes in the list should have geneIDs as rownames.}
 
 \item{colName}{The name of the data column to extract into a matrix.}
 
@@ -25,21 +25,23 @@ A dataframe containing the extracted columns
 \description{
 Take a named list of dataframes where each dataframe has the same
 column names (e.g. a list of topTable dataframes), then extract
-the named column from each dataframe and return a matrix.
+the named column from each dataframe and return a matrix.  The name of
+each dataframe is used as the column name in the resulting table.
 }
 \details{
 The common use case for this is to provide a list of topTable
 data frames and extract one column from each file to create
-a matrix of LogRatios or P-values.
+a matrix of LogRatios or P-values (genes x contrasts)..
 
-This should work as long as the requested colName is present
-in each dataframe.  The default robust = TRUE should be used unless it has been
-verified that each dataframe in the input list has the same row count
-and row order.
+This should work as long as the requested column name is present in every
+dataframe.  The default robust = TRUE should be used unless it has been
+verified that each dataframe in the input list has the same row count and row
+order.
 }
 \examples{
-\dontrun{
-   MyPvalues <- ExtractCol(TopTableList, colName = "P.Value")
-}
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   TopTableList <- DGEobj::getType(dgeObj, type = "topTable")
+   MyPvalues    <- extractCol(TopTableList, colName = "P.Value")
+   head(MyPvalues)
 
 }

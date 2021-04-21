@@ -2,30 +2,56 @@
 % Please edit documentation in R/runEdgeRNorm.R
 \name{runEdgeRNorm}
 \alias{runEdgeRNorm}
-\title{Run edgeR TMM normalization on DGEobj}
+\title{Run edgeR normalization on DGEobj}
 \usage{
-runEdgeRNorm(dgeObj, normMethod = "TMM", plotFile = TRUE, plotLabels = NULL)
+runEdgeRNorm(
+  dgeObj,
+  normMethod = "TMM",
+  itemName = "DGEList",
+  includePlot = FALSE,
+  plotLabels = NULL
+)
 }
 \arguments{
 \item{dgeObj}{A DGEobj containing counts, design data, and gene annotation.}
 
 \item{normMethod}{One of "TMM", "RLE", "upperquartile", or "none". (Default = "TMM")}
 
-\item{plotFile}{Enable a bar plot of the norm.factors produced. (Default = TRUE)}
+\item{itemName}{optional string represents the name of the new DGEList. It must be unique and not exist
+in the passed DGEobj (Default = "DGEList")}
 
-\item{plotLabels}{Sample labels for the plot. Length must equal the number of
+\item{includePlot}{Enable returning a "canvasXpress" or "ggplot" bar plot of the norm.factors
+produced (Default = FALSE). Possible values to pass:
+ \itemize{
+  \item \strong{FALSE or NULL}: Disable plot
+  \item \strong{TRUE or "canvasXpress"}: returns "canvasXpress" bar plot of the norm.factors produced.
+  \item \strong{"ggplot"}: returns "ggplot" bar plot of the norm.factors produced.
+}}
+
+\item{plotLabels}{Sample text labels for the plot. Length must equal the number of
 samples. (Default = NULL; sample number will be displayed)}
 }
 \value{
-A DGEobj with a normalized DGEList added.
+A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 }
 \description{
-Returns a DGEobj containing DGEList object representing the result of
- edgeR TMM normalization.
+Takes a DGEobj and adds a normalized DGEList object representing the result of
+edgeR normalization (calcNormFactors).
 }
 \examples{
-\dontrun{
+   myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+
+   # Default TMM normalization
    myDGEobj <- runEdgeRNorm(myDGEobj)
-}
+
+   # With some options and plot output
+   require(canvasXpress)
+   myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
+   obj_plus_plot <- runEdgeRNorm(myDGEobj,
+                                 normMethod = "upperquartile",
+                                 includePlot = TRUE)
+   myDGEobj <- obj_plus_plot[[1]]
+   obj_plus_plot[[2]]
 
 }

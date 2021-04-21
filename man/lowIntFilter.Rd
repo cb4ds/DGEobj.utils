@@ -6,27 +6,25 @@
 \usage{
 lowIntFilter(
   dgeObj,
+  countThreshold,
   zfpkmThreshold,
   fpkThreshold,
-  countThreshold,
   tpmThreshold,
   sampleFraction = 0.5,
-  geneLength = NULL,
+  geneLength,
   verbose = FALSE
 )
 }
 \arguments{
 \item{dgeObj}{A DGEobj with RNA-Seq (counts) data (Required)}
 
+\item{countThreshold}{Genes below this threshold are removed (10 is recommended).}
+
 \item{zfpkmThreshold}{Genes below this threshold are removed. (-3.0 is recommended)}
 
 \item{fpkThreshold}{Genes below this threshold are removed. (5 is recommended)}
 
-\item{countThreshold}{Genes below this threshold are removed (10 is recommended).
-Set to 0 to disable this filter.}
-
-\item{tpmThreshold}{Genes below this threshold are removed (TPM is supported
-by request, but FPK is a better length-normalized value to use as a filter)}
+\item{tpmThreshold}{Genes below this threshold are removed.}
 
 \item{sampleFraction}{The proportion of samples that must meet the thresholds
 (Default = 0.5). Range > 0 and <= 1.}
@@ -41,17 +39,26 @@ retrieved from the DGEobj, unless supplied by the geneLength argument.}
 Same class as input object with low intensity rows removed
 }
 \description{
-Takes a DGEobj as input and applies a combination of low
-intensity filters. Raw count, zFPKM, TPM, and/or FPK filters are supported.  A gene
-must pass all active filters.  Not setting a threshold argument inactivates that threshold.
+Takes a DGEobj as input and applies a combination of low intensity filters as
+specified by the user. Raw count, zFPKM, TPM, and/or FPK filters are
+supported.  A gene must pass all active filters.  Not setting a threshold
+argument inactivates that threshold.
 }
 \examples{
-\dontrun{
-  # Simple count threshold
-  myDGEobj <- lowIntFilter(myDGEobj, countThreshold = 10)
+  myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+  dim(myDGEobj)
 
-  # Count and zFPKM thresholds
-  myDGEobj <- lowIntFilter(myDGEobj, countThreshold = 10, zfpkmThreshold = -3.0)
-}
+  # Simple count threshold in at least 3/4ths the samples
+  myDGEobj <- lowIntFilter(myDGEobj,
+                           countThreshold = 10,
+                           sampleFraction = 0.5)
+  dim(myDGEobj)
+
+  # Count and FPK thresholds
+  myDGEobj <- lowIntFilter(myDGEobj,
+                           countThreshold = 10,
+                           fpkThreshold = 5,
+                           sampleFraction = 0.5)
+  dim(myDGEobj)
 
 }

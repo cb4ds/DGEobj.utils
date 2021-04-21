@@ -1,8 +1,9 @@
 #' Merge specified topTable df cols
 #'
-#' Take a list of topTable dataframes and consolidate output for specified
-#' columns. Should work on any named list of dataframes where each member of the list
-#' has the same columns.
+#' Take a named list of topTable dataframes and cbinds the requested columns
+#' from each file.  To avoid column name conflicts the names are used as suffixes
+#' to the colnames. Although written for topTable data, this should work on any
+#' named list of dataframes where each member of the list has the same columns.
 #'
 #' @param contrastList A named list of topTable data.frames which all have the same colnames and same row counts.
 #' The dataframes in the list should have rownames (geneIDs).
@@ -15,14 +16,13 @@
 #' @return A matrix containing the extracted columns.
 #'
 #' @examples
-#' \dontrun{
-#'     myContrastTable <- topTable.merge(topTablelist)
-#' }
+#' dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#' contrastList <- DGEobj::getType(dgeObj, type = "topTable")
 #'
-#' @import magrittr
+#' mergedData <- topTable.merge(contrastList)
+#' colnames(mergedData)
+#'
 #' @importFrom stringr str_c
-#' @importFrom tibble rownames_to_column column_to_rownames
-#' @importFrom dplyr left_join
 #'
 #' @export
 topTable.merge <- function(contrastList,
@@ -36,6 +36,8 @@ topTable.merge <- function(contrastList,
                             "list" %in% class(contrastList),
                             "data.frame" %in% class(contrastList[[1]]),
                             !is.null(names(contrastList)),
+                            length(unique(lapply(contrastList, colnames))) == 1,
+                            length(unique(lapply(contrastList, dim))) == 1,
                             msg = "contrastList must be specified, be of class 'list' and be a named list specifically, and include items of class 'data.frame'.")
     assertthat::assert_that(length(digits) %in% c(1, length(colNames)),
                             msg = "digits must be either of length 1 or the same length as colNames.")
@@ -48,28 +50,26 @@ topTable.merge <- function(contrastList,
     contrastNames <- names(contrastList)
 
     # Get the first set of columns
-    dat <- extractCol(contrastList, colName = colNames[1], robust = TRUE) %>%
-        as.data.frame
+    dat <- as.data.frame(extractCol(contrastList, colName = colNames[1], robust = TRUE))
     colnames(dat) <- stringr::str_c(colNames[1], "_", colnames(dat))
     dat <- round(dat, digits[1])
-    dat %<>% tibble::rownames_to_column(var = "rowid")
+    dat <- cbind(rowID = rownames(dat), data.frame(dat, row.names = NULL))
 
     if (length(colNames)  > 1) {
         for (i in 1:length(colNames)) {
-            dat2 <- extractCol(contrastList, colName = colNames[i], robust = TRUE) %>%
-                as.data.frame
+            dat2 <- as.data.frame(extractCol(contrastList, colName = colNames[i], robust = TRUE))
             # Add datatype as prefix on colname e.g. logFC_contrastname
             colnames(dat2) <- stringr::str_c(colNames[i], "_", colnames(dat2))
             dat2 <- round(dat2, digits[i])
-            dat2 %<>% tibble::rownames_to_column(var = "rowid")
+            dat2 <- cbind(rowID = rownames(dat2), data.frame(dat2, row.names = NULL))
             if (i == 1) {
                 dat <- dat2
             } else {
-                dat %<>% dplyr::left_join(dat2, by = "rowid")
+                dat <- merge(x = dat, y = dat2, by = "rowID", all.x = TRUE, sort = FALSE)
             }
         }
     }
 
-    dat %<>% tibble::column_to_rownames(var = "rowid")
+    dat <- data.frame(dat[,-c(1)], row.names = dat[,c(1)])
     return(dat)
 }
