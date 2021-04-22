@@ -1,5 +1,9 @@
 ## Comments from Maintainer
 
+Resubmission Comments:
+* DOI link fixed
+
+Initial Submission Comments:
 * This is a new package to be added to CRAN, it contains utilities for running DE analysis 
   in concert with the DGEobj package
 * Code Coverage is 99%
