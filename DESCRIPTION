@@ -1,6 +1,6 @@
 Package: DGEobj.utils
 Type:    Package
-Title:   Differential Gene Expression Analysis Utility Tookit
+Title:   Differential Gene Expression Analysis Utility Toolkit
 Version: 1.0.2
 Description:
     Provides a function toolkit to facilitate reproducible RNA-Seq Differential Gene Expression
