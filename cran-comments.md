@@ -1,6 +1,7 @@
 ## Comments from Maintainer
 
 Resubmission Comments:
+* Description rewritten to pass spelling checks without industry-specific lingo
 * DOI link fixed
 
 Initial Submission Comments:
