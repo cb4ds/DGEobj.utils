@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runPower.R functions")
+skip_on_cran()
 
 
 test_that("runPower.R: runPower()", {

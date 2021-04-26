@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runContrasts.R functions")
+skip_on_cran()
 
 
 test_that('runContrasts.R: runContrasts()', {

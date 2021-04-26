@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runVoom.R functions")
+skip_on_cran()
 
 
 test_that('runVoom.R: runVoom()', {

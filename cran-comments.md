@@ -1,7 +1,8 @@
 ## Comments from Maintainer
 
 Resubmission Comments:
-* Description rewritten to pass spelling checks without industry-specific lingo
+* Analysis tests (runXYZ function testing) skipped on CRAN to reduce testing time for cran
+* Description rewritten to pass as many spelling checks as possible w/o industry-specific lingo
 * DOI link fixed
 
 Initial Submission Comments:

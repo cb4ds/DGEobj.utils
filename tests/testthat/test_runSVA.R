@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runSVA.R functions")
+skip_on_cran()
 
 
 test_that("runSVA.R: runSVA()", {

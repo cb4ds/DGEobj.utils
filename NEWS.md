@@ -4,5 +4,5 @@
 
 ---
 
-### v1.0.2
+### v1.0.3
 * Initial public release to CRAN
