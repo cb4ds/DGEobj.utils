@@ -33,25 +33,25 @@
 #'   "ihw." The second list element is the IHW result dataframe.
 #'
 #' @examples
-#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-#'    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
-#'    contrastList <- lapply(contrastList, dplyr::select,
-#'                           -ihw.adj_pvalue,
-#'                           -ihw.weight,
-#'                           -ihw.weighted_pvalue)
-#'    colnames(contrastList[[1]])
-#'
-#'    contrastList <- runIHW(contrastList)
-#'
-#'    # note new columns added
-#'    colnames(contrastList[[1]])
+   # dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   # contrastList <- DGEobj::getType(dgeObj, type = "topTable")
+   # contrastList <- lapply(contrastList, dplyr::select,
+   #                        -ihw.adj_pvalue,
+   #                        -ihw.weight,
+   #                        -ihw.weighted_pvalue)
+   # colnames(contrastList[[1]])
+   #
+   # contrastList <- runIHW(contrastList)
+   #
+   # # note new columns added
+   # colnames(contrastList[["contrasts"]][[1]])
 #'
 #' @export
 runIHW <- function(contrastList,
                    alpha = 0.1,
                    FDRthreshold = 0.1,
                    ...){
-    assertthat::assert_that(requireNamespace("IHW"),
+    assertthat::assert_that(requireNamespace("IHW", quietly = TRUE),
                             msg = "IHW package is required to apply Independent Hypothesis Weighting (IHW) to the given list of topTable dataframes")
 
     assertthat::assert_that(!missing(contrastList),
