@@ -46,7 +46,6 @@
 #'    # note new columns added
 #'    colnames(contrastList[[1]])
 #'
-#'
 #' @export
 runIHW <- function(contrastList,
                    alpha = 0.1,
