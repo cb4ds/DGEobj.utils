@@ -46,13 +46,15 @@
 #'    # note new columns added
 #'    colnames(contrastList[[1]])
 #'
-#' @importFrom IHW ihw
 #'
 #' @export
 runIHW <- function(contrastList,
                    alpha = 0.1,
                    FDRthreshold = 0.1,
                    ...){
+    assertthat::assert_that(requireNamespace("IHW"),
+                            msg = "IHW package is required to apply Independent Hypothesis Weighting (IHW) to the given list of topTable dataframes")
+
     assertthat::assert_that(!missing(contrastList),
                             is.list(contrastList),
                             msg = "contrastList must be specified and should be of class 'List'.")
@@ -85,21 +87,34 @@ runIHW <- function(contrastList,
                                 msg = "The topTable dataframes in contrastList must have both P.Value and AveExpr columns.")
         # Run IHW on one df
         # Return an ihwResult object
-        IHWresult <- IHW::ihw(ttdf$P.Value,
-                              covariates = ttdf$AveExpr,
-                              alpha = alpha,
-                              ...)
+        do.call("require", list("IHW"))
+        IHWresult <- tryCatch({
+            do.call("ihw", list(ttdf$P.Value,
+                                covariates = ttdf$AveExpr,
+                                alpha = alpha,
+                                ...))
+        },
+        error = function(e) {
+            message("Unexpected error: ", e$message, " happened during runIHWon1DF execution")
+            return(NULL)
+        })
+
     }
 
     # Run IHW on each dataframe, collect the result objects in a list which
     # is added to the result object.
-    proportion <- sapply(contrastList, getProportion, threshold = FDRthreshold)
-    ihwList <- list()
+    proportion    <- sapply(contrastList, getProportion, threshold = FDRthreshold)
+    ihwList       <- list()
     contrastNames <- names(contrastList)
+
     for (i in 1:length(contrastList)) {
         ihwResult <- runIHWon1DF(contrastList[[i]],
                                  alpha = alpha,
                                  proportion = proportion[i], ...)
+        if (is.null(ihwResult)) {
+            next
+        }
+
         # Capture the ihwResult object
         ihwList[[i]] <- ihwResult
         contrastList[[i]] <- cbind(contrastList[[i]],
@@ -114,6 +129,5 @@ runIHW <- function(contrastList,
         attr(contrastList[[i]], "ihw") = TRUE
     }
 
-    result <- list(contrasts = contrastList, ihwObj = ihwList)
-    return(result)
+    list(contrasts = contrastList, ihwObj = ihwList)
 }
