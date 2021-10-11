@@ -56,7 +56,7 @@ test_that('lowIntFilter: lowIntFilter()', {
                  regexp = "dgeObj must be of class 'DGEobj'.")
     # Testing assert
     ## sampleFraction
-    msg <- "sampleFraction must be a singular numeic value. Assigning default value 0.5"
+    msg <- "sampleFraction must be a singular numeric value. Assigning default value 0.5"
     expect_warning(lowIntFilter(t_obj1,
                                 fpkThreshold   = 5,
                                 sampleFraction = NULL),

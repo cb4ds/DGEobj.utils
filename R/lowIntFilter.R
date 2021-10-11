@@ -64,7 +64,7 @@ lowIntFilter <- function(dgeObj,
     if (any(is.null(sampleFraction),
             !is.numeric(sampleFraction),
             length(sampleFraction) != 1)) {
-        warning("sampleFraction must be a singular numeic value. Assigning default value 0.5")
+        warning("sampleFraction must be a singular numeric value. Assigning default value 0.5")
         sampleFraction = 0.5
     }
 
