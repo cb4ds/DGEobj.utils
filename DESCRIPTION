@@ -28,8 +28,7 @@ Imports:
     edgeR,
     limma,
     qvalue,
-    sva,
-    zFPKM
+    sva
 Suggests:
     canvasXpress,
     conflicted, 
@@ -40,7 +39,8 @@ Suggests:
     RNASeqPower,
     rmarkdown,
     testthat,
-    biomaRt
+    biomaRt,
+    zFPKM
 biocViews:
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
