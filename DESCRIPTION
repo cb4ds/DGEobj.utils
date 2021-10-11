@@ -28,7 +28,6 @@ Imports:
     edgeR,
     limma,
     qvalue,
-    RNASeqPower,
     sva,
     zFPKM
 Suggests:
@@ -38,6 +37,7 @@ Suggests:
     ggplot2,
     IHW,
     knitr,
+    RNASeqPower,
     rmarkdown,
     testthat,
     biomaRt
