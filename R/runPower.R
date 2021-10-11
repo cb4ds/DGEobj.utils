@@ -32,7 +32,8 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#' if (requireNamespace("RNASeqPower", quietly = TRUE)) {
+#'  dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'     counts <- dgeObj$counts
 #'     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
 #'     resultList <- runPower(countsMatrix = counts,
@@ -42,6 +43,7 @@
 #'     head(resultList[[1]]) # dataframe
 #'     resultList[[2]]       # ROC Curves Plot
 #'     resultList[[3]]       # N vs Power Plot
+#' }
 #'
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter arrange select %>%

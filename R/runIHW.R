@@ -33,18 +33,18 @@
 #'   "ihw." The second list element is the IHW result dataframe.
 #'
 #' @examples
-   # dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
-   # contrastList <- DGEobj::getType(dgeObj, type = "topTable")
-   # contrastList <- lapply(contrastList, dplyr::select,
-   #                        -ihw.adj_pvalue,
-   #                        -ihw.weight,
-   #                        -ihw.weighted_pvalue)
-   # colnames(contrastList[[1]])
-   #
-   # contrastList <- runIHW(contrastList)
-   #
-   # # note new columns added
-   # colnames(contrastList[["contrasts"]][[1]])
+#' if ((requireNamespace("IHW", quietly = TRUE)) {
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
+#'    contrastList <- lapply(contrastList, dplyr::select,
+#'                           -ihw.adj_pvalue,
+#'                           -ihw.weight,
+#'                           -ihw.weighted_pvalue)
+#'    colnames(contrastList[[1]])
+#'    contrastList <- runIHW(contrastList)
+#'    # note new columns added
+#'    colnames(contrastList[["contrasts"]][[1]])
+#' }
 #'
 #' @export
 runIHW <- function(contrastList,

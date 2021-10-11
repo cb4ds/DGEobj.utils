@@ -56,7 +56,8 @@ If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an a
 "canvasXpress" or ggplots (plots) to the dataframe.
 }
 \examples{
-    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+if (requireNamespace("RNASeqPower", quietly = TRUE)) {
+ dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
     counts <- dgeObj$counts
     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
     resultList <- runPower(countsMatrix = counts,
@@ -66,5 +67,6 @@ If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an a
     head(resultList[[1]]) # dataframe
     resultList[[2]]       # ROC Curves Plot
     resultList[[3]]       # N vs Power Plot
+}
 
 }
