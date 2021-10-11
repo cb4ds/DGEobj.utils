@@ -3,6 +3,7 @@ skip_on_cran()
 
 
 test_that("runPower.R: runPower()", {
+    skip_if_not_installed("RNASeqPower")
     # data setup
     designMatrix <- model.matrix(~ 0 + ReplicateGroup, getItem(t_obj1, "design"))
 

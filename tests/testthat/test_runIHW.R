@@ -3,6 +3,7 @@ skip_on_cran()
 
 
 test_that('runIHW: runIHW()', {
+    skip_if_not_installed("IHW")
     runIHW_contrastList <- getType(t_obj1, "topTable")[1:2]
 
     runIHW_test_one <- runIHW(runIHW_contrastList)

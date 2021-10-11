@@ -43,7 +43,6 @@
 #'     resultList[[2]]       # ROC Curves Plot
 #'     resultList[[3]]       # N vs Power Plot
 #'
-#' @importFrom RNASeqPower rnapower
 #' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter arrange select %>%
 #' @importFrom stats approx power
@@ -57,6 +56,8 @@ runPower <- function(countsMatrix,
                      FDR = c(0.05, 0.1),
                      effectSize = c(1.2, 1.5, 2),
                      includePlots = FALSE) {
+    assertthat::assert_that(requireNamespace("RNASeqPower", quietly = TRUE),
+                            msg = "RNASeqPower package is required to run power analysis on the given counts matrix and design matrix.")
     assertthat::assert_that(!missing(countsMatrix),
                             !is.null(countsMatrix),
                             class(countsMatrix)[[1]] %in% c("matrix","data.frame"),
@@ -122,7 +123,8 @@ runPower <- function(countsMatrix,
         for (Nf in n) {
             for (E in effectSize) {
                 for (A in alpha) {
-                    P    <- RNASeqPower::rnapower(depth = D, n = Nf, cv = cv, effect = E, alpha = A)
+                    do.call("require", list("RNASeqPower"))
+                    P    <- do.call("rnapower", list(depth = D, n = Nf, cv = cv, effect = E, alpha = A))
                     pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, powerVal = P))
                 }
             }

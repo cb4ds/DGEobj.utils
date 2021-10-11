@@ -19,15 +19,18 @@ test_that('runContrasts.R: runContrasts()', {
                           BDL_vs_EXT1024     = "ReplicateGroupBDL  - ReplicateGroupBDL_EXT.1024",
                           EXT1024_vs_Nint    = "ReplicateGroupBDL_EXT.1024 - ReplicateGroupBDL_Nint",
                           EXT1024_vs_Sora    = "ReplicateGroupBDL_EXT.1024 - ReplicateGroupBDL_Sora")
-    dgeObj_output <- runContrasts(dgeObj              = t_obj1,
-                                  designMatrixName    = "ReplicateGroupDesign",
-                                  contrastList        = contrastList,
-                                  contrastSetName     = "ReplicateGroup_Contrasts",
-                                  runTopTreat         = TRUE,
-                                  qValue              = TRUE,
-                                  IHW                 = TRUE,
-                                  verbose             = TRUE)
-    expect_s3_class(dgeObj_output, "DGEobj")
+    if (!requireNamespace("IHW", quietly = TRUE)) {
+        dgeObj_output <- runContrasts(dgeObj              = t_obj1,
+                                      designMatrixName    = "ReplicateGroupDesign",
+                                      contrastList        = contrastList,
+                                      contrastSetName     = "ReplicateGroup_Contrasts",
+                                      runTopTreat         = TRUE,
+                                      qValue              = TRUE,
+                                      IHW                 = TRUE,
+                                      verbose             = TRUE)
+        expect_s3_class(dgeObj_output, "DGEobj")
+    }
+
 
     # testing assert statements
     ## dgeobj
