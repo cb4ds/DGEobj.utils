@@ -23,7 +23,6 @@ Imports:
     dplyr,
     stats,
     stringr,
-    tidyr,
     edgeR,
     limma,
     qvalue,
