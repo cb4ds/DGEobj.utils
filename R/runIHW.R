@@ -110,22 +110,20 @@ runIHW <- function(contrastList,
         ihwResult <- runIHWon1DF(contrastList[[i]],
                                  alpha = alpha,
                                  proportion = proportion[i], ...)
-        if (is.null(ihwResult)) {
-            next
+        if (!is.null(ihwResult)) {
+            # Capture the ihwResult object
+            ihwList[[i]] <- ihwResult
+            contrastList[[i]] <- cbind(contrastList[[i]],
+                                       ihwResult@df[,2:4])
+            # Prefix the colnames of those three columns with "ihw."
+            cnames <- colnames(contrastList[[i]])
+            numcol <- length(cnames)
+            cnames[(numcol - 2):numcol] <- paste("ihw.", cnames[(numcol - 2):numcol], sep = "")
+            colnames(contrastList[[i]]) <- cnames
+
+            # Add documentation
+            attr(contrastList[[i]], "ihw") <-  TRUE
         }
-
-        # Capture the ihwResult object
-        ihwList[[i]] <- ihwResult
-        contrastList[[i]] <- cbind(contrastList[[i]],
-                                   ihwResult@df[,2:4])
-        # Prefix the colnames of those three columns with "ihw."
-        cnames <- colnames(contrastList[[i]])
-        numcol <- length(cnames)
-        cnames[(numcol - 2):numcol] <- paste("ihw.", cnames[(numcol - 2):numcol], sep = "")
-        colnames(contrastList[[i]]) <- cnames
-
-        # Add documentation
-        attr(contrastList[[i]], "ihw") = TRUE
     }
 
     list(contrasts = contrastList, ihwObj = ihwList)
