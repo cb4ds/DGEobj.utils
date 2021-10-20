@@ -21,7 +21,6 @@ Imports:
     assertthat,
     DGEobj  (>= 1.0.3),
     dplyr,
-    statmod,
     stats,
     stringr,
     tidyr,
@@ -38,6 +37,7 @@ Suggests:
     knitr,
     RNASeqPower,
     rmarkdown,
+    statmod,
     testthat,
     biomaRt,
     zFPKM
