@@ -6,6 +6,12 @@
 #' should describe the major sources of variation so the procedure can dial
 #' out those known effects for the power calculations.
 #'
+#' Note, both 'RNASeqPower' and 'statmod' packages are required to run this function as follow:
+#' \itemize{
+#' \item {'RNASeqPower' package is required to run power analysis on the given counts matrix and design matrix.}
+#' \item {'statmod' package is required to run estimate dispersion calculations}
+#' }
+#'
 #' If includePlots = FALSE (the default) or NULL, the function will return a tall skinny dataframe
 #' of power calculations for various requested combinations of N and significance
 #' thresholds.
@@ -32,7 +38,7 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#' if (requireNamespace("RNASeqPower", quietly = TRUE)) {
+#' if (requireNamespace("RNASeqPower", quietly = TRUE) && requireNamespace("statmod", quietly = TRUE)) {
 #'  dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'     counts <- dgeObj$counts
 #'     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
@@ -60,6 +66,8 @@ runPower <- function(countsMatrix,
                      includePlots = FALSE) {
     assertthat::assert_that(requireNamespace("RNASeqPower", quietly = TRUE),
                             msg = "RNASeqPower package is required to run power analysis on the given counts matrix and design matrix.")
+    assertthat::assert_that(requireNamespace("statmod", quietly = TRUE),
+                            msg = "'statmod' package is required to run estimate dispersion calculations")
     assertthat::assert_that(!missing(countsMatrix),
                             !is.null(countsMatrix),
                             class(countsMatrix)[[1]] %in% c("matrix","data.frame"),

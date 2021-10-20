@@ -1,9 +1,9 @@
 context("DGEobj.utils - tests for runPower.R functions")
 skip_on_cran()
-
+skip_if_not_installed("statmod")
+skip_if_not_installed("RNASeqPower")
 
 test_that("runPower.R: runPower()", {
-    skip_if_not_installed("RNASeqPower")
     # data setup
     designMatrix <- model.matrix(~ 0 + ReplicateGroup, getItem(t_obj1, "design"))
 
