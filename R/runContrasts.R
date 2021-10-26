@@ -64,7 +64,7 @@
 #'                             contrastList=contrastList,
 #'                             contrastSetName = "SecondContrastSet",
 #'                             qValue = TRUE,
-#'                             IHW = TRUE,
+#'                             IHW = FALSE,
 #'                             runTopTable = TRUE,
 #'                             runTopTreat = TRUE,
 #'                             foldChangeThreshold = 1.25)

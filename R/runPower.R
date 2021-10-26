@@ -38,10 +38,13 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#' if (requireNamespace("RNASeqPower", quietly = TRUE) && requireNamespace("statmod", quietly = TRUE)) {
-#'  dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#' if (requireNamespace("RNASeqPower", quietly = TRUE) &&
+#'     requireNamespace("statmod", quietly = TRUE)) {
+#'
+#'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'     counts <- dgeObj$counts
-#'     dm <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
+#'     dm     <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
+#'
 #'     resultList <- runPower(countsMatrix = counts,
 #'                            designMatrix = dm,
 #'                            includePlots = TRUE)
