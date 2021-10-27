@@ -1,7 +1,7 @@
 Package: DGEobj.utils
 Type:    Package
 Title:   Differential Gene Expression (DGE) Analysis Utility Toolkit
-Version: 1.0.4.9001
+Version: 1.0.4
 Description:
     Provides a function toolkit to facilitate reproducible RNA-Seq Differential Gene Expression (DGE)
     analysis (Law (2015) <doi:10.12688/f1000research.9005.3>).  The tools include both analysis 
