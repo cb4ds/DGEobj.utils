@@ -5,6 +5,7 @@
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/DGEobj.utils?color=9bc2cf)](https://cran.r-project.org/package=DGEobj.utils) 
 [![Travis build status](https://travis-ci.com/cb4ds/DGEobj.utils.svg?branch=master)](https://travis-ci.com/cb4ds/DGEobj.utils?branch=master)
 [![Codecov test coverage](https://codecov.io/gh/cb4ds/DGEobj.utils/branch/master/graph/badge.svg)](https://codecov.io/gh/cb4ds/DGEobj.utils?branch=master)
+[![CircleCI build status](https://circleci.com/gh/agenius-jasmine/DGEobj.utils.svg?style=svg)](https://circleci.com/gh/agenius-jasmine/DGEobj.utils)
 badges: end -->
 
 This package implements a set of utility functions to enable a limma/voom workflow capturing

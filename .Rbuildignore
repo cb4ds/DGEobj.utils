@@ -7,3 +7,5 @@
 ^misc$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^\.circleci$
+^\.circleci/config\.yml$
