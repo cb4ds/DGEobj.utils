@@ -26,9 +26,8 @@ jobs:
             R -e 'install.packages("BiocManager")'
             R -e 'BiocManager::install(c("edgeR", "IHW", "limma", "qvalue", "RNASeqPower", "sva", "zFPKM", "biomaRt"))'
             R -e 'install.packages("covr")'
-            R -e 'install.packages("statmod")'
-            R -e 'install.packages("devtools")'
-            R -e 'install.packages("DGEobj")'
+            Rscript -e 'install.packages("remotes")'
+            Rscript -e 'remotes::install_deps(dependencies = TRUE)'
       - run:
           name: Session information and installed package versions
           command: |
