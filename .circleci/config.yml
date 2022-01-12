@@ -41,6 +41,7 @@ jobs:
 
       - run:
           name: Check coverage
+          no_output_timeout: 30m
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
 
       - run:
@@ -87,6 +88,7 @@ jobs:
 
       - run:
           name: Check coverage
+          no_output_timeout: 30m
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
 
       - run:
