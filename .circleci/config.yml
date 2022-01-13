@@ -41,7 +41,8 @@ jobs:
       - run:
           name: Build package
           command: R CMD build .
-          - run:
+
+      - run:
           name: Check package
           command: |
             # Install suggested packages
@@ -51,7 +52,6 @@ jobs:
 
       - run:
           name: Check coverage
-          no_output_timeout: 30m
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
 
   Build-for-rLATEST:
@@ -100,7 +100,6 @@ jobs:
 
       - run:
           name: Check coverage
-          no_output_timeout: 30m
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
 
 workflows:
