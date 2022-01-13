@@ -48,7 +48,7 @@ jobs:
             # Install suggested packages
             R -e 'install.packages("png")'
             # Perform package check
-            R CMD check *tar.gz
+            R CMD check *tar.gz > /dev/tty
 
       - run:
           name: Check coverage
@@ -96,7 +96,7 @@ jobs:
             # Install suggested packages
             R -e 'install.packages("png")'
             # Perform package check
-            R CMD check *tar.gz
+            R CMD check *tar.gz > /dev/tty
 
       - run:
           name: Check coverage
