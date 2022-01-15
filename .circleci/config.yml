@@ -29,6 +29,7 @@ jobs:
             R -e 'install.packages("covr")'
             R -e 'install.packages("DGEobj")'
             R -e 'install.packages("statmod")'
+            R -e 'install.packages("conflicted")'
             R -e 'install.packages("canvasXpress")'
 
       - run:
@@ -79,6 +80,7 @@ jobs:
             R -e 'install.packages("covr")'
             R -e 'install.packages("DGEobj")'
             R -e 'install.packages("statmod")'
+            R -e 'install.packages("conflicted")'
             R -e 'install.packages("canvasXpress")'
       - run:
           name: Session information and installed package versions
