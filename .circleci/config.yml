@@ -55,6 +55,9 @@ jobs:
           name: Check coverage
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
 
+     - store_artifacts:
+          path: DGEobj.utils.Rcheck/
+
   Build-for-rLATEST:
     docker:
       - image: rocker/verse:latest
@@ -103,6 +106,9 @@ jobs:
       - run:
           name: Check coverage
           command: Rscript -e 'library(covr); codecov(quiet = FALSE)'
+
+      - store_artifacts:
+          path: DGEobj.utils..Rcheck/
 
 workflows:
   version: 2
