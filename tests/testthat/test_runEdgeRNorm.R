@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runEdgeRNorm.R functions")
+skip_on_cran()
 
 
 test_that('runEdgeRNorm: runEdgeRNorm()', {

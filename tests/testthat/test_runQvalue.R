@@ -1,4 +1,5 @@
 context("DGEobj.utils - tests for runQvalue.R functions")
+skip_on_cran()
 
 
 test_that("runQvalue.R: runQvalue()", {

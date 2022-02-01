@@ -1,6 +1,6 @@
 # DGEobj.utils: A toolkit facilitating a limma/voom workflow Differential Gene Expression analysis
 
-<!-- badges: start
+<!-- badges: start -->
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/DGEobj.utils?color=9bc2cf)](https://cran.r-project.org/package=DGEobj.utils) 
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/DGEobj.utils?color=9bc2cf)](https://cran.r-project.org/package=DGEobj.utils) 
 [![CircleCI build status](https://circleci.com/gh/cb4ds/DGEobj.utils.svg?style=svg)](https://circleci.com/gh/cb4ds/DGEobj.utils)

@@ -1,8 +1,7 @@
 ## Comments from Maintainer
 
-* This is a new package to be added to CRAN, it contains utilities for running DE analysis 
-  in concert with the (newish) DGEobj package
-* Code Coverage is 99%
+* Resolved CRAN check notes and errors
+* Made some analysis packages suggested/optional and only required when using methods requiring them
 
 ---  
 
@@ -11,13 +10,14 @@
 RStudio Server Pro (ubuntu 18.04.2)  
 
 * R 3.6.3
-* R 4.0.4
+* R 4.0.5
+* R 4.1.1
 
 Travis-CI (ubuntu 16.04.6)
 
 * R 3.6.3
 * R 4.0.2
-* R devel (2021-04-14 r80165)
+* R devel (2021-09-29 r80990)
 
 WinBuilder
 
@@ -26,7 +26,8 @@ WinBuilder
 
 RHub
 
-* devtools::check_rhub(interactive = F)
+* devtools::check_rhub(interactive = F,
+                       env_vars    = c("_R_CHECK_FORCE_SUGGESTS_" = "false"))
 
 ---  
 
@@ -47,7 +48,10 @@ devtools::check()
 **NONE**
 
 ```
-revdepcheck::cran_revdeps('DGEobj.utils', bioc = T)
+tools::package_dependencies(packages = c('DGEobj.utils'),
+                            db       = available.packages(), 
+                            reverse  = TRUE)
 
+$DGEobj.utils
 character(0)
 ```

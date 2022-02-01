@@ -1,7 +1,7 @@
 ---
 title: "DGEobj.utils: An Example Workflow"
 author: "John R. Thompson"
-date: "2021-04-19"
+date: "2021-04-21"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
@@ -101,7 +101,7 @@ Two methods for low intensity filtering are supplied; min counts, and FPK.  The 
 
 It is typically recommended to use counts >= 10 and FPK >=5.  But the filter should be set as close as possible to criteria the original analyst used.  A custom filter can also be substituted.
 
-Minimum counts >= 10 is commonly used to filter out low intensity genes.  But mincounts is biased against short genes.  In contrast, FPK (fragments per kilobase), described below, provides an intensity measure that is not length biased.
+Minimum counts >= 10 is commonly used to filter out low intensity genes.  But mincount is biased against short genes.  In contrast, FPK (fragments per kilobase), described below, provides an intensity measure that is not length biased.
 
 Fragments per kilobase (FPK) is another filtering criterion.  For an average size ~2kb mRNA FPK = 5 is equivalent to counts = 10, however, FPK is not length biased.   Another useful property of FPK is that FPK can be calculated for intergenic DNA and thus provides an empirical background level of stochastic or spurious transcription.  This estimate is surely conservative in that there is very likely some real transcription going on in intergenic regions.  Typically, the intergenic FPK level is below 5 so FPK >= 5 is an appropriate threshold.
 
@@ -271,16 +271,16 @@ The user can then use the new design matrix to incorporate the SVs into the anal
 |geneData                  |geneData      |row      |geneData_orig       |data.frame |951  |8   |2021-04-08 11:04:01 |
 |granges_orig              |granges_orig  |meta     |geneData_orig       |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
 |granges                   |granges       |row      |geneData            |GRanges    |951  |NA  |2021-04-08 11:04:01 |
-|DGEList                   |DGEList       |assay    |counts              |DGEList    |951  |48  |2021-04-19 15:06:12 |
-|ReplicateGroupDesign      |designMatrix  |col      |design              |matrix     |48   |5   |2021-04-19 15:06:14 |
-|DiseaseStatusDesign       |designMatrix  |col      |design              |matrix     |48   |2   |2021-04-19 15:06:14 |
-|DiseaseStatusDesign_svobj |svobj         |meta     |DiseaseStatusDesign |list       |4    |NA  |2021-04-19 15:06:14 |
-|DiseaseStatusDesign_sva   |designMatrix  |col      |DiseaseStatusDesign |matrix     |48   |3   |2021-04-19 15:06:14 |
+|DGEList                   |DGEList       |assay    |counts              |DGEList    |951  |48  |2021-04-21 11:06:05 |
+|ReplicateGroupDesign      |designMatrix  |col      |design              |matrix     |48   |5   |2021-04-21 11:06:07 |
+|DiseaseStatusDesign       |designMatrix  |col      |design              |matrix     |48   |2   |2021-04-21 11:06:07 |
+|DiseaseStatusDesign_svobj |svobj         |meta     |DiseaseStatusDesign |list       |4    |NA  |2021-04-21 11:06:07 |
+|DiseaseStatusDesign_sva   |designMatrix  |col      |DiseaseStatusDesign |matrix     |48   |3   |2021-04-21 11:06:07 |
 
 
 
 
-## Run Voom and fit the model (lmfit)
+## Run Voom and fit the model (lmFit)
 
 The duplicateCorrelation method in Voom optionally allows the user to account for a random effect, such as repeated measurements on the same animal in this case.
 
@@ -359,17 +359,17 @@ kable(inventory(dgeObj))
 |geneData                    |geneData       |row      |geneData_orig                                    |data.frame |951  |8   |2021-04-08 11:04:01 |
 |granges_orig                |granges_orig   |meta     |geneData_orig                                    |GRanges    |1000 |NA  |2021-04-08 11:04:01 |
 |granges                     |granges        |row      |geneData                                         |GRanges    |951  |NA  |2021-04-08 11:04:01 |
-|DGEList                     |DGEList        |assay    |counts                                           |DGEList    |951  |48  |2021-04-19 15:06:12 |
-|ReplicateGroupDesign        |designMatrix   |col      |design                                           |matrix     |48   |5   |2021-04-19 15:06:14 |
-|ReplicateGroupDesign_Elist  |Elist          |assay    |DGEList             , ReplicateGroupDesign       |EList      |951  |48  |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_corFit |corFit         |meta     |ReplicateGroupDesign_Elist                       |list       |3    |NA  |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit    |fit            |row      |ReplicateGroupDesign_Elist, ReplicateGroupDesign |MArrayLM   |951  |5   |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit_cm |contrastMatrix |meta     |ReplicateGroupDesign_fit                         |matrix     |5    |4   |2021-04-19 15:06:19 |
-|ReplicateGroupDesign_fit_cf |contrast_fit   |row      |ReplicateGroupDesign_fit                         |MArrayLM   |951  |4   |2021-04-19 15:06:19 |
-|BDL_vs_Sham                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|EXT1024_vs_BDL              |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|Nint_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
-|Sora_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-19 15:06:19 |
+|DGEList                     |DGEList        |assay    |counts                                           |DGEList    |951  |48  |2021-04-21 11:06:05 |
+|ReplicateGroupDesign        |designMatrix   |col      |design                                           |matrix     |48   |5   |2021-04-21 11:06:07 |
+|ReplicateGroupDesign_Elist  |Elist          |assay    |DGEList             , ReplicateGroupDesign       |EList      |951  |48  |2021-04-21 11:06:11 |
+|ReplicateGroupDesign_corFit |corFit         |meta     |ReplicateGroupDesign_Elist                       |list       |3    |NA  |2021-04-21 11:06:11 |
+|ReplicateGroupDesign_fit    |fit            |row      |ReplicateGroupDesign_Elist, ReplicateGroupDesign |MArrayLM   |951  |5   |2021-04-21 11:06:11 |
+|ReplicateGroupDesign_fit_cm |contrastMatrix |meta     |ReplicateGroupDesign_fit                         |matrix     |5    |4   |2021-04-21 11:06:12 |
+|ReplicateGroupDesign_fit_cf |contrast_fit   |row      |ReplicateGroupDesign_fit                         |MArrayLM   |951  |4   |2021-04-21 11:06:12 |
+|BDL_vs_Sham                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-21 11:06:12 |
+|EXT1024_vs_BDL              |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-21 11:06:12 |
+|Nint_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-21 11:06:12 |
+|Sora_vs_BDL                 |topTable       |row      |ReplicateGroupDesign_fit_cf                      |data.frame |951  |13  |2021-04-21 11:06:12 |
 
 After executing runContrasts, the topTable dataframes are present in the DGEobj and the DGE analysis is complete.
 
