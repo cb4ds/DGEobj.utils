@@ -5,7 +5,7 @@
 [![CRAN_Downloads_Badge](https://cranlogs.r-pkg.org/badges/grand-total/DGEobj.utils?color=9bc2cf)](https://cran.r-project.org/package=DGEobj.utils) 
 [![CircleCI build status](https://circleci.com/gh/cb4ds/DGEobj.utils.svg?style=svg)](https://circleci.com/gh/cb4ds/DGEobj.utils)
 [![Codecov test coverage](https://codecov.io/gh/cb4ds/DGEobj.utils/branch/master/graph/badge.svg)](https://codecov.io/gh/cb4ds/DGEobj.utils?branch=master)
-badges: end -->
+<!-- badges: end -->
 
 This package implements a set of utility functions to enable a limma/voom workflow capturing
 the results in the DGEobj data structure. Aside from implementing a well developed and popular
