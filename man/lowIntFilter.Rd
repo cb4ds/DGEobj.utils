@@ -62,4 +62,5 @@ argument inactivates that threshold.
                            sampleFraction = 0.5)
   dim(myDGEobj)
 }
+
 }

@@ -37,6 +37,7 @@
 #'                            sampleFraction = 0.5)
 #'   dim(myDGEobj)
 #'}
+#'
 #' @importFrom assertthat assert_that
 #' @importFrom DGEobj getItem
 #' @importFrom stringr str_c
