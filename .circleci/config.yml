@@ -160,4 +160,5 @@ workflows:
   Prepare-All-R-Editions:
     jobs:
       - Build-for-r4_0_5
+      - Build-for-r4_1_3
       - Build-for-rLATEST
