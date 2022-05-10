@@ -9,3 +9,4 @@
 ^CRAN-RELEASE$
 ^\.circleci$
 ^\.circleci/config\.yml$
+^CRAN-SUBMISSION$
