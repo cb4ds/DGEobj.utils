@@ -62,9 +62,7 @@ If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an a
 "canvasXpress" or ggplots (plots) to the dataframe.
 }
 \examples{
-if (requireNamespace("RNASeqPower", quietly = TRUE) &&
-    requireNamespace("statmod", quietly = TRUE)) {
-
+\dontrun{
     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
     counts <- dgeObj$counts
     dm     <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]

@@ -33,7 +33,7 @@
 #'   "ihw." The second list element is the IHW result dataframe.
 #'
 #' @examples
-#' if (requireNamespace("IHW", quietly = TRUE)) {
+#' \dontrun {
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
 #'    contrastList <- lapply(contrastList, dplyr::select,

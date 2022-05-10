@@ -20,6 +20,7 @@
 #' @return A DGEobj with a normalized DGEList added or a list containing the normalized DGEobj and a plot
 #'
 #' @examples
+#' \dontrun{
 #'    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
 #'
@@ -34,9 +35,9 @@
 #'                                  includePlot = TRUE)
 #'    myDGEobj <- obj_plus_plot[[1]]
 #'    obj_plus_plot[[2]]
+#' }
 #'
 #' @importFrom dplyr %>%
-#' @importFrom edgeR calcNormFactors DGEList
 #' @importFrom DGEobj addItem getItem
 #' @importFrom assertthat assert_that
 #'
@@ -46,6 +47,9 @@ runEdgeRNorm <- function(dgeObj,
                          itemName    = "DGEList",
                          includePlot = FALSE,
                          plotLabels  = NULL) {
+    assertthat::assert_that(requireNamespace("edgeR", quietly = TRUE),
+                            msg = "edgeR package is required to apply edgeR normalization to the given DGEobj")
+
     assertthat::assert_that(!missing(dgeObj),
                             !is.null(dgeObj),
                             class(dgeObj) == "DGEobj",
@@ -76,10 +80,17 @@ runEdgeRNorm <- function(dgeObj,
         plot_type <- "none"
     }
 
-    MyDGElist  <-  as.matrix(DGEobj::getItem(dgeObj, "counts")) %>%
-        edgeR::DGEList() %>%
-        edgeR::calcNormFactors(method = normMethod)
-
+    do.call("require", list("edgeR"))
+    MyDGElist <- tryCatch({
+        do.call("calcNormFactors",
+                list(object = do.call("DGEList",
+                                      list(counts = as.matrix(DGEobj::getItem(dgeObj, "counts")))),
+                     method = normMethod))
+    },
+    error = function(e) {
+        message("Unexpected error: ", e$message, " happened during edgeR normalization of counts")
+        return(NULL)
+    })
 
     # Capture the DGEList
     itemAttr <- list(normalization = normMethod)

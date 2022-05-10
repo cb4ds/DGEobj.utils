@@ -22,23 +22,23 @@ Imports:
     DGEobj  (>= 1.0.3),
     dplyr,
     stats,
-    stringr,
-    edgeR,
-    limma,
-    qvalue,
-    sva
+    stringr
 Suggests:
+    biomaRt,
     canvasXpress,
-    conflicted, 
+    conflicted,
+    edgeR,
     glue,
     ggplot2,
     IHW,
+    limma,
     knitr,
+    qvalue,
     RNASeqPower,
     rmarkdown,
     statmod,
+    sva,
     testthat,
-    biomaRt,
     zFPKM
 biocViews:
 RoxygenNote: 7.1.2

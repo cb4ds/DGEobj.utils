@@ -38,9 +38,7 @@
 #' @return a dataframe of power calculations or a list of the dataframe and defined plots as defined by the "includePlots" argument.
 #'
 #' @examples
-#' if (requireNamespace("RNASeqPower", quietly = TRUE) &&
-#'     requireNamespace("statmod", quietly = TRUE)) {
-#'
+#' \dontrun{
 #'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'     counts <- dgeObj$counts
 #'     dm     <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]
@@ -54,7 +52,6 @@
 #'     resultList[[3]]       # N vs Power Plot
 #' }
 #'
-#' @importFrom edgeR estimateDisp DGEList calcNormFactors aveLogCPM
 #' @importFrom dplyr filter arrange select %>%
 #' @importFrom stats approx power
 #' @importFrom assertthat assert_that
@@ -71,6 +68,9 @@ runPower <- function(countsMatrix,
                             msg = "RNASeqPower package is required to run power analysis on the given counts matrix and design matrix.")
     assertthat::assert_that(requireNamespace("statmod", quietly = TRUE),
                             msg = "'statmod' package is required to run estimate dispersion calculations")
+    assertthat::assert_that(requireNamespace("edgeR", quietly = TRUE),
+                            msg = "edgeR package is required to apply normalization and estimate dispersion for power anlaysis")
+
     assertthat::assert_that(!missing(countsMatrix),
                             !is.null(countsMatrix),
                             class(countsMatrix)[[1]] %in% c("matrix","data.frame"),
@@ -108,16 +108,35 @@ runPower <- function(countsMatrix,
     }
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
-    dgelist <- countsMatrix %>%
-        as.matrix() %>%
-        edgeR::DGEList() %>%
-        edgeR::calcNormFactors() %>%
-        edgeR::estimateDisp(design = designMatrix, robust = TRUE)
+
+    do.call("require", list("edgeR"))
+    dgelist <- tryCatch({
+        do.call("estimateDisp",
+                list(y      = do.call("calcNormFactors",
+                                      list(object = do.call("DGEList",
+                                                            list(counts = as.matrix(countsMatrix))))),
+                     design = designMatrix,
+                     robust = TRUE))
+    },
+    error = function(e) {
+        message("Unexpected error: ", e$message, " happened during edgeR normalization or dispersion estimation")
+        return(NULL)
+    })
 
     # Get a fitted CV values for each input value of depth
     # BCV is the sqrt of Dispersion
     GeoMeanLibSize  <- dgelist$samples$lib.size %>% log %>% mean %>% exp
-    depth_avelogcpm <- edgeR::aveLogCPM(depth, GeoMeanLibSize)
+
+    depth_avelogcpm <- tryCatch({
+        do.call("aveLogCPM",
+                list(y        = depth,
+                     lib.size = GeoMeanLibSize))
+    },
+    error = function(e) {
+        message("Unexpected error: ", e$message, " happened during edgeR computation of average log2 CPM")
+        return(NULL)
+    })
+
     depthBCV        <- sqrt(approx(dgelist$AveLogCPM, dgelist$trended.dispersion,
                             xout = depth_avelogcpm, rule = 2, ties = mean)$y)
 
