@@ -38,6 +38,7 @@ See \doi{10.1007/978-3-642-04898-2_248} for a brief introduction
 to FDRs and q-values.
 }
 \examples{
+\dontrun{
    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
    contrastList <- lapply(contrastList, dplyr::select,
@@ -49,5 +50,6 @@ to FDRs and q-values.
 
    # note new columns added
    colnames(contrastList[[1]])
+}
 
 }
