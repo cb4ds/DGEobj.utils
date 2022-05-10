@@ -46,7 +46,7 @@ If bins = 1, IHW converges on the BH FDR value. Instead, run IHW on the
 complete set of detected genes from topTable (not topTreat) results.
 }
 \examples{
-if (requireNamespace("IHW", quietly = TRUE)) {
+\dontrun{
    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
    contrastList <- lapply(contrastList, dplyr::select,

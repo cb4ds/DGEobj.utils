@@ -193,6 +193,10 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
                             msg = "dgeObj must be specified and should be of class 'DGEobj'.")
     assertthat::assert_that(attr(dgeObj, "level") %in% c("isoform", "gene"),
                             msg = "The level of dgeObj should be of type 'isoform' or type 'gene'.")
+
+    do.call("require", list("edgeR"))
+
+
     if (any(is.null(applyFilter),
             !is.logical(applyFilter),
             length(applyFilter) != 1)) {
@@ -219,7 +223,6 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
         geneLength <- rowMeans(getItem(dgeObj, "effectiveLength_orig"), na.rm = TRUE)
     }
 
-    do.call("require", list("edgeR"))
     MyDGElist <- tryCatch({
         do.call("calcNormFactors",
                 list(object = do.call("DGEList",

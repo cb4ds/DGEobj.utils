@@ -79,6 +79,10 @@ runPower <- function(countsMatrix,
                             !is.null(designMatrix),
                             class(designMatrix)[[1]] %in% c("matrix","data.frame"),
                             msg = "designMatrix must be specified and must be of class matrix or dataframe.")
+
+    do.call("require", list("edgeR"))
+    do.call("require", list("RNASeqPower"))
+
     if (any(is.null(depth),
             !is.numeric(depth),
             length(depth)  != 3)) {
@@ -109,7 +113,6 @@ runPower <- function(countsMatrix,
     # Fit the BCV data and define the BCV for each depth requested.
     # Estimate dispersion
 
-    do.call("require", list("edgeR"))
     dgelist <- tryCatch({
         do.call("estimateDisp",
                 list(y      = do.call("calcNormFactors",
@@ -155,7 +158,6 @@ runPower <- function(countsMatrix,
         for (Nf in n) {
             for (E in effectSize) {
                 for (A in alpha) {
-                    do.call("require", list("RNASeqPower"))
                     P    <- do.call("rnapower", list(depth = D, n = Nf, cv = cv, effect = E, alpha = A))
                     pdat <- rbind(pdat, c(depth = D, n = Nf, effect = E, alpha = A, powerVal = P))
                 }

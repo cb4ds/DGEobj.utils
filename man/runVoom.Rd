@@ -30,13 +30,13 @@ Also, 'statmod' package must be installed to run duplicate correlation calculati
 \item{runDupCorTwice}{Default = TRUE. Gordon Smyth recommends running duplicateCorrelation
 twice. Set this to false to run duplicateCorrelation just once.}
 
-\item{qualityWeights}{Runs limma::voomWithQualityWeights if set to TRUE (Default = TRUE).
+\item{qualityWeights}{Runs limma's voomWithQualityWeights() if set to TRUE (Default = TRUE).
 This should normally be set to TRUE.}
 
 \item{var.design}{Provide a design matrix (from model.matrix) to identify
 replicate groups (e.g. "~ ReplicateGroup") for quality weight determination.
 Causes quality weights to be determined on a group basis.  If omitted
-limma::voomWithQualityWeights treats each sample individually.}
+limma's voomWithQualityWeights() treats each sample individually.}
 
 \item{mvPlot}{Enables the voom mean-variance plot. (Default = TRUE)}
 

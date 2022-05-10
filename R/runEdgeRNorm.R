@@ -63,7 +63,10 @@ runEdgeRNorm <- function(dgeObj,
                             !itemName %in% names(dgeObj),
                             length(itemName) == 1,
                             msg = "itemName must be a singular, unique and not NULL character value.")
+
     funArgs <- match.call()
+    do.call("require", list("edgeR"))
+
     if (is.null(includePlot)) {
         plot_type <- "none"
     } else if (is.logical(includePlot) && length(includePlot) == 1) {
@@ -80,7 +83,6 @@ runEdgeRNorm <- function(dgeObj,
         plot_type <- "none"
     }
 
-    do.call("require", list("edgeR"))
     MyDGElist <- tryCatch({
         do.call("calcNormFactors",
                 list(object = do.call("DGEList",
@@ -123,6 +125,7 @@ runEdgeRNorm <- function(dgeObj,
     if (plot_type == "canvasxpress") {
         if ("canvasXpress" %in% .packages(all.available = T)) {
             do.call("require", list("canvasXpress"))
+
             plot <- do.call("canvasXpress",
                             list(data             = as.data.frame(t(plot_data)),
                                  graphOrientation = "vertical",
