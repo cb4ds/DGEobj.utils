@@ -17,6 +17,8 @@
 #'
 #' @examples
 #' \dontrun{
+#'    # NOTE: Requires the sva package
+#'
 #'     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'
 #'     ###  Create a model based on surgery status, intentionally omitting the compound treatments

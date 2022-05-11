@@ -28,9 +28,10 @@ using the formula provided by [Harold Pimental](https://haroldpimentel.wordpress
 }
 \examples{
 \dontrun{
-   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   # NOTE: Requires the edgeR package
 
-   tpm <- tpm.on.subset(dgeObj)
+   dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+   tpm    <- tpm.on.subset(dgeObj)
 }
 
 }

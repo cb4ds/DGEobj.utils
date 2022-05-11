@@ -63,6 +63,8 @@ If includePlots = TRUE, "canvasXpress" or "ggplot", a list is returned with an a
 }
 \examples{
 \dontrun{
+    # NOTE: Requires the RNASeqPower, statmod, and edgeR packages
+
     dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
     counts <- dgeObj$counts
     dm     <- DGEobj::getType(dgeObj, type = "designMatrix")[[1]]

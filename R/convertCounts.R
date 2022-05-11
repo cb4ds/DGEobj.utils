@@ -177,9 +177,10 @@ convertCounts <- function(countsMatrix,
 #'
 #' @examples
 #' \dontrun{
-#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    # NOTE: Requires the edgeR package
 #'
-#'    tpm <- tpm.on.subset(dgeObj)
+#'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
+#'    tpm    <- tpm.on.subset(dgeObj)
 #' }
 #'
 #' @import DGEobj

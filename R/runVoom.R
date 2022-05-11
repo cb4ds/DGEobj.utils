@@ -52,6 +52,8 @@
 #'
 #' @examples
 #' \dontrun{
+#'   # NOTE: Requires the limma package
+#'
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'    for (name in names(dgeObj)[11:length(dgeObj)]) {
 #'        dgeObj <- DGEobj::rmItem(dgeObj, name)

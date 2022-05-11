@@ -48,6 +48,8 @@
 #'
 #' @examples
 #' \dontrun{
+#'   # NOTE: Requires the limma and statmod packages
+#'
 #'    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'
 #'    # Name the design matrix to be used (see inventory(myDGEobj))

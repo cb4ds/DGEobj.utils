@@ -50,22 +50,24 @@ Note that log2 values for CPM, TPM, and FPKM employ edgeR's prior.count handling
 }
 \examples{
 \dontrun{
-# Simulate some data
-counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
-geneLength <- rowMeans(counts)
+  # NOTE: Requires the edgeR package
 
-# TMM normalized Log2FPKM
-Log2FPKM <- convertCounts(counts,
-                          unit = "fpkm",
-                          geneLength = geneLength,
-                          log = TRUE,
-                          normalize = "tmm")
+  # Simulate some data
+  counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
+  geneLength <- rowMeans(counts)
 
-# Non-normalized CPM (not logged)
-RawCPM <- convertCounts(counts,
-                        unit = "CPM",
-                        log = FALSE,
-                        normalize = "none")
+  # TMM normalized Log2FPKM
+  Log2FPKM <- convertCounts(counts,
+                            unit       = "fpkm",
+                            geneLength = geneLength,
+                            log        = TRUE,
+                            normalize  = "tmm")
+
+  # Non-normalized CPM (not logged)
+  RawCPM <- convertCounts(counts,
+                          unit      = "CPM",
+                          log       = FALSE,
+                          normalize = "none")
 }
 
 }

@@ -40,6 +40,8 @@ edgeR normalization (calcNormFactors).
 }
 \examples{
 \dontrun{
+   # NOTE: Requires the edgeR package
+
    myDGEobj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
    myDGEobj <- DGEobj::resetDGEobj(myDGEobj)
 

@@ -27,6 +27,8 @@
 #'
 #' @examples
 #' \dontrun{
+#'    # NOTE: Requires the qvalue package
+#'
 #'    dgeObj <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
 #'    contrastList <- DGEobj::getType(dgeObj, type = "topTable")
 #'    contrastList <- lapply(contrastList, dplyr::select,
