@@ -5,9 +5,10 @@
 #' in the model, enable eBayes. To use contrasts.fit downstream, run eBayes
 #' after that step instead. eBayes should always be run last.
 #'
-#' Input is minimally a DGEobj containing a DGEList (typically TMM-normalized),
-#' and a formula (character representation).  Other arguments can invoke
-#' the duplicateCorrelation method and modify use of quality weights.
+#' Input is minimally a DGEobj containing a DGEList (which is typically TMM-normalized)
+#' and a formula (character representation).  If a DGEList is missing on the object the
+#' counts are used as-is.  Other arguments can invoke the duplicateCorrelation method and
+#' modify use of quality weights.
 #'
 #' Returns a DGEobj class object containing the VoomElist (voom
 #' output), and Fit object (lmFit output).
@@ -24,7 +25,7 @@
 #' than once (e.g. before and after some treatment).  This calculates a within-
 #' subject correlation and includes this in the model.
 #'
-#' @param dgeObj A DGEobj containing a DGEList (e.g. from runEdgeRNorm.) (Required)
+#' @param dgeObj A DGEobj containing a DGEList (e.g. from runEdgeRNorm) or counts (Required)
 #' @param designMatrixName Name of a design matrix within dgeObj. (Required)
 #' @param dupCorBlock Supply a block argument to trigger duplicateCorrelation. (Optional)
 #'    Should be a vector the same length as ncol with values to indicate common
@@ -93,8 +94,8 @@ runVoom <- function(dgeObj,
                             length(designMatrixName) == 1,
                             designMatrixName %in% names(dgeObj),
                             msg = "designMatrixName must be specified and must be one of the items in dgeObj. Use names(dgeObj) to check for available options.")
-    assertthat::assert_that("DGEList" %in% DGEobj::showTypes(dgeObj)$Type,
-                            msg = "No DGEList found in dgeObj. Specify a DGEobj that contains a DGEList.")
+    assertthat::assert_that(any(c("DGEList", "counts") %in% attr(dgeObj, "type")),
+                            msg = "No counts or DGEList found in dgeObj. Specify a DGEobj that contains a DGEList or counts.")
 
     do.call("require", list("limma"))
 
@@ -102,6 +103,8 @@ runVoom <- function(dgeObj,
 
     if ("DGEList" %in% attr(dgeObj, "type")) {
         dgelist <- DGEobj::getItem(dgeObj, "DGEList")
+    } else {
+        dgelist <- DGEobj::getItem(dgeObj, "counts")
     }
 
     if (any(is.null(runDupCorTwice),

@@ -49,7 +49,7 @@ used (because edgeR functions only accept a vector for effectiveLength).
 Note that log2 values for CPM, TPM, and FPKM employ edgeR's prior.count handling to avoid divide by zero.
 }
 \examples{
-/dontrun{
+\dontrun{
 # Simulate some data
 counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
 geneLength <- rowMeans(counts)

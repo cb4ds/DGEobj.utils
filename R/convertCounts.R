@@ -27,23 +27,25 @@
 #' @return A matrix in the new unit space
 #'
 #' @examples
-#' /dontrun{
-#' # Simulate some data
-#' counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
-#' geneLength <- rowMeans(counts)
+#' \dontrun{
+#'   # NOTE: Requires the edgeR package
 #'
-#' # TMM normalized Log2FPKM
-#' Log2FPKM <- convertCounts(counts,
-#'                           unit = "fpkm",
-#'                           geneLength = geneLength,
-#'                           log = TRUE,
-#'                           normalize = "tmm")
+#'   # Simulate some data
+#'   counts <- trunc(matrix(runif(6000, min=0, max=2000), ncol=6))
+#'   geneLength <- rowMeans(counts)
 #'
-#' # Non-normalized CPM (not logged)
-#' RawCPM <- convertCounts(counts,
-#'                         unit = "CPM",
-#'                         log = FALSE,
-#'                         normalize = "none")
+#'   # TMM normalized Log2FPKM
+#'   Log2FPKM <- convertCounts(counts,
+#'                             unit       = "fpkm",
+#'                             geneLength = geneLength,
+#'                             log        = TRUE,
+#'                             normalize  = "tmm")
+#'
+#'   # Non-normalized CPM (not logged)
+#'   RawCPM <- convertCounts(counts,
+#'                           unit      = "CPM",
+#'                           log       = FALSE,
+#'                           normalize = "none")
 #' }
 #'
 #' @importFrom assertthat assert_that
@@ -223,17 +225,6 @@ tpm.on.subset <- function(dgeObj, applyFilter = TRUE){
         geneLength <- rowMeans(getItem(dgeObj, "effectiveLength_orig"), na.rm = TRUE)
     }
 
-    MyDGElist <- tryCatch({
-        do.call("calcNormFactors",
-                list(object = do.call("DGEList",
-                                      list(counts = as.matrix(DGEobj::getItem(dgeObj, "counts")))),
-                     method = normMethod))
-    },
-    error = function(e) {
-        message("Unexpected error: ", e$message, " happened during edgeR normalization of counts")
-        return(NULL)
-    })
-
     TPM <- convertCounts(getItem(dgeObj, "counts_orig"),
                          geneLength = geneLength,
                          unit = "tpm",
@@ -394,6 +385,7 @@ calcFPK <- function(countsMatrix, log, normalize, geneLength, prior.count){
 }
 
 # brought in from edgeR
+#' @importFrom methods is
 expandAsMatrix <- function(x, dim = NULL, byrow = TRUE) {
     if (is.null(dim))
         return(as.matrix(x))
@@ -421,7 +413,7 @@ expandAsMatrix <- function(x, dim = NULL, byrow = TRUE) {
         stop("x has more than 2 dimensions")
     if (all(dx == dim))
         return(as.matrix(x))
-    if (is(x, "CompressedMatrix")) {
+    if (methods::is(x, "CompressedMatrix")) {
         return(Recall(as.matrix(x), dim = dim, byrow = byrow))
     }
     stop("x is matrix of wrong size")

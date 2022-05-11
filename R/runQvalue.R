@@ -52,7 +52,7 @@ runQvalue <- function(contrastList, pvalField = "P.Value", ...){
                             "list" %in% class(contrastList),
                             msg = "contrastList must be of class 'list'.")
 
-    do.call("require", list("IHW"))
+    do.call("require", list("qvalue"))
 
     # Add Q-values to each topTable dataframe in contrastList
     contrastNames = names(contrastList)

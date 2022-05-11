@@ -18,7 +18,7 @@ runVoom(
 )
 }
 \arguments{
-\item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm.) (Required)}
+\item{dgeObj}{A DGEobj containing a DGEList (e.g. from runEdgeRNorm) or counts (Required)}
 
 \item{designMatrixName}{Name of a design matrix within dgeObj. (Required)}
 
@@ -60,9 +60,10 @@ in the model, enable eBayes. To use contrasts.fit downstream, run eBayes
 after that step instead. eBayes should always be run last.
 }
 \details{
-Input is minimally a DGEobj containing a DGEList (typically TMM-normalized),
-and a formula (character representation).  Other arguments can invoke
-the duplicateCorrelation method and modify use of quality weights.
+Input is minimally a DGEobj containing a DGEList (which is typically TMM-normalized)
+and a formula (character representation).  If a DGEList is missing on the object the
+counts are used as-is.  Other arguments can invoke the duplicateCorrelation method and
+modify use of quality weights.
 
 Returns a DGEobj class object containing the VoomElist (voom
 output), and Fit object (lmFit output).

@@ -19,9 +19,13 @@ Takes a Log2CPM numeric matrix and MArrayLM fit object from limma's lmFit()
 and calculates R-squared for each gene fit.
 }
 \examples{
+\dontrun{
+   # NOTE: Requires the edgeR package
+
    dgeObj    <- readRDS(system.file("exampleObj.RDS", package = "DGEobj"))
    log2cpm   <- convertCounts(dgeObj$counts, unit = "cpm", log=TRUE, normalize = "tmm")
    fitObject <- dgeObj$ReplicateGroupDesign_fit
    rsq       <- rsqCalc (log2cpm, fitObject)
+}
 
 }
