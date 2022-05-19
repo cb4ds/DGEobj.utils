@@ -1,7 +1,7 @@
 ## Comments from Maintainer
 
 * Resolved CRAN check errors, including the noSuggests
-* Updated the example object so that as many examples can be run as possible without suggested packages
+* Some systems do show one NOTE however, as the suggested Bioconductor packages are not available for checking
 * Made all Bioconductor packages in suggests required for testing, will not run tests if any are missing
 * Also updated our process to check ALL RHub platforms, to so hopefully we do not run into unexpected issues
 
