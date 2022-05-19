@@ -23,3 +23,7 @@ if (requireNamespace('zFPKM',       quietly = TRUE) &&
 
     setup_failed <- FALSE
 }
+
+if (setup_failed) {
+    message('Test Setup Failed - likely due to missing suggested packages.  Tests will be skipped.')
+}
