@@ -431,16 +431,10 @@ runVoom <- function(dgeObj,
 
         # Run eBayes
         if (runEBayes) {
-            fit <- tryCatch({
-                do.call("eBayes",
-                        list(fit        = fit,
-                             robust     = robust,
-                             proportion = proportion))
-            },
-            error = function(e) {
-                message("Unexpected error: ", e$message, " happened during eBayes statistics computation")
-                return(NULL)
-            })
+            fit <- do.call("eBayes",
+                   list(fit        = fit,
+                        robust     = robust,
+                        proportion = proportion))
             itemAttr <- list(eBayes = TRUE)
         } else {
             itemAttr <- list(eBayes = FALSE)
@@ -449,7 +443,9 @@ runVoom <- function(dgeObj,
         if (exists("corfit")) { # Duplicate correlation was used; capture the correlation value
             cat(stringr::str_c("Duplicate Correlation = ", round(corfit$consensus.correlation, 4), "   \n"))
             attr(VoomElist, "DupCor") <- corfit$consensus.correlation
-            attr(fit, "DupCor") <- corfit$consensus.correlation
+            if (!is.null(fit)) {
+                attr(fit, "DupCor") <- corfit$consensus.correlation
+            }
         }
 
         VoomElistName = paste(designMatrixName, "_Elist", sep = "")
@@ -466,6 +462,7 @@ runVoom <- function(dgeObj,
                                 funArgs = funArgs,
                                 parent = paste(designMatrixName, "_Elist", sep = ""))
         }
+
         dgeObj <- dgeObj %>%
             DGEobj::addItem(fit, paste(designMatrixName, "_fit", sep = ""),
                             "fit",
