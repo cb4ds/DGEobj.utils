@@ -75,6 +75,8 @@ convertCounts <- function(countsMatrix,
                             toupper(unit) %in% c("CPM", "FPKM", "FPK", "TPM"),
                             msg = "unit must be specified and must be one of 'CPM', 'FPKM', 'FPK' or 'TPM'.")
 
+    do.call("require", list("edgeR"))
+
     unit <- toupper(unit)
     if (unit %in% c('FPKM', 'TPM', 'FPK')) {
         # In these cases geneLength is required
